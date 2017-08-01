@@ -37,7 +37,7 @@ class C_Document extends Controller {
     var $file;
     var $error;
     //under view _action
-    var $webpath;
+    var $web_path;
     var $note_action;
     var $move_action;
     var $delete_string;
@@ -917,7 +917,7 @@ class C_Document extends Controller {
 
     // Added by Rod for metadata update.
     //
-	function update_action_process($patient_id = "", $document_id) {
+    function update_action_process($patient_id = "", $document_id) {
 
         if ($_POST['process'] != "true") {
             die("process is '" . $_POST['process'] . "', expected 'true'");
@@ -1004,7 +1004,7 @@ class C_Document extends Controller {
         return $echoed_content;
     }
 
-    /* 	This is a recursive function to rename a file to something that doesn't already exist.
+    /*  This is a recursive function to rename a file to something that doesn't already exist.
      *      Modified in version 3.2.0 to place a counter within the filename (previously was placed
      *      at end) to ensure documents opened correctly by external browser viewers. If the
      *      counter is at the end of the file, then will use it (to continue to work with older
@@ -1203,16 +1203,16 @@ class C_Document extends Controller {
                 $conn = $GLOBALS['adodb']['db'];
                 $encounter = $conn->GenID("sequences");
                 $query = "INSERT INTO form_encounter SET
-						date = ?,
-						reason = ?,
-						facility = ?,
-						sensitivity = 'normal', 
-						pc_catid = ?,
-						facility_id = ?,
-						billing_facility = ?,
-						provider_id = ?,
-						pid = ?,
-						encounter = ?";
+                        date = ?,
+                        reason = ?,
+                        facility = ?,
+                        sensitivity = 'normal', 
+                        pc_catid = ?,
+                        facility_id = ?,
+                        billing_facility = ?,
+                        provider_id = ?,
+                        pid = ?,
+                        encounter = ?";
                 $bindArray = array($event_date, $file_name, $facility, $_POST['visit_category_id'], (int) $facility_id, (int) $billingFacilityID, (int) $provider_id, $patient_id, $encounter);
                 $formID = sqlInsert($query, $bindArray);
                 addForm($encounter, "Patient Encounter", $formID, "patient_encounter", $patient_id, "1", date("Y-m-d H:i:s"), $username);

@@ -3243,5 +3243,25 @@ function genProviderSelect($selname, $toptext, $default=0, $disabled=false, $all
   }
   echo "   </select>\n";
 }
+function genUserSelect($selname, $toptext, $default=0, $disabled=false)
+{
+     $query = "SELECT id, lname, mname, fname, suffix FROM users WHERE " .
+    "authorized = 0 AND username != '' " .
+    "AND active = 1 " .
+    "ORDER BY lname, fname";
+
+  $res = sqlStatement($query);
+  echo "   <select name='" . attr($selname) . "'";
+  if ($disabled) echo " disabled";
+  echo ">\n";
+  echo "    <option value=''>" . text($toptext) . "\n";
+  while ($row = sqlFetchArray($res)) {
+    $provid = $row['id'];
+    echo "    <option value='" . attr($provid) . "'";
+    if ($provid == $default) echo " selected";
+    echo ">" . text($row['lname'] . ", " . $row['fname'] . " " . $row['mname'] . " " . $row['suffix']) . "\n";
+  }
+  echo "   </select>\n";
+}
 }
 ?>

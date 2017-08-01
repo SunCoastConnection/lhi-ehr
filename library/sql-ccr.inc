@@ -34,11 +34,11 @@ if($_POST['ccrAction'] == 'generate'){
 function getHeaderData() {
 
 // Reserved for future use
-	
+    
 }
 
 function getMedicationData() {
-	global $pid,$set,$start,$end;
+    global $pid,$set,$start,$end;
   if($set == "on"){
     $sql = " 
       SELECT prescriptions.date_added ,
@@ -52,7 +52,7 @@ function getMedicationData() {
         IF(prescriptions.active=1,'Active','Prior History No Longer Active') AS active,
         prescriptions.provider_id,
         prescriptions.size,
-	prescriptions.rxnorm_drugcode,
+    prescriptions.rxnorm_drugcode,
         IFNULL(prescriptions.refills,0) AS refills,
         lo2.title AS form,
         lo.title
@@ -99,7 +99,7 @@ function getMedicationData() {
         IF(prescriptions.active=1,'Active','Prior History No Longer Active') AS active,
         prescriptions.provider_id,
         prescriptions.size,
-	prescriptions.rxnorm_drugcode,
+    prescriptions.rxnorm_drugcode,
         IFNULL(prescriptions.refills,0) AS refills,
         lo2.title AS form,
         lo.title
@@ -122,7 +122,7 @@ function getMedicationData() {
         IF((isnull(enddate) OR enddate = '0000-00-00' OR enddate >= CURDATE()),'Active','Prior History No Longer Active') AS active,
         '' AS provider_id,
         '' AS size,
-	'' AS rxnorm_drugcode,
+    '' AS rxnorm_drugcode,
         0 AS refills,
         '' AS form,
         '' AS title 
@@ -132,11 +132,11 @@ function getMedicationData() {
         AND pid = ?";
     $result = sqlStatement($sql, array($pid,$pid) );
   }
-	return $result;
+    return $result;
 }
 
 function getImmunizationData() {
-	global $pid,$set,$start,$end;
+    global $pid,$set,$start,$end;
   if($set == "on"){
     $sql = "SELECT
       immunizations.administered_date,
@@ -167,13 +167,13 @@ function getImmunizationData() {
     WHERE immunizations.patient_id = ? AND immunizations.added_erroneously = 0 AND code_types.ct_key = 'CVX'";
     $result = sqlStatement($sql, array($pid) );
   }
-	return $result;
+    return $result;
 }
 
 
 function getProcedureData() {
 
-	global $pid,$set,$start,$end;
+    global $pid,$set,$start,$end;
   if($set == "on"){
     $sql = " 
     SELECT 
@@ -293,7 +293,7 @@ function getProcedureData() {
   
     $result = sqlStatement($sql, array($pid,$pid) );
   }
-	return $result;
+    return $result;
 }
 
 
@@ -307,7 +307,7 @@ function getProblemData() {
   #  problems with one diagnostic code set in order to maintain previous behavior
   #  (this will likely need to be dealt with at some point; ie. support multiple dx codes per problem).
 
-	global $pid,$set,$start,$end;
+    global $pid,$set,$start,$end;
   if($set == "on"){
     $sql = " 
     SELECT fe.encounter, fe.reason, fe.provider_id, u.title, u.fname, u.lname, 
@@ -318,7 +318,7 @@ function getProblemData() {
     LEFT JOIN form_encounter AS fe ON fe.encounter = ie.encounter
     LEFT JOIN facility AS f ON fe.facility_id = f.id
     LEFT JOIN users AS u ON fe.provider_id = u.id
-    WHERE l.type = 'medical_problem' AND l.pid=? AND l.diagnosis LIKE 'ICD9:%'
+    WHERE l.type = 'medical_problem' AND l.pid=? AND l.diagnosis LIKE 'ICD10:%'
     AND l.diagnosis NOT LIKE '%;%'
     AND l.date BETWEEN ? AND ?";
     $result = sqlStatement($sql, array($pid,$start,$end) );
@@ -332,19 +332,19 @@ function getProblemData() {
     LEFT JOIN form_encounter AS fe ON fe.encounter = ie.encounter
     LEFT JOIN facility AS f ON fe.facility_id = f.id
     LEFT JOIN users AS u ON fe.provider_id = u.id
-    WHERE l.type = 'medical_problem' AND l.pid=? AND l.diagnosis LIKE 'ICD9:%'
+    WHERE l.type = 'medical_problem' AND l.pid=? AND l.diagnosis LIKE 'ICD10:%'
     AND l.diagnosis NOT LIKE '%;%'";
     $result = sqlStatement($sql, array($pid) );
   }
-	return $result;
+    return $result;
 }
 
 
 function getAlertData() {
 
-	global $pid,$set,$start,$end;
+    global $pid,$set,$start,$end;
   if($set == "on"){
-	$sql = " 
+    $sql = " 
     select fe.reason, fe.provider_id, fe.facility_id, fe.encounter,
       ie.list_id, l.pid, l.title as alert_title, l.outcome, 
       l.groupname, l.begdate, l.enddate, l.type, l.diagnosis, l.date ,
@@ -387,13 +387,13 @@ function getAlertData() {
       
     $result = sqlStatement($sql, array($pid) );
   }
-	return $result;
+    return $result;
 }
 
 
 function getResultData() {
 
-	global $pid,$set,$start,$end;
+    global $pid,$set,$start,$end;
   if($set == "on"){
     $sql = "
       SELECT 
@@ -426,7 +426,7 @@ function getResultData() {
           ON lo.list_id = 'proc_unit' AND pt.units = lo.option_id
       WHERE po.patient_id=?
       AND prs.date BETWEEN ? AND ?";
-		
+        
     $result = sqlStatement($sql, array($pid,$start,$end) );
   }else{
     $sql = "
@@ -459,27 +459,27 @@ function getResultData() {
         LEFT JOIN list_options AS lo
           ON lo.list_id = 'proc_unit' AND pt.units = lo.option_id
       WHERE po.patient_id=?";
-		
+        
     $result = sqlStatement($sql, array($pid) );
   }
-	return $result;
+    return $result;
 }
 
 
 function getActorData() {
-	global $pid;
+    global $pid;
 
-	$sql = " 
-	select fname, lname, DOB, sex, pid, street, city, state, postal_code, phone_contact
-	from patient_data
-	where pid=?";
-		
-	$result[0] = sqlStatement($sql, array($pid) );
+    $sql = " 
+    select fname, lname, DOB, sex, pid, street, city, state, postal_code, phone_contact
+    from patient_data
+    where pid=?";
+        
+    $result[0] = sqlStatement($sql, array($pid) );
   
   $sql2 = " 
-	SELECT * FROM users AS u LEFT JOIN facility AS f ON u.facility_id = f.id WHERE u.id=?";
-		
-	$result[1] = sqlStatement($sql2, array($_SESSION['authUserID']) );
+    SELECT * FROM users AS u LEFT JOIN facility AS f ON u.facility_id = f.id WHERE u.id=?";
+        
+    $result[1] = sqlStatement($sql2, array($_SESSION['authUserID']) );
   
   $sql3 = "
   SELECT 
@@ -497,10 +497,10 @@ function getActorData() {
     AND lo.list_id = 'proc_type' 
     AND lo.option_id = 'ord'
     GROUP BY u.ppid";
-		
-	$result[2] = sqlStatement($sql3, array($pid) );
+        
+    $result[2] = sqlStatement($sql3, array($pid) );
   
-	return $result;
+    return $result;
 }
 
 
@@ -513,7 +513,7 @@ function getReportFilename() {
     where pid=?";
 
   $result = sqlQuery($sql, array($pid) );
-	$result_filename = $result['lname']."-".$result['fname']."-".$result['pid']."-".date("mdY",time());
+    $result_filename = $result['lname']."-".$result['fname']."-".$result['pid']."-".date("mdY",time());
 
   return $result_filename;
 }
