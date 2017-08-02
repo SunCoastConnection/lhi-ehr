@@ -82,17 +82,19 @@ if (isset($_SESSION['pc_username'])) {
         }
     }
 }
+// TODO: docs_see_entire_calendar global
 
 // different frame source page depending on session vars
-if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar']) {
-    $framesrc = "calendar/index.php?module=PostCalendar&viewtype=".$viewtype."&func=view";
-}
-else if ($_SESSION['userauthorized']) {
-    $framesrc = "calendar/index.php?module=PostCalendar&viewtype=".$viewtype."&func=view&".$pcuStr;
-}
-else {
-    $framesrc = "calendar/index.php?module=PostCalendar&func=view&viewtype=".$viewtype;
-}
+// if ($_SESSION['userauthorized'] && $GLOBALS['docs_see_entire_calendar']) {
+//     $framesrc = "../../modules/calendar/index.php?viewtype=".$viewtype."&func=view";
+// }
+// else if ($_SESSION['userauthorized']) {
+//     $framesrc = "../../modules/calendar/index.php?viewtype=".$viewtype."&func=view&".$pcuStr;
+// }
+// else {
+//     $framesrc = "../../modules/calendar/index.php?func=view&viewtype=".$viewtype;
+// }
+$framesrc = "../../modules/calendar/index.php?";
 ?>
 
 framesrc += ' src="<?php echo $framesrc; ?>';
