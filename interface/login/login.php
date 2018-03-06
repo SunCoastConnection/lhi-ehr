@@ -38,6 +38,8 @@ include_once("$srcdir/sql.inc");
     <?php html_header_show(); ?>
     <link rel=stylesheet href="<?php echo $css_header; ?>" type="text/css">
     <link rel=stylesheet href="../themes/login.css" type="text/css">
+    <link rel="shortcut icon" href="<?php echo $web_root; ?>/favicon.ico" type="image/x-icon">
+    <title>Login | <?php echo $GLOBALS['libreehr_name']; ?></title>
 
     <script language='JavaScript' src="../../library/js/jquery-1.4.3.min.js"></script>
     <script language='JavaScript'>
@@ -146,6 +148,14 @@ include_once("$srcdir/sql.inc");
                                 <tr>
                                     <td colspan='2' class='text' style='color:red'>
                                         <?php echo xlt('Invalid username or pass phrase'); ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <?php if (isset($_GET['loginfirst'])): ?>
+                                <tr>
+                                    <td colspan='2' class='text' style='color:red'>
+                                        <?php echo xlt('You have been logged out due to inactivity, or you have experienced an error. Please re-enter access credentials.'); ?>
                                     </td>
                                 </tr>
                             <?php endif; ?>
