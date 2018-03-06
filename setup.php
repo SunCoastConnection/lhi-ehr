@@ -1,3 +1,4 @@
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 <?php
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,7 +14,7 @@ ini_set("session.bug_compat_warn","off");
 
 $state = $_POST["state"];
 
-// Make this true for IPPF.
+// Make this true for IPPF.  // TODO - REMOVE THIS
 $ippf_specific = false;
 
 // If this script was invoked with no site ID, then ask for one.
@@ -70,8 +71,6 @@ $billingDirectory2 = "$OE_SITE_DIR/era";
 $billingLogDirectory = "$OE_SITE_DIR/logs";
 $lettersDirectory = "$OE_SITE_DIR/letter_templates";
 $gaclWritableDirectory = dirname(__FILE__)."/gacl/admin/templates_c";
-$requiredDirectory1 = dirname(__FILE__)."/interface/main/calendar/modules/PostCalendar/pntemplates/compiled";
-$requiredDirectory2 = dirname(__FILE__)."/interface/main/calendar/modules/PostCalendar/pntemplates/cache";
 
 $zendModuleConfigFile = dirname(__FILE__)."/interface/modules/zend_modules/config/application.config.php";
 
@@ -79,7 +78,7 @@ $zendModuleConfigFile = dirname(__FILE__)."/interface/modules/zend_modules/confi
 // correct permissions.
 if (is_dir($OE_SITE_DIR)) {
   $writableFileList = array($installer->conffile,$zendModuleConfigFile);
-  $writableDirList = array($docsDirectory, $billingDirectory, $billingDirectory2, $lettersDirectory, $gaclWritableDirectory, $requiredDirectory1, $requiredDirectory2);
+  $writableDirList = array($docsDirectory, $billingDirectory, $billingDirectory2, $lettersDirectory, $gaclWritableDirectory);
 }
 else {
   $writableFileList = array();
@@ -192,7 +191,7 @@ else {
     
   case 2:
     echo "<b>Step $state</b><br><br>\n";
-    echo "Now you need to supply the MySQL server information and path information. Detailed instructions on each item can be found in the <a href='INSTALL' target='_blank'><span STYLE='text-decoration: underline;'>'INSTALL'</span></a> manual file.
+    echo "Now you need to supply the MySQL server information and path information. Detailed instructions on each item can be found in the <a href='https://github.com/LibreHealthIO/LibreEHR/blob/master/INSTALL.md' target='_blank'><span STYLE='text-decoration: underline;'>'Installation'</span></a> manual file.
 <br><br>\n
 <FORM METHOD='POST'>
 <INPUT TYPE='HIDDEN' NAME='state' VALUE='3'>
@@ -202,7 +201,7 @@ else {
 <TR VALIGN='TOP'><TD COLSPAN=2><font color='red'>MYSQL SERVER:</font></TD></TR>
 <TR VALIGN='TOP'><TD><span class='text'>Server Host: </span></TD><TD><INPUT TYPE='TEXT' VALUE='localhost' NAME='server' SIZE='30'></TD><TD><span class='text'>(If you run MySQL and Apache/PHP on the same computer, then leave this as 'localhost'. If they are on separate computers, then enter the IP address of the computer running MySQL.)</span><br></TD></TR>
 <TR VALIGN='TOP'><TD><span class='text'>Server Port: </span></TD><TD><INPUT TYPE='TEXT' VALUE='3306' NAME='port' SIZE='30'></TD><TD><span class='text'>(This is the MySQL port. The default port for MySQL is 3306.)</span><br></TD></TR>
-<TR VALIGN='TOP'><TD><span class='text'>Database Name: </span></TD><TD><INPUT TYPE='TEXT' VALUE='libreehr' NAME='dbname' SIZE='30'></TD><TD><span class='text'>(This is the name of the LibreHealth EHR database in MySQL - 'LibreHealth EHR' is the recommended)</span><br></TD></TR>
+<TR VALIGN='TOP'><TD><span class='text'>Database Name: </span></TD><TD><INPUT TYPE='TEXT' VALUE='libreehr' NAME='dbname' SIZE='30'></TD><TD><span class='text'>(This is the name of the LibreHealth EHR database in MySQL - 'libreehr' is the recommended)</span><br></TD></TR>
 <TR VALIGN='TOP'><TD><span class='text'>Login Name: </span></TD><TD><INPUT TYPE='TEXT' VALUE='libreehr' NAME='login' SIZE='30'></TD><TD><span class='text'>(This is the name of the LibreHealth EHR login name in MySQL - 'libreehr' is the recommended)</span><br></TD></TR>
 <TR VALIGN='TOP'><TD><span class='text'>Password: </span></TD><TD><INPUT TYPE='PASSWORD' VALUE='' NAME='pass' SIZE='30'></TD><TD><span class='text'>(This is the Login Password for when PHP accesses MySQL - it should be at least 8 characters long and composed of both numbers and letters)</span><br></TD></TR>\n";
     if ($inst != 2) {
@@ -246,7 +245,7 @@ else {
     $siteslist = array();
     while (false !== ($sfname = readdir($dh))) {
       if (substr($sfname, 0, 1) == '.') continue;
-      if ($sfname == 'CVS'            ) continue;
+      if ($sfname == 'CVS'            ) continue;  //TODO REMOVE this
       if ($sfname == $site_id         ) continue;
       $sitedir = "$OE_SITES_BASE/$sfname";
       if (!is_dir($sitedir)               ) continue;
@@ -261,9 +260,9 @@ else {
       echo " <td class='text'>Source Site: </td>\n";
       echo " <td class='text'><select name='source_site_id'>";
       foreach ($siteslist as $sfname) {
-    echo "<option value='$sfname'";
-    if ($sfname == 'default') echo " selected";
-    echo ">$sfname</option>";
+	echo "<option value='$sfname'";
+	if ($sfname == 'default') echo " selected";
+	echo ">$sfname</option>";
       }
       echo "</select></td>\n";
       echo " <td class='text'>(The site directory that will be a model for the new site.)</td>\n";
@@ -325,12 +324,12 @@ else {
       echo "Connecting to MySQL Server...\n";
       flush();
       if ( ! $installer->root_database_connection() ) {
-    echo "ERROR.  Check your login credentials.\n";
-    echo $installer->error_message;
-    break;
+	echo "ERROR.  Check your login credentials.\n";
+	echo $installer->error_message;
+	break;
       }
       else {
-    echo "OK.<br>\n";
+	echo "OK.<br>\n";
         flush();
       }
     }
@@ -380,11 +379,11 @@ else {
       echo "Creating user with permissions for database...\n";
       flush();
       if ( ! $installer->grant_privileges() ) {
-    echo "ERROR when granting privileges to the specified user.\n";
-    echo $installer->error_message;
-    break;
+	echo "ERROR when granting privileges to the specified user.\n";
+	echo $installer->error_message;
+	break;
       } else {
-    echo "OK.<br>\n";
+	echo "OK.<br>\n";
         flush();
       }
 
@@ -508,7 +507,7 @@ else {
 <INPUT TYPE='HIDDEN' NAME='state' VALUE='5'>\n
 <INPUT TYPE='HIDDEN' NAME='site' VALUE='$site_id'>\n
 <INPUT TYPE='HIDDEN' NAME='iuser' VALUE='$installer->iuser'>\n
-<INPUT TYPE='HIDDEN' NAME='iuserpass' VALUE='$installer->iuserpass'>\n  
+<INPUT TYPE='HIDDEN' NAME='iuserpass' VALUE='$installer->iuserpass'>\n	
 <br>\n
 <INPUT TYPE='SUBMIT' VALUE='Continue'><br></FORM><br>\n";
 
@@ -527,10 +526,34 @@ else {
         $gotFileFlag = 1;
       }
     }
-echo "<li>To ensure proper functioning of LibreHealth EHR you must make sure that settings in php.ini file include  \"short_open_tag = On\", \"display_errors = Off\", \"register_globals = Off\", \"max_execution_time\" set to at least 60, \"max_input_time\" set to at least 90, \"post_max_size\" set to at least 30M, and \"memory_limit\" set to at least \"128M\".</li>\n";
-echo "<li>In order to take full advantage of the patient documents capability you must make sure that settings in php.ini file include \"file_uploads = On\", that \"upload_max_filesize\" is appropriate for your use and that \"upload_tmp_dir\" is set to a correct value that will work on your system.</li>\n";
+echo "<li>To ensure proper functioning of LibreHealth EHR you must make sure that settings in php.ini file include: 
+<ul>
+<li>\"short_open_tag = On\"</li>
+<li>\"display_errors = Off\"</li>
+<li>\"max_execution_time\" set to at least 600</li>
+<li>\"max_input_time\" set to at least 600</li>
+<li>\"max_input_vars\" set to at least 3000</li>
+<li>\"post_max_size\" set to at least 32M</li>
+<li>\"memory_limit\" set to at least 512M</li>
+<li>\"session.gc_maxlifetime\" set to 14400</li>
+<li>\"error_reporting\" = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE</li>
+</ul>";
+echo "
+<li>In order to take full advantage of the patient documents capability you must make sure that settings in php.ini file include:
+<ul>
+<li>\"file_uploads\" = On</li>
+<li>\"upload_max_filesize\" is appropriate for your use (32M seems good)</li>
+<li>\"upload_tmp_dir\" is set to a correct default value that will work on your system.</li>
+</ul>";
+
+echo "<li>To ensure proper functioning of LibreHealth EHR you must make sure that settings in MYSQL /etc/mysql/my.cnf file include: 
+<ul>
+<li>\"key_buffer_size\" set to 10M</li>
+<li>\"innodb_buffer_pool_size\" set to 70% of available RAM.</li>
+</ul>";
+
 if (!$gotFileFlag) {
-    echo "<li>If you are having difficulty finding your php.ini file, then refer to the <a href='INSTALL' target='_blank'><span STYLE='text-decoration: underline;'>'INSTALL'</span></a> manual for suggestions.</li>\n";
+    echo "<li>If you are having difficulty finding your php.ini file, then refer to the <a href='https://github.com/LibreHealthIO/LibreEHR/blob/master/INSTALL.md' target='_blank'><span STYLE='text-decoration: underline;'>'Installation'</span></a> manual for suggestions.</li>\n";
 }
 echo "</ul>";
 
@@ -571,7 +594,7 @@ it is important to secure these directories. Additionally, some settings are req
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deny from all<br>
 &nbsp;&nbsp;&lt;/Directory&gt;<br><br>";
 
-echo "If you are having difficulty finding your apache configuration file, then refer to the <a href='INSTALL' target='_blank'><span STYLE='text-decoration: underline;'>'INSTALL'</span></a> manual for suggestions.<br><br>\n";
+echo "If you are having difficulty finding your apache configuration file, then refer to the <a href='https://github.com/LibreHealthIO/LibreEHR/blob/master/INSTALL.md' target='_blank'><span STYLE='text-decoration: underline;'>'Installation'</span></a> manual for suggestions.<br><br>\n";
 echo "<br>We recommend you print these instructions for future reference.<br><br>";
 echo "Click 'continue' for further instructions.";
 
@@ -585,63 +608,63 @@ echo "<br><FORM METHOD='POST'>\n
 
 break;
 
-    case 0:
-    default:
+	case 0:
+	default:
 echo "<p>Welcome to LibreHealth EHR.  This utility will step you through the installation and configuration of LibreHealth EHR for your practice.</p>\n";
 echo "<ul><li>Before proceeding, be sure that you have a properly installed and configured MySQL server available, and a PHP configured webserver.</li>\n";
 
-echo "<li>Detailed installation instructions can be found in the <a href='INSTALL' target='_blank'><span STYLE='text-decoration: underline;'>'INSTALL'</span></a> manual file.</li>\n";
+echo "<li>Detailed installation instructions can be found in the <a href='https://github.com/LibreHealthIO/LibreEHR/blob/master/INSTALL.md' target='_blank'><span STYLE='text-decoration: underline;'>'Installation'</span></a> manual file.</li>\n";
 
-Echo "<li>If you are upgrading from a previous version, do NOT use this script.  Please read the 'Upgrading' section found in the <a href='INSTALL' target='_blank'><span STYLE='text-decoration: underline;'>'INSTALL'</span></a> manual file.</li></ul>";
+Echo "<li>If you are upgrading from a previous version, do NOT use this script.  Please read the 'Upgrading' section found in the <a href='https://github.com/LibreHealthIO/LibreEHR/blob/master/INSTALL.md' target='_blank'><span STYLE='text-decoration: underline;'>'Installation'</span></a> manual file.</li></ul>";
 
 if ($checkPermissions) {
-    echo "<p>We will now ensure correct file and directory permissions before starting installation:</p>\n";
-    echo "<FONT COLOR='green'>Ensuring following files are world-writable...</FONT><br>\n";
-    $errorWritable = 0;
-    foreach ($writableFileList as $tempFile) {
-        if (is_writable($tempFile)) {
-                echo "'".realpath($tempFile)."' file is <FONT COLOR='green'><b>ready</b></FONT>.<br>\n";
-        }
-        else {
-                echo "<p><FONT COLOR='red'>UNABLE</FONT> to open file '".realpath($tempFile)."' for writing.<br>\n";
-                echo "(configure file permissions; see below for further instructions)</p>\n";
-                $errorWritable = 1;
-        }
-    }
-    if ($errorWritable) {
-        echo "<p><FONT COLOR='red'>You can't proceed until all above files are ready (world-writable).</FONT><br>\n";   
-        echo "In linux, recommend changing file permissions with the 'chmod 666 filename' command.<br>\n";
-        echo "Fix above file permissions and then click the 'Check Again' button to re-check files.<br>\n";
+	echo "<p>We will now ensure correct file and directory permissions before starting installation:</p>\n";
+	echo "<FONT COLOR='green'>Ensuring following files are world-writable...</FONT><br>\n";
+	$errorWritable = 0;
+	foreach ($writableFileList as $tempFile) {
+		if (is_writable($tempFile)) {
+	        	echo "'".realpath($tempFile)."' file is <FONT COLOR='green'><b>ready</b></FONT>.<br>\n";
+		}
+		else {
+	        	echo "<p><FONT COLOR='red'>UNABLE</FONT> to open file '".realpath($tempFile)."' for writing.<br>\n";
+	        	echo "(configure file permissions; see below for further instructions)</p>\n";
+	        	$errorWritable = 1;
+		}
+	}
+	if ($errorWritable) {
+		echo "<p><FONT COLOR='red'>You can't proceed until all above files are ready (world-writable).</FONT><br>\n";	
+		echo "In linux, recommend changing file permissions with the 'chmod 666 filename' command.<br>\n";
+		echo "Fix above file permissions and then click the 'Check Again' button to re-check files.<br>\n";
     echo "<FORM METHOD='POST'><INPUT TYPE='SUBMIT' VALUE='Check Again'></p>" .
       "<INPUT TYPE='HIDDEN' NAME='site' VALUE='$site_id'></FORM><br>\n";
-        break;
-    }
+		break;
+	}
 
-    echo "<br><FONT COLOR='green'>Ensuring following directories have proper permissions...</FONT><br>\n";
-    $errorWritable = 0;
-    foreach ($writableDirList as $tempDir) {
-        if (is_writable($tempDir)) {
-                echo "'".realpath($tempDir)."' directory is <FONT COLOR='green'><b>ready</b></FONT>.<br>\n";
-        }
-        else {
-                echo "<p><FONT COLOR='red'>UNABLE</FONT> to open directory '".realpath($tempDir)."' for writing by web server.<br>\n";
-                echo "(configure directory permissions; see below for further instructions)</p>\n";
-            $errorWritable = 1;
-        }
-    }
-    if ($errorWritable) {
-        echo "<p><FONT COLOR='red'>You can't proceed until all directories are ready.</FONT><br>\n";
-        echo "In linux, recommend changing owners of these directories to the web server. For example, in many linux OS's the web server user is 'apache', 'nobody', or 'www-data'. So if 'apache' were the web server user name, could use the command 'chown -R apache:apache directory_name' command.<br>\n";
-            echo "Fix above directory permissions and then click the 'Check Again' button to re-check directories.<br>\n";
+	echo "<br><FONT COLOR='green'>Ensuring following directories have proper permissions...</FONT><br>\n";
+	$errorWritable = 0;
+	foreach ($writableDirList as $tempDir) {
+		if (is_writable($tempDir)) {
+	        	echo "'".realpath($tempDir)."' directory is <FONT COLOR='green'><b>ready</b></FONT>.<br>\n";
+		}
+		else {
+		        echo "<p><FONT COLOR='red'>UNABLE</FONT> to open directory '".realpath($tempDir)."' for writing by web server.<br>\n";
+		       	echo "(configure directory permissions; see below for further instructions)</p>\n";
+	 	   	$errorWritable = 1;
+		}
+	}
+	if ($errorWritable) {
+		echo "<p><FONT COLOR='red'>You can't proceed until all directories are ready.</FONT><br>\n";
+		echo "In linux, recommend changing owners of these directories to the web server. For example, in many linux OS's the web server user is 'apache', 'nobody', or 'www-data'. So if 'apache' were the web server user name, could use the command 'chown -R apache:apache directory_name' command.<br>\n";
+	        echo "Fix above directory permissions and then click the 'Check Again' button to re-check directories.<br>\n";
     echo "<FORM METHOD='POST'><INPUT TYPE='SUBMIT' VALUE='Check Again'></p>" .
       "<INPUT TYPE='HIDDEN' NAME='site' VALUE='$site_id'></FORM><br>\n";
-        break;
-    }
+		break;
+	}
 
-    echo "<br>All required files and directories have been verified. Click to continue installation.<br>\n";
+	echo "<br>All required files and directories have been verified. Click to continue installation.<br>\n";
 }
 else {
-    echo "<br>Click to continue installation.<br>\n";
+	echo "<br>Click to continue installation.<br>\n";
 }
 
 echo "<FORM METHOD='POST'><INPUT TYPE='HIDDEN' NAME='state' VALUE='1'>" .
