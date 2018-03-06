@@ -958,7 +958,7 @@ while ($row = sqlFetchArray($res)) {
   if ($row['group_name'] != $prevgroup) {
     if ($firstgroup == false) { echo "</tbody></table></div>\n"; }
     echo "<div id='".$row['group_name']."' class='group'>";
-    echo "<div class='text bold layouts_title' style='position:relative; background-color: #eef'>";
+    echo "<div class='text bold layouts_title' style='background-color: #eef'>";
     // echo preg_replace("/^\d+/", "", $row['group_name']);
     echo substr($row['group_name'], 1);
     echo "&nbsp; ";
@@ -1027,13 +1027,12 @@ while ($row = sqlFetchArray($res)) {
 <?php echo $extra_html; ?>
 
 <?php if ($layout_id) { ?>
-<span style="font-size:90%">
-<?php xl('With selected:', 'e');?>
-<input type='button' name='deletefields' id='deletefields' value='<?php xl('Delete','e'); ?>' style="font-size:90%" disabled="disabled" />
-<input type='button' name='movefields' id='movefields' value='<?php xl('Move to...','e'); ?>' style="font-size:90%" disabled="disabled" />
-</span>
+&nbsp;&nbsp;
+
+<input type='button' name='deletefields' id='deletefields' value='<?php xl('Delete selected','e'); ?>' style="font-size:90%" disabled="disabled" />
+<input type='button' name='movefields' id='movefields' value='<?php xl('Move selected to...','e'); ?>' style="font-size:90%" disabled="disabled" />
 <p>
-<input type='button' name='save' id='save' value='<?php xl('Save Changes','e'); ?>' />
+  <input type='button' name='save' id='save' value='<?php xl('Save Changes','e'); ?>' />
 </p>
 <?php } ?>
 

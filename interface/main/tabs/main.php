@@ -12,11 +12,13 @@ $sanitize_all_escapes=true;
 require_once("../../globals.php");
 require_once $GLOBALS['srcdir'].'/headers.inc.php';
 require_once $GLOBALS['srcdir'].'/ESign/Api.php';
+/* for getPnotesByUser(). */
+require_once($GLOBALS['srcdir'] . '/pnotes.inc');
 $esignApi = new Api();
 
 ?>
 <!DOCTYPE html>
-<title>LibreHealth EHR</title>
+<title><?php echo $GLOBALS['libreehr_name'];?></title>
 <script type="text/javascript">
 <?php require($GLOBALS['srcdir'] . "/restoreSession.php"); ?>
 
@@ -52,19 +54,14 @@ function isEncounterLocked( encounterId ) {
 }
 var webroot_url="<?php echo $web_root; ?>";
 </script>
-<link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 <link rel="stylesheet" type="text/css" href="css/tabs.css"/>
-<link rel="stylesheet" type="text/css" href="css/menu.css"/>
 
 <?php
-include_js_library("knockout/knockout-3.4.0.js"); 
-include_js_library("jquery-min-2-2-0/index.js");
+    /*  Include Bootstrap, Knockout Libraries and Font Awesome library   */
+  call_required_libraries(array("jquery-min-3-1-1","bootstrap","knockout", "font-awesome"));
 ?>
 
 <script type="text/javascript" src="js/custom_bindings.js"></script>
-
-
-
 <script type="text/javascript" src="js/user_data_view_model.js"></script>
 <script type="text/javascript" src="js/patient_data_view_model.js"></script>
 <script type="text/javascript" src="js/tabs_view_model.js"></script>
@@ -73,6 +70,7 @@ include_js_library("jquery-min-2-2-0/index.js");
 <script type="text/javascript" src="js/dialog_utils.js"></script>
 
 <link rel='stylesheet' href='<?php echo $web_root; ?>/library/fonts/typicons/typicons.min.css' />
+<link rel="shortcut icon" href="<?php echo $web_root; ?>/favicon.ico" type="image/x-icon">
 
 <?php require_once("templates/tabs_template.php"); ?>
 <?php require_once("templates/menu_template.php"); ?>
@@ -116,16 +114,26 @@ include_js_library("jquery-min-2-2-0/index.js");
 </script>
 <div id="mainBox">
     <div id="dialogDiv"></div>
-    <div class="body_top">
-        <span id="menu"  data-bind="template: {name: 'menu-template', data: application_data} "> </span>
-        <span id="userData" data-bind="template: {name: 'user-data-template', data:application_data} "></span>
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+        <span class="sr-only"><?php echo xlt("Toggle navigation"); ?></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        </button>        
+    </div>    
+    <div class="collapse navbar-collapse" id="navbar-collapse">
+        <div id="menu" data-bind="template: {name: 'menu-template', data: application_data} "></div>
+        <div id="userData" data-bind="template: {name: 'user-data-template', data:application_data} "></div>
     </div>
+    
     <div id="patientData" class="body_title" data-bind="template: {name: 'patient-data-template', data: application_data} "></div>
     <div class="body_title" data-bind="template: {name: 'tabs-controls', data: application_data} "> </div>
 
     <div class="mainFrames">
         <div id="framesDisplay" data-bind="template: {name: 'tabs-frames', data: application_data}"> </div>
     </div>
+    
 </div>
 <script>
     $("#dialogDiv").hide();
@@ -185,15 +193,14 @@ include_js_library("jquery-min-2-2-0/index.js");
 
                         prev.css('flex', leftPercentage.toString());
                         next.css('flex', rightPercentage.toString());
-
-                        $(document).on("mouseup", function() {
-                          $('body').css('cursor', priorCursor);
-                            $('.draggable').removeClass('draggable').css('z-index', z_idx);
-
-                            // Deactivate Frame Barrier!
-                            $("#frameBarrier").css("visibility", "hidden");
-                        });
                     }
+                    $(document).on("mouseup", function() {
+                        $('body').css('cursor', priorCursor);
+                        $('.draggable').removeClass('draggable').css('z-index', z_idx);
+                        
+                        // Deactivate Frame Barrier!
+                        $("#frameBarrier").css("visibility", "hidden");
+                    });
                 });
                 e.preventDefault(); // Disable selection
             });
@@ -202,7 +209,6 @@ include_js_library("jquery-min-2-2-0/index.js");
     })(jQuery);
 
     $('.handle').drags();
-
 </script>
 
 <?php do_action( 'after_main_box' ); ?>

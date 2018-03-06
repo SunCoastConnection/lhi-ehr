@@ -17,7 +17,7 @@ require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/headers.inc.php");
 
 // Including Bootstrap library.
-call_required_libraries(true,false,false,false);
+  call_required_libraries(array("jquery-min-3-1-1","bootstrap"));
 
 $popup = empty($_REQUEST['popup']) ? 0 : 1;
 $defaultFilterName = empty($_REQUEST['defaultFilterName']) ? null : $_REQUEST['defaultFilterName'];
@@ -31,7 +31,7 @@ $header0 = "";
 $header  = "";
 $coljson = "";
 $res = sqlStatement("SELECT option_id, title FROM list_options WHERE " .
-  "list_id = 'ptlistcols' ORDER BY seq, title");
+  "list_id = 'ptlistcols' and activity = '1' ORDER BY seq, title");
 while ($row = sqlFetchArray($res)) {
   $colname = $row['option_id'];
   $title = xl_list_label($row['title']);
@@ -88,7 +88,7 @@ $(document).ready(function() {
   // language strings are included so we can translate them
   "oLanguage": {
    "sSearch"      : "<?php echo xla('Search all columns'); ?>:",
-   "sLengthMenu"  : "<?php echo xla('Show') . ' _MENU_ ' . xla('entries'); ?>",
+   "sLengthMenu"  : "<?php echo xla('Show ') . xla('entries:') . '<br>' . ' _MENU_ '; ?>",
    "sZeroRecords" : "<?php echo xla('No matching records found'); ?>",
    "sInfo"        : "<?php echo xla('Showing') . ' _START_ ' . xla('to{{range}}') . ' _END_ ' . xla('of') . ' _TOTAL_ ' . xla('entries'); ?>",
    "sInfoEmpty"   : "<?php echo xla('Nothing to show'); ?>",
@@ -148,12 +148,26 @@ function openNewTopWindow(pid) {
  document.fnew.submit();
 }
 
+// this will add bootstrap classes to search all columns and entries inputs
+$(document).ready(function() {
+
+  var search = $("#pt_table_filter :input");
+  var entries = $("#pt_table_length :input");
+  var paginate_pre = $('.paginate_disabled_previous');
+  var paginate_next = $('.paginate_disabled_next');
+
+  search.addClass("form-control form-rounded");
+  entries.addClass("form-control form-rounded");
+  paginate_pre.css('height','30px');
+  paginate_next.css('height','30px');
+});
+
 </script>
 
 </head>
-<body class="body_top well">
+<body class="body_top" style="min-height:20px; padding: 19px; margin-bottom: 20px; background-color: #f5f5f5;">
 
-<div id="dynamic">
+<div id="dynamic" style="padding-bottom: 30px">
 
 <!-- Class "display" is defined in demo_table.css -->
 <table cellpadding="0" cellspacing="0" border="0" class="table table-hover " id="pt_table">
@@ -179,7 +193,6 @@ function openNewTopWindow(pid) {
 <form name='fnew' method='post' target='_blank' action='../main_screen.php?auth=login&site=<?php echo attr($_SESSION['site_id']); ?>'>
 <input type='hidden' name='patientID'      value='0' />
 </form>
-
 </body>
 </html>
 

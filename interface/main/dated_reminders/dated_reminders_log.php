@@ -28,6 +28,7 @@
   require_once("$srcdir/acl.inc");    
   require_once("$srcdir/dated_reminder_functions.php"); 
   require_once("$srcdir/formatting.inc.php");
+  require_once("$srcdir/headers.inc.php");
   $DateFormat = DateFormatRead();
   $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
   
@@ -90,7 +91,10 @@
   }
 ?> 
 <html>
-  <head>                                    
+  <head>
+    <?php 
+      call_required_libraries(['bootstrap', 'jquery-min-3-1-1']);
+    ?>
     <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css"> 
     <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-1.7.2.min.js"></script>
 
@@ -125,51 +129,45 @@
   for($i=0; $uRow=sqlFetchArray($uSQL); $i++){ $allUsers[] = $uRow; } 
 ?>     
     <form method="get" id="logForm" onsubmit="return top.restoreSession()">         
-      <h1><?php echo xlt('Dated Message Log') ?></h1>  
-      <h2><?php echo xlt('filters') ?> :</h2>
-      <blockquote><?php echo xlt('Date The Message Was Sent') ?><br />
-<!----------------------------------------------------------------------------------------------------------------------------------------------------->  
-      <?php echo xlt('Start Date') ?> : <input id="sd" type="text" name="sd" value=""title='<?php echo xla('yyyy-mm-dd'); ?>' />   &nbsp;&nbsp;&nbsp;
-<!----------------------------------------------------------------------------------------------------------------------------------------------------->   
-      <?php echo xlt('End Date') ?> : <input id="ed" type="text" name="ed" value="" title='<?php echo xla('yyyy-mm-dd'); ?>' />   <br /><br />
-<!----------------------------------------------------------------------------------------------------------------------------------------------------->   
-      </blockquote>
-      <table style="width:100%">
-        <tr>
-          <td style="width:50%">
-            <?php echo xlt('Sent By, Leave Blank For All') ?> : <br />                                    
-            <select style="width:100%;" id="sentBy" name="sentBy[]" multiple="multiple">
-              <option value="<?php echo attr(intval($_SESSION['authId'])); ?>"><?php echo xlt('Myself') ?></option>
-              <?php  
-                if($isAdmin)    
-                  foreach($allUsers as $user)
-                    echo '<option value="',attr($user['id']),'">',text($user['fname'].' '.$user['mname'].' '.$user['lname']),'</option>'; 
-              ?>
-            </select>   
-          </td>
-          <td style="width:50%">
-            <?php echo xlt('Sent To, Leave Blank For All') ?> : <br />      
-            <select style="width:100%" id="sentTo" name="sentTo[]" multiple="multiple">    
-              <option value="<?php echo attr(intval($_SESSION['authId'])); ?>"><?php echo xlt('Myself') ?></option>
-              <?php                    
-                if($isAdmin)
-                  foreach($allUsers as $user) 
-                    echo '<option value="',attr($user['id']),'">',text($user['fname'].' '.$user['mname'].' '.$user['lname']),'</option>';  
-              ?>
-            </select>  
-          </td>
-        </tr>
-      </table>
-<!-----------------------------------------------------------------------------------------------------------------------------------------------------> 
-      <input type="checkbox" name="processed" id="processed"><label for="processed"><?php echo xlt('Processed') ?></label>      
-<!-----------------------------------------------------------------------------------------------------------------------------------------------------> 
-      <input type="checkbox" name="pending" id="pending"><label for="pending"><?php echo xlt('Pending') ?></label>          
-<!----------------------------------------------------------------------------------------------------------------------------------------------------->  
-      <br /><br />  
-      <button value="Refresh" id="submitForm"><?php echo xlt('Refresh') ?></button>
-    </form>
+    <h1><?php echo xlt('Dated Message Log') ?></h1>  
+    <p class="lead"><?php echo xlt('Filters:')?></p><br/>
+    <p class="lead"><?php echo xlt('Date The Message Was Sent') ?></p>
+    <?php echo xlt('Start Date') ?> : <input class="form-control" style="display: inline-block; width: auto; margin-left:1px"  id="sd" type="text" name="sd" value=""title='<?php echo xla('yyyy-mm-dd'); ?>' />   &nbsp;&nbsp;&nbsp;
+    <?php echo xlt('End Date') ?> : <input class="form-control" style="display: inline-block; width: auto;" id="ed" type="text" name="ed" value="" title='<?php echo xla('yyyy-mm-dd'); ?>' />   <br /><br />
     
-    <div id="resultsDiv"></div> 
+    <table style="width:100%">
+      <tr>
+        <td style="width:50%">
+          <p class="lead"><?php echo xlt('Sent By, Leave Blank For All') ?>: </p>
+          <select class="form-control" style="width:100%;" id="sentBy" name="sentBy[]" multiple="multiple">
+            <option value="<?php echo attr(intval($_SESSION['authId'])); ?>"><?php echo xlt('Myself') ?></option>
+            <?php  
+              if($isAdmin)    
+                foreach($allUsers as $user)
+                  echo '<option value="',attr($user['id']),'">',text($user['fname'].' '.$user['mname'].' '.$user['lname']),'</option>'; 
+            ?>
+          </select>   
+        </td>
+        <td style="width:50%">
+          <p class="lead"><?php echo xlt('Sent To, Leave Blank For All') ?>: </p>
+          <select class="form-control" style="width:100%" id="sentTo" name="sentTo[]" multiple="multiple">    
+            <option value="<?php echo attr(intval($_SESSION['authId'])); ?>"><?php echo xlt('Myself') ?></option>
+            <?php                    
+              if($isAdmin)
+                foreach($allUsers as $user) 
+                  echo '<option value="',attr($user['id']),'">',text($user['fname'].' '.$user['mname'].' '.$user['lname']),'</option>';  
+            ?>
+          </select>  
+        </td>
+      </tr>
+    </table>
+    <input type="checkbox" name="processed" id="processed"><label for="processed"><?php echo xlt('Processed') ?></label>      
+    <input type="checkbox" name="pending" id="pending"><label for="pending"><?php echo xlt('Pending') ?></label>          
+    <br /><br />  
+    <button style="margin-bottom:16px" value="Refresh" id="submitForm"><?php echo xlt('Refresh') ?></button>
+  </form>
+  
+  <div id="resultsDiv"></div>
  
   </body> 
 <link rel="stylesheet" href="<?php echo $GLOBALS['webroot'] ?>/library/css/jquery.datetimepicker.css">
