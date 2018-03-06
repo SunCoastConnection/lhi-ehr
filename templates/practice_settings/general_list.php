@@ -1,8 +1,9 @@
 <html>
 <head>
-
 <link rel="stylesheet" href="<?php echo $this->css_header;?>" type="text/css">
-<?php call_required_libraries(true,true,false,false);?>
+<?php
+   call_required_libraries(array("jquery-min-3-1-1","bootstrap","fancybox"));
+?>
 <script type="text/javascript" src="<?php echo $GLOBALS['rootdir'] . '/../library/js/common.js';?>"></script>
 </head>
 
@@ -35,8 +36,8 @@
             </li>
         </ul>        
     </div>
-
-<div>
+    
+    <div>
         <h5><b><?php echo $this->action_name;?></b></h5>        
     </div>
     
@@ -44,7 +45,7 @@
         <div class="tab-pane active">
             <?php echo $this->display_action;?>
         </div>
-    </div>
+    </div>    
     
 </div>
 </body>
