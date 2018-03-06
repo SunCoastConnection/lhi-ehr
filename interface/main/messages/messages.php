@@ -45,7 +45,7 @@ require_once("$srcdir/gprelations.inc.php");
 require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/headers.inc.php");
 //Include Bootstrap
-call_required_libraries(true,false,false,false);
+call_required_libraries(array("jquery-min-3-1-1","bootstrap", "jquery-ui"));
 ?>
 <html>
 <head>
@@ -54,16 +54,15 @@ call_required_libraries(true,false,false,false);
 </head>
 
 <body class="body_top">
+<span class="title" style="display: none"><?php echo xlt('Message and Reminder Center'); ?></span>
 
-<span class="title"><?php echo xlt('Message and Reminder Center'); ?></span>
-<br /><br />
 <span class="title"><?php echo xlt('Reminders'); ?></span>
 
 <?php       
         
-        // TajEmo Work by CB 2012/01/11 02:51:25 PM adding dated reminders
-        // I am asuming that at this point security checks have been performed
-        require_once '../dated_reminders/dated_reminders.php';   
+  // TajEmo Work by CB 2012/01/11 02:51:25 PM adding dated reminders
+  // I am asuming that at this point security checks have been performed
+  require_once '../dated_reminders/dated_reminders.php';   
         
 // Check to see if the user has Admin rights, and if so, allow access to See All.
 $showall = isset($_GET['show_all']) ? $_GET['show_all'] : "" ;
@@ -97,16 +96,17 @@ $task= isset($_REQUEST['task']) ? $_REQUEST['task'] : "";
 if (acl_check('admin', 'super'    )) {
 if ($show_all=='yes') {
     $showall = "yes";
-    $lnkvar="'messages.php?show_all=no&$activity_string_html' name='Just Mine' onclick=\"top.restoreSession()\"> (".htmlspecialchars( xl('Just Mine'), ENT_NOQUOTES).")";
+    $lnkvar="<a class='more' href='messages.php?show_all=no&$activity_string_html' name='Just Mine' onclick=\"top.restoreSession()\"> (".htmlspecialchars( xl('Just Mine'), ENT_NOQUOTES).")</a>";
 }
 else {
     $showall = "no";
-    $lnkvar="'messages.php?show_all=yes&$activity_string_html' name='See All' onclick=\"top.restoreSession()\"> (".htmlspecialchars( xl('See All'), ENT_NOQUOTES).")";
+    $lnkvar="<a class='more' href='messages.php?show_all=yes&$activity_string_html' name='See All' onclick=\"top.restoreSession()\"> (".htmlspecialchars( xl('See All'), ENT_NOQUOTES).")</a>";
 }
 }
 ?>
 <br>
-<table class="table"><tr><td><span class="title"><?php echo htmlspecialchars( xl('Messages'), ENT_NOQUOTES); ?></span> <a class='more' href=<?php echo $lnkvar; ?> ></a></td></tr></table>
+<span class="title"><?php echo htmlspecialchars( xl('Messages'), ENT_NOQUOTES); ?><?php echo $lnkvar; ?></span>
+<br><br>
 <?php
 //show the activity links
 if (empty($task) || $task=="add" || $task=="delete") { ?>
@@ -424,7 +424,7 @@ $(document).ready(function(){
 
  // This invokes the find-patient popup.
  function sel_patient() {
-  dlgopen('../../main/calendar/find_patient_popup.php', '_blank', 500, 400);
+  dlgopen('<?php echo $GLOBALS["web_root"]; ?>/modules/calendar/find_patient_popup.php', '_blank', 500, 400);
  }
  
   function addtolist(sel){
@@ -495,20 +495,20 @@ else {
     }
     // Display the Messages table header.
     echo "
-    <table class='table well'><tr><td><table class='table'style=\"border-left: 1px #000000 solid; border-right: 1px #000000 solid; border-top: 1px #000000 solid;\">
+    <table class='table well'><tr><td><table class='table table-bordered table-hover'>
     <form name=MessageList action=\"messages.php?showall=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($begin)."&$activity_string_html\" method=post>
     <input type=hidden name=task value=delete>
-        <tr height=\"24\" style=\"background:lightgrey\">
-            <td align=\"center\" width=\"25\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><input type=checkbox id=\"checkAll\" onclick=\"selectAll()\"></td>
-            <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+        <tr height=\"24\">
+            <td align=\"center\" width=\"25\"><input type=checkbox id=\"checkAll\" onclick=\"selectAll()\"></td>
+            <td width=\"20%\">&nbsp;<b>" .
               htmlspecialchars( xl('From'), ENT_NOQUOTES) . "</b> $sortlink[0]</td>
-            <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+            <td width=\"20%\">&nbsp;<b>" .
               htmlspecialchars( xl('Patient'), ENT_NOQUOTES) . "</b> $sortlink[1]</td>
-            <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+            <td>&nbsp;<b>" .
               htmlspecialchars( xl('Type'), ENT_NOQUOTES) . "</b> $sortlink[2]</td>
-            <td width=\"15%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+            <td width=\"15%\">&nbsp;<b>" .
               htmlspecialchars( xl('Date'), ENT_NOQUOTES) . "</b> $sortlink[3]</td>
-            <td width=\"15%\" style=\"border-bottom: 1px #000000 solid; \" class=bold>&nbsp;<b>" .
+            <td width=\"15%\">&nbsp;<b>" .
               htmlspecialchars( xl('Status'), ENT_NOQUOTES) . "</b> $sortlink[4]</td>
         </tr>";
         // Display the Messages table body.
@@ -552,8 +552,8 @@ else {
     </form></table>
     <table class='table well'>
         <tr>
-            <td class=\"text\"><a href=\"messages.php?showall=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($begin)."&task=addnew&$activity_string_html\" onclick=\"top.restoreSession()\">" .
-              htmlspecialchars( xl('Add New'), ENT_NOQUOTES) . "</a> &nbsp; <a href=\"javascript:confirmDeleteSelected()\" onclick=\"top.restoreSession()\">" .
+            <td class=\"text\"><a role='button' href=\"messages.php?showall=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($begin)."&task=addnew&$activity_string_html\" onclick=\"top.restoreSession()\">" .
+              htmlspecialchars( xl('Add New'), ENT_NOQUOTES) . "</a> &nbsp; <a role='button' class='deleter' href=\"javascript:confirmDeleteSelected()\" onclick=\"top.restoreSession()\">" .
               htmlspecialchars( xl('Delete'), ENT_NOQUOTES) . "</a></td>
             <td align=right class=\"text amount-msg\">$prevlink &nbsp; $end of $total &nbsp; $nextlink</td>
         </tr>

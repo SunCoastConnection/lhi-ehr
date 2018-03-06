@@ -24,6 +24,10 @@ a:hover {
   color: #ff5555;
 }
 
+.centerBody {
+    text-align: center;
+}
+
 .menu {
     font-family: 'FontAwesome';
     font-style: italic;
@@ -631,7 +635,7 @@ font-weight: bold;
     padding: 0px 0px 0px 10px;
 }
 
-.css_button {
+.css_button, a[role="button"] {
     background: transparent url( 'theme_assets/bg_button_a.gif' ) no-repeat scroll top right;
     color: #444;
     display: block;

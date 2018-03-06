@@ -22,6 +22,10 @@ a:hover {
   color: #ff5555;
 }
 
+.centerBody {
+  text-align: center;
+}
+
 .menu {
   font-style: italic;
   font-size: 11pt;
@@ -142,8 +146,12 @@ a:hover {
 }
 
 .sorting_1:hover{
-    cursor:pointer;
+    cursor: url('theme_assets/cursors/refresh_icon.png'), pointer;
     color:#ff5555;
+}
+
+.tab-button {
+  margin-left: 2px;
 }
 
 /*=============================================================
@@ -677,7 +685,7 @@ tr.odd, td.even {
   background: #1050b6;
 }
 
-.css_button, input[type="button"],input[type="submit"], button {
+.css_button, input[type="button"],input[type="submit"], button, a[role="button"] {
   background: #2672ec;
   color: #ffffff !important;
   display: block;
@@ -693,7 +701,7 @@ tr.odd, td.even {
 .css_button span, input[type="button"] span, button span {
   display: block;
 }
-.css_button[href*="deleter"], input[type="button"][href*="deleter"], button[href*="deleter"] {
+.css_button[href*="deleter"], input[type="button"][href*="deleter"], button[href*="deleter"], input[type="button"][class="deleter"], button[href*="deleter"], a[class="deleter"] {
   background: red !important;
 }
 .css_button:hover, input[type="button"]:hover, input[type="submit"]:hover, button:hover {
@@ -708,7 +716,7 @@ input[type="text"] {
   background: #ffffff;
   border: 1px solid #444444;
   padding: 3px;
-  margin: 3px;
+ /* margin: 3px;*/ /* removed this because it was causing layout problems */
 }
 
 #logout_link:before {

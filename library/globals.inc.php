@@ -74,8 +74,7 @@ if (stristr(PHP_OS, 'WIN')) {
   $perl_bin_dir        = 'C:/xampp/perl/bin';
   $temporary_files_dir = 'C:/windows/temp';
   $backup_log_dir      = 'C:/windows/temp';
-}
-else {
+} else {
   // Everything else
   $mysql_bin_dir       = '/usr/bin';
   $perl_bin_dir        = '/usr/bin';
@@ -107,7 +106,6 @@ else {
 // List of user specific tabs and globals
 $USER_SPECIFIC_TABS = array('Appearance',
                             'Locale',
-                            'Features',
                             'Report',
                             'Encounter',
                             'Claim',
@@ -117,6 +115,10 @@ $USER_SPECIFIC_TABS = array('Appearance',
 $USER_SPECIFIC_GLOBALS = array('default_tab_1',
                                'default_tab_2',
                                'css_header',
+                               'primary_color',
+                               'primary_font_color',
+                               'secondary_color',
+                               'secondary_font_color',
                                'menu_styling_tabs',
                                'gbl_pt_list_page_size',
                                'gbl_pt_list_new_window',
@@ -128,6 +130,7 @@ $USER_SPECIFIC_GLOBALS = array('default_tab_1',
                                'ledger_begin_date',
                                'print_next_appointment_on_ledger',
                                'calendar_view_type',
+                               'calendar_refresh_freq',
                                'event_color',
                                'pat_trkr_timer',
                                'ptkr_visit_reason',
@@ -183,13 +186,6 @@ $GLOBALS_METADATA = array(
       xl('Second TAB on the left')
   ),
 
-    'theme_tabs_layout' => array(
-      xl('Menu Theme'),
-      'tabs_css',
-      'tabs_style_full.css',
-      xl('Pick a theme: Windows style (full) or Mac/Linux style (compact) ')
-    ),
-
     'menu_styling_tabs' => array(
       xl('Role-based Menu'),
       array(
@@ -215,13 +211,10 @@ $GLOBALS_METADATA = array(
        'style_light.css',
       xl('Pick a CSS theme.')
     ),
-
-    'gbl_nav_area_width' => array(
-      xl('Navigation Area Width'),
-       'num',
-       '150',
-      xl('Width in pixels of the left navigation frame.')
-    ),
+    'primary_color'=>array(xl('Primary color'),  'color', '#ffffff'),
+    'primary_font_color'=>array(xl('Primary font color'),  'color', '#000000'),
+    'secondary_color'=>array(xl('Secondary color'),  'color', '#000000'),
+    'secondary_font_color'=>array(xl('Secondary font color'),  'color', '#ffffff'),
 
     'libreehr_name' => array(
       xl('Application Title'),
@@ -233,7 +226,6 @@ $GLOBALS_METADATA = array(
     'full_new_patient_form' => array(
       xl('New Patient Form'),
       array(
-        '0' => xl('Old-style static form without search or duplication check'),
         '1' => xl('All demographics fields, with search and duplication check'),
         '2' => xl('Mandatory or specified fields only, search and dup check'),
         '3' => xl('Mandatory or specified fields only, dup check, no search'),
@@ -252,19 +244,6 @@ $GLOBALS_METADATA = array(
       xl('Type of columns displayed for patient search results')
     ),
 
-    'gbl_tall_nav_area' => array(
-      xl('Tall Navigation Area'),
-       'bool',                          // data type
-       '0',                             // default = false
-      xl('Navigation area uses full height of frameset')
-    ),
-
-    'gbl_nav_visit_forms' => array(
-      xl('Navigation Area Visit Forms'),
-       'bool',                          // data type
-       '1',                             // default = true
-      xl('Navigation area includes encounter forms')
-    ),
 
     'simplified_demographics' => array(
       xl('Simplified Demographics'),
@@ -289,15 +268,16 @@ $GLOBALS_METADATA = array(
 
 
     // TajEmo Work BY CB 2012/06/21 10:42:31 AM added option to Hide Fees
-    'enable_fees_in_left_menu' => array(
-      xl('Enable Fees In Left Menu'),
+    'enable_fees_in_menu' => array(
+      xl('Enable Fees In Menu'),
        'bool',                          // data type
        '1',                             // default = true
-      xl('Enable Fees In Left Menu')
+      xl('Enable Fees In Menu')
     ),
     // EDI history  2012-09-13
-    'enable_edihistory_in_left_menu' => array(
-      xl('Enable EDI History In Left Menu'),
+    
+    'enable_edihistory_in_menu' => array(
+      xl('Enable EDI History In Fees Menu'),
        'bool',                          // data type
        '1',                             // default = true
       xl('EDI History (under Fees) for storing and interpreting EDI claim response files')
@@ -572,9 +552,9 @@ $GLOBALS_METADATA = array(
     ),
 
     'disable_sql_admin_link' => array(
-     xl('Disable SQL Admin Tool Link'),
+     xl('Disable SQL Admin'),
       'bool',                           // data type
-      '0',                              // default = false
+      '1',                              // default = true
      xl('Removes menu selection for configured SQL Admin Tool')
     ),
 
@@ -785,6 +765,13 @@ $GLOBALS_METADATA = array(
       xl('Show Insurance Address Information in the Insurance Panel of Demographics.')
 
   ),
+
+    'insurance_address_demographics_report' => array(
+      xl('Show Insurance Address on Demographics Report'),
+       'bool',                          // data type
+       '0',                             // default = false
+      xl('This will Show the Insurance Address on the Demographics Report')
+    ),
 
 
     'hide_billing_widget' => array(
@@ -1134,6 +1121,13 @@ $GLOBALS_METADATA = array(
       xl('This will Show Aging on the custom Statement.')
     ),
 
+    'show_insurance_name_on_custom_statement' => array(
+      xl('Show Insurance Company Name on Custom Statement'),
+       'bool',                          // data type
+       '0',                             // default = false
+      xl('This will Show Insurance Company Name on the custom Statement Instead of Insurance information on file.')
+    ),
+
     'use_statement_print_exclusion' => array(
       xl('Allow Statement to be Excluded from Printing'),
        'bool',                          // data type
@@ -1147,6 +1141,19 @@ $GLOBALS_METADATA = array(
        '1.00',
       xl('Total Minimum Dollar Amount of Statement to Allow Printing.(only applicable if Allow Statement to be Excluded from Printing is enabled)')
     ),
+
+    'insurance_statement_exclude' => array(
+       xl('Do Not Print Statements For Insurance Companies'),
+       array(
+            '0' => xl('Primary'),
+            '1' => xl('Secondary'),
+            '2' => xl('Tertiary'),
+            '3' => xl('All'),
+            '4' => xl('None')
+             ),                          // data type
+       '1',                              // default = true
+       xl('Do Not Print Statements for Insurance Companies Statement to Allow Printing.(only applicable if Allow Statement to be Excluded from Printing is enabled).')
+     ),
 
     'disallow_print_deceased' => array(
       xl('Disallow Printing for Deceased Patients'),
@@ -1333,7 +1340,7 @@ $GLOBALS_METADATA = array(
       'num', // data type
       '07', // default
       xl('This is the default top print margin for UB-04. It will adjust the final printed output up or down.')
-  ),
+    ),
 
     'ubleft_margin_default' => array(
       xl('Default left print margin for UB-04'),
@@ -1513,6 +1520,29 @@ $GLOBALS_METADATA = array(
        '17',                            // default
       xl('Ending hour of day for calendar events.')
     ),
+    
+    'calendar_refresh_freq' => array(
+      xl('Calendar Refresh Frequency'),
+      array(
+        'none' => xl('No Refresh'),
+        '60000' => xl('60 seconds'),
+        '360000' => xl('5 minutes'),
+        '720000' => xl('10 minutes'),
+      ),
+       '360000',                     // default
+      xl('How often the calendar automatically refetches events.')
+    ),
+    
+    'calendar_provider_view_type' => array(
+      xl('Resource Title'),
+      array(
+        'full' => xl('Provider Full Name'),
+        'last' => xl('Provider Last Name'),
+        'resource' => xl('Resource Title'),
+      ),
+       'full',                     // default
+      xl('Name Choice for Resource in Calendar.')
+    ),
 
     'calendar_interval' => array(
       xl('Calendar Interval'),
@@ -1531,21 +1561,22 @@ $GLOBALS_METADATA = array(
     'calendar_view_type' => array(
       xl('Default Calendar View'),
       array(
-       'day' => xl('Day'),
-       'week' => xl('Week'),
-       'month' => xl('Month'),
+       'providerAgenda' => xl('1 Day'),
+       'providerAgenda2Day' => xl('2 Day'),
+       'timelineWeek' => xl('Week'),
+       'timelineMonth' => xl('Month'),
       ),
-       'day',                           // default
-      xl('This sets the Default Calendar View, Default is Day.')
+       'providerAgenda',                           // default
+      xl('This sets the Default Calendar View, Default is 1 Day.')
     ),
 
     'calendar_appt_style' => array(
       xl('Appointment Display Style'),
       array(
-        '1' => 'Last name',
-        '2' => 'Last name, first name',
-        '3' => 'Last name, first name (title)',
-        '4' => 'Last name, first name (title: description)',
+                '1' => xl('Last name'),
+                '2' => xl('Last name, first name'),
+                '3' => xl('Last name, first name (title)'),
+                '4' => xl('Last name, first name (title: description)'),
       ),
        '2',                             // default
       xl('This determines how appointments display on the calendar.')
@@ -1647,64 +1678,64 @@ $GLOBALS_METADATA = array(
     ),
 
     'disable_pat_trkr' => array(
-      xl('Disable Patient Flow Board'),
+      xl('Patient Flow Board: Disable'),
        'bool',                          // data type
        '0',                             // default
       xl('Do not display the patient flow board.')
     ),
 
     'ptkr_pt_list_new_window' => array(
-      xl('Open Demographics in New Window from Patient Flow Board'),
+      xl('Patient Flow Board: Open Demographics in New Window'),
        'bool',                          // data type
        '0',                             // default = false
       xl('When Checked, Demographics Will Open in New Window from Patient Flow Board.')
     ),
 
     'ptkr_visit_reason' => array(
-      xl('Show Visit Reason in Patient Flow Board'),
+      xl('Patient Flow Board: Show Visit Reason'),
        'bool',                          // data type
        '0',                             // default = false
       xl('When Checked, Visit Reason Will Show in Patient Flow Board.')
     ),
 
     'ptkr_show_pid' => array(
-      xl('Show Patient ID in Patient Flow Board'),
+      xl('Patient Flow Board: Show Patient ID'),
        'bool',                          // data type
        '1',                             // default = true
       xl('When Checked, Patient ID Will Show in Patient Flow Board.')
     ),
     'ptkr_show_room' => array(
-      xl('Show Exam Room Patient Flow Board'),
+      xl('Patient Flow Board: Show Exam Room'),
       'bool',                          // data type
       '1',                             // default = true
       xl('When Checked, Exam Room Will Show in Patient Flow Board.')
     ),
     'ptkr_show_visit_type' => array(
-      xl('Show Visit Type in Patient Flow Board'),
+      xl('Patient Flow Board: Show Visit Type'),
       'bool',                          // data type
       '1',                             // default = true
       xl('When Checked, Visit Type Will Show in Patient Flow Board.')
     ),
     'ptkr_show_encounter' => array(
-      xl('Show Patient Encounter Number in Patient Flow Board'),
+      xl('Patient Flow Board: Show Patient Encounter Number'),
        'bool',                          // data type
        '1',                             // default = true
       xl('When Checked, Patient Encounter Number Will Show in Patient Flow Board.')
     ),
       'ptkr_flag_dblbook' => array(
-          xl('Flag Double Booked Appt in Flow Board'),
+          xl('Patient Flow Board: Flag Double Booked Appt'),
           'bool',                          // data type
           '1',                             // default = true
           xl('When Checked, double booked appointments will be flagged in orange in Patient Flow Board.')
     ),
     'ptkr_date_range' => array(
-      xl('Allow Date Range in Patient Flow Board'),
+      xl('Patient Flow Board: Allow Date Range'),
        'bool',                          // data type
        '0',                             // default = false
       xl('This Allows a Date Range to be Selected in Patient Flow Board.')
     ),
     'ptkr_end_date' => array(
-      xl('Ending Date for Patient Flow Board'),
+      xl('Patient Flow Board: Ending Date'),
       array(
         'Y1' => xl('One Year Ahead'),
         'Y2' => xl('Two Years Ahead'),
@@ -1717,9 +1748,9 @@ $GLOBALS_METADATA = array(
       xl('This is the Ending date for the Patient Flow Board Date Range. (only applicable if Allow Date Range in option above is Enabled)')
     ),
     'pat_trkr_timer' => array(
-      xl('Patient Flow Board Timer Interval'),
+      xl('Patient Flow Board: Timer Interval'),
       array(
-       '0' => 'No automatic refresh',
+       '0' => xl('No automatic refresh'),
        '0:10' => '10',
        '0:20' => '20',
        '0:30' => '30',
@@ -1732,21 +1763,21 @@ $GLOBALS_METADATA = array(
     ),
 
     'status_default' => array(
-      xl('Default Status for the Patient Flow Board'),
+      xl('Patient Flow Board: Default Status'),
       'status',                           // data type
       '',                                 // default = none
       xl('Default Status for the Patient Flow Board Screen.')
     ),
 
     'checkout_roll_off' => array(
-      xl('Number of Minutes to display completed checkouts'),
+      xl('Patient Flow Board: Number of Minutes to display completed checkouts'),
        'num',
        '0',                             // default
       xl('Number of Minutes to display completed checkouts. Zero is continuous display')
     ),
 
     'drug_screen' => array(
-      xl('Enable Random Drug Testing'),
+      xl('Patient Flow Board: Enable Random Drug Testing'),
       'bool',                           // data type
       '0',                              // default
       xl('Allow Patient Flow Board to Select Patients for Drug Testing.')
@@ -1821,61 +1852,6 @@ $GLOBALS_METADATA = array(
       xl('Enable Patient Reminder Widget')
     ),
 
-    'enable_cqm' => array(
-      xl('Enable CQM Reporting'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Clinical Quality Measure (CQM) Reporting')
-    ),
-
-    'pqri_registry_name' => array(
-      xl('PQRI Registry Name'),
-       'text',                          // data type
-       'Model Registry',                // default
-      xl('PQRI Registry Name')
-    ),
-
-    'pqri_registry_id' => array(
-      xl('PQRI Registry ID'),
-       'text',                          // data type
-       '125789123',                     // default
-      xl('PQRI Registry ID')
-    ),
-
-    'enable_amc' => array(
-      xl('Enable AMC Reporting'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Automated Measure Calculations (AMC) Reporting')
-    ),
-
-    'enable_amc_prompting' => array(
-      xl('Enable AMC Prompting'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Prompting For Automated Measure Calculations (AMC) Required Data')
-    ),
-
-    'enable_amc_tracking' => array(
-      xl('Enable AMC Tracking'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Reporting of Tracking Date For Automated Measure Calculations (AMC)')
-    ),
-
-    'cdr_report_nice' => array(
-      xl('CDR Reports Processing Priority'),
-      array(
-        '' => xl('Default Priority'),
-        '5' => xl('Moderate Priority'),
-        '10' => xl('Moderate/Low Priority'),
-        '15' => xl('Low Priority'),
-        '20' => xl('Lowest Priority')
-      ),
-       '',                              // default
-      xl('Set processing priority for CDR engine based reports.')
-    ),
-
     'pat_rem_clin_nice' => array(
       xl('Patient Reminder Creation Processing Priority'),
       array(
@@ -1889,26 +1865,6 @@ $GLOBALS_METADATA = array(
       xl('Set processing priority for creation of Patient Reminders (in full clinic mode).')
     ),
 
-    'report_itemizing_standard' => array(
-      xl('Enable Standard Report Itemization'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Itemization of Standard Clinical Rules Reports')
-    ),
-
-    'report_itemizing_cqm' => array(
-      xl('Enable CQM Report Itemization'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Itemization of CQM Reports')
-    ),
-
-    'report_itemizing_amc' => array(
-      xl('Enable AMC Report Itemization'),
-       'bool',                          // data type
-       '1',                             // default
-      xl('Enable Itemization of AMC Reports')
-    ),
   ),
 
   // Logging
@@ -2197,8 +2153,49 @@ $GLOBALS_METADATA = array(
     'portal_onsite_address' => array(
       xl('Onsite Patient Portal Site Address'),
        'text',                          // data type
-       'https://your_web_site.com/libreehr/patients',
+       'https://your_web_site.com/libreehr/patient_portal',
       xl('Website link for the Onsite Patient Portal.')
+    ),
+
+    'portal_onsite_two_basepath' => array(
+      xl('Portal Uses Server Base Path (internal)'),
+      'bool',
+      '0',
+      xl('Use servers protocol and host in urls (portal internal only).')
+    ),
+
+    'portal_onsite_two_register' => array(
+      xl('Allow Onsite New Patient Registration Widget'),
+        'bool',                           // data type
+        '1',
+      xl('Enable Onsite Patient Portal new patient to self register.')
+    ),
+
+    'portal_two_payments' => array(
+      xl('Allow Onsite Online Payments'),
+        'bool',                           // data type
+        '0',
+      xl('Allow Onsite Patient to make payments online.')
+    ),
+
+    'portal_two_pass_reset' => array(
+      xl('Allow Patients to Reset Credentials'),
+        'bool',                           // data type
+        '0',
+      xl('Patient may change their logon from portal login dialog.')
+    ),
+
+    //Terry Fix this in the 3rd release of portal
+    'ccda_alt_service_enable' => array(
+      xl('Enable C-CDA Alternate Service'),
+      array(
+          0 => xl('Off'),
+          1 => xl('Care Coordination Only'),
+          2 => xl('Portal Only'),
+          3 => xl('Both'),
+      ),
+      '0',
+      xl('Enable C-CDA Alternate Service')
     ),
 
     'portal_onsite_document_download' => array(
@@ -2380,7 +2377,7 @@ $GLOBALS_METADATA = array(
 
     'SMTP_PASS' => array(
       xl('SMTP Password for Authentication'),
-      'text',                           // data type
+      'pass',                           // data type
       '',                               // default
       xl('Must be empty if SMTP authentication is not used.')
     ),
@@ -3149,6 +3146,64 @@ $GLOBALS_METADATA = array(
       xl('Location where scans are stored.')
     ),
 
+  ),
+    'MIPS' => array(
+
+    'enable_pqrs' => array(
+      xl('Enable Physician Quality Reporting System (MIPS)'),
+      'bool',                           // data type
+      '1',                               // default
+      xl('Enable Physician Quality Reporting System (MIPS)')
+    ),
+
+    'pqrs_demosystem' => array(
+      xl('This is a MIPS demo system'),
+      'bool',                           // data type
+      '0',                               // default
+      xl('Show demo system "Save/Load database presets" menu')
+    ),
+    
+    'report_itemizing_pqrs' => array(
+      xl('Enable MIPS report itemization'),     // for itemizing reports
+      'bool',                           // data type
+      '1',                     // default
+      xl('Creates patient lists from reports')
+    ),
+    
+
+    'pqrs_creator' => array(
+      xl('MIPS Report Creator Name'),       // for XML generation
+      'text',                           // data type
+      'FIXME creator FIXME!!!',                     // default
+      xl('MIPS Report Creator Name')
+    ),
+
+    'pqrs_registry_name' => array(
+      xl('MIPS Registry Name'),     // for XML generation
+      'text',                           // data type
+      'FIXME registry name FIXME!!!',               // default
+      xl('MIPS Registry Name')
+    ),
+
+    'pqrs_registry_id' => array(
+      xl('MIPS Registry ID'),       // for XML generation
+      'text',                           // data type
+      'FIXME registry id FIXME!!!',                 // default
+      xl('MIPS Registry ID')
+    ),
+
+    'pqrs_vendor_unique_id' => array(
+      xl('MIPS VENDOR UNIQUE ID'),  // for XML generation
+      'text',                           // data type
+      'FIXME vendor unique id FIXME!!!',            // default
+      xl('MIPS Registry Name')
+    ),
+     'pqrs_attestation_date' => array(
+      xl('Default Direct Entry Date'),  
+      'text',                           // data type
+      '2017-06-06',            // default
+      xl('Default date that direct entry encounters will be created on.')
+    ),
   ),
 
 );

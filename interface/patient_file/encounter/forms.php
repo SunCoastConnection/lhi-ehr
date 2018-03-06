@@ -23,7 +23,7 @@ require_once("$srcdir/headers.inc.php");
 <head>
 <?php html_header_show();
 //  Include Bootstrap and datepicker Library
-call_required_libraries(true,true,false,true);
+  call_required_libraries(array("jquery-min-3-1-1","bootstrap","datepicker","fancybox"));
 resolveFancyboxCompatibility();
 ?>
 <script type="text/javascript" src="../../../library/js/common.js"></script>
@@ -261,7 +261,7 @@ function divtoggle(spanid, divid) {
 }
 </script>
 
-<style type="text/css">
+<style type="text/css">    
     div.tab {
         min-height: 50px;
         padding:8px;
@@ -286,7 +286,7 @@ function divtoggle(spanid, divid) {
         float:left; 
         display:inline;
         margin-top:10px;
-    }
+    }    
     .flat_button{
     padding: 3px 6px;
     }
