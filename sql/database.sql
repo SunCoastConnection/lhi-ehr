@@ -7670,7 +7670,7 @@ CREATE TABLE `menu_entries` (
 --
 DROP TABLE IF EXISTS `wms_wards`;
 CREATE TABLE `wms_wards` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `name` varchar(500) NOT NULL,
   `rooms` varchar(500) NOT NULL,
   `owner` varchar(500) NOT NULL

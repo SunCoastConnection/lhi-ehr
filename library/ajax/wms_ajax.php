@@ -31,7 +31,8 @@ if ($wms_mode == "add") {
 			name=?,
 			rooms=?,
 			owner=?";
-			$bindArray = array("", $wms_name, $wms_rooms, $wms_owner);
+			$random = str_shuffle(time());
+			$bindArray = array($random, $wms_name, $wms_rooms, $wms_owner);
 			echo sqlInsert($sql, $bindArray);
 	    }
 	    else {
