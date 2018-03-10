@@ -267,18 +267,17 @@ $(function() {
 //delete wards
 $('#delete').click(function () {
 //used to delete wards.
-
 if (deletewards.length > 0 && deletedwards_uid.length > 0) {
 var valid_delete = 0;
 var invalid_delete = 0;
  for (i=0; i<deletedwards_uid.length; i++) {
  	var wms_uid = deletedwards_uid[i];
  	var hide = '#' + deletewards[i];
- 	var url = "../../library/ajax/wms_ajax.php?wms_mode=delete&wms_id=&wms_id=" + wms_uid;
+ 	var url = "../../library/ajax/wms_ajax.php?wms_mode=delete&wms_id=" + wms_uid;
+ 	console.log(url);
 	$.get(url, function(data, status){
         if (data == 1){
         	valid_delete = valid_delete + 1;
-        	console.log(hide);
         	$(hide).hide();
         }
         else {
