@@ -7666,6 +7666,18 @@ CREATE TABLE `menu_entries` (
 
 
 --
+-- Table structure for table `wms_wards`
+--
+DROP TABLE IF EXISTS `wms_wards`;
+CREATE TABLE `wms_wards` (
+  `id` int(11) NOT NULL,
+  `name` varchar(500) NOT NULL,
+  `rooms` varchar(500) NOT NULL,
+  `owner` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
 -- Dumping data for table `menu_entries`
 --
 
