@@ -5,7 +5,6 @@
         <!--ko if:!locked() -->
             <span class="tabSpan tabFloat bgcolor2">
                 <span  data-bind="text: title, click: tabClicked, css: {tabHidden: !visible()}"></span>
-                <span class="fa fa-refresh tab-button" data-bind="click: tabRefresh" title="Refresh"></span>
                     <!--ko if:!locked() -->
                         <span class="fa fa-unlock tab-button"  data-bind="click: tabLockToggle" title="Unlock"></span>
                     <!-- /ko -->

@@ -31,5 +31,6 @@ CREATE TABLE IF NOT EXISTS `form_misc_billing_options` (
   icn_resubmission_number     varchar(35)  default NULL,
   box_14_date_qual            char(3)   default NULL,
   box_15_date_qual            char(3)   default NULL,
+  onset_date                  date         default NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
