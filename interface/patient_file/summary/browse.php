@@ -29,7 +29,6 @@ $browsenum = (is_numeric($_REQUEST['browsenum'])) ? $_REQUEST['browsenum'] : 1;
 
 <form border='0' method='post' name="find_patient" action="browse.php?browsenum=<?php echo ".htmlspecialchars( $browsenum, ENT_QUOTES)."?>">
 
-<?php //<a href="javascript:document.find_patient.action='finder/patient_finder_keyboard.php';document.find_patient.submit();" class=link>Find Patient:</a>?>
 <input type='entry' size='10' name='patient'>
 <select name="findBy" size='1'>
  <option value="ID"><?php echo htmlspecialchars( xl('ID'), ENT_NOQUOTES); ?></option>
@@ -243,79 +242,79 @@ $total=0;
 $findby = $_POST['findBy'];
 $patient = $_POST['patient'];
 if ($findby == "Last" && $result = getPatientLnames("$patient","*,DATE_FORMAT(DOB,'%m/%d/%Y') as DOB_TS") ) {
-	foreach ($result as $iter) {
+    foreach ($result as $iter) {
 
-		if ($total >= $M) {
-			break;
-		}
-		print "<tr><td><a class=text target=_top href='browse.php?browsenum=" .
-	                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-	                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-	                htmlspecialchars( $iter{"lname"}.", ".$iter{"fname"}, ENT_NOQUOTES) .
-	                "</td></a>\n";
-		print "<td><a class=text target=_top href='browse.php?browsenum=" .
-	                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-	                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-	                htmlspecialchars( $iter{"ss"}, ENT_NOQUOTES) . "</a></td>";
-		if ($iter{"DOB"} != "0000-00-00 00:00:00") {
-			print "<td><a class=text target=_top href='browse.php?browsenum=" .
-		                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-		                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-		                htmlspecialchars( $iter{"DOB_TS"}, ENT_NOQUOTES) . "</a></td>";
-		} else {
-			print "<td><a class=text target=_top href='browse.php?browsenum=" .
-		                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-		                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>&nbsp;</a></td>";
-		}
-		print "<td><a class=text target=_top href='browse.php?browsenum=" .
-	                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-	                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-	                htmlspecialchars( $iter{"pubpid"}, ENT_NOQUOTES) . "</a></td>";
+        if ($total >= $M) {
+            break;
+        }
+        print "<tr><td><a class=text target=_top href='browse.php?browsenum=" .
+                    htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                    htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                    htmlspecialchars( $iter{"lname"}.", ".$iter{"fname"}, ENT_NOQUOTES) .
+                    "</td></a>\n";
+        print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                    htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                    htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                    htmlspecialchars( $iter{"ss"}, ENT_NOQUOTES) . "</a></td>";
+        if ($iter{"DOB"} != "0000-00-00 00:00:00") {
+            print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                        htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                        htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                        htmlspecialchars( $iter{"DOB_TS"}, ENT_NOQUOTES) . "</a></td>";
+        } else {
+            print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                        htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                        htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>&nbsp;</a></td>";
+        }
+        print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                    htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                    htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                    htmlspecialchars( $iter{"pubpid"}, ENT_NOQUOTES) . "</a></td>";
 
-		$total++;
-	}
+        $total++;
+    }
 }
 
 if ($findby == "ID" && $result = getPatientId("$patient","*, DATE_FORMAT(DOB,'%m/%d/%Y') as DOB_TS") ) {
-	foreach ($result as $iter) {
+    foreach ($result as $iter) {
 
-		if ($total >= $M) {
-			break;
-		}
-		print "<tr><td><a class=text target=_top href='browse.php?browsenum=" .
-	                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-	                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-	                htmlspecialchars( $iter{"lname"}.", ".$iter{"fname"}, ENT_NOQUOTES) .
-	                "</td></a>\n";
-		print "<td><a class=text target=_top href='browse.php?browsenum=" .
-	                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-	                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-	                htmlspecialchars( $iter{"ss"}, ENT_NOQUOTES) . "</a></td>";
-		if ($iter{"DOB"} != "0000-00-00 00:00:00") {
-			print "<td><a class=text target=_top href='browse.php?browsenum=" .
-		                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-		                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-		                htmlspecialchars( $iter{"DOB_TS"}, ENT_NOQUOTES) . "</a></td>";
-		} else {
-			print "<td><a class=text target=_top href='browse.php?browsenum=" .
-		                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-		                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>&nbsp;</a></td>";
-		}
-		print "<td><a class=text target=_top href='browse.php?browsenum=" .
-	                htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
-	                htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
-	                htmlspecialchars( $iter{"pubpid"}, ENT_NOQUOTES) . "</a></td>";
+        if ($total >= $M) {
+            break;
+        }
+        print "<tr><td><a class=text target=_top href='browse.php?browsenum=" .
+                    htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                    htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                    htmlspecialchars( $iter{"lname"}.", ".$iter{"fname"}, ENT_NOQUOTES) .
+                    "</td></a>\n";
+        print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                    htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                    htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                    htmlspecialchars( $iter{"ss"}, ENT_NOQUOTES) . "</a></td>";
+        if ($iter{"DOB"} != "0000-00-00 00:00:00") {
+            print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                        htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                        htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                        htmlspecialchars( $iter{"DOB_TS"}, ENT_NOQUOTES) . "</a></td>";
+        } else {
+            print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                        htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                        htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>&nbsp;</a></td>";
+        }
+        print "<td><a class=text target=_top href='browse.php?browsenum=" .
+                    htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
+                    htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
+                    htmlspecialchars( $iter{"pubpid"}, ENT_NOQUOTES) . "</a></td>";
 
-		$total++;
-	}
+        $total++;
+    }
 }
 
 if ($findby == "DOB" && $result = getPatientDOB("$patient","*, DATE_FORMAT(DOB,'%m/%d/%Y') as DOB_TS") ) {
-	foreach ($result as $iter) {
+    foreach ($result as $iter) {
 
-		if ($total >= $M) {
-			break;
-		}
+        if ($total >= $M) {
+            break;
+        }
                 print "<tr><td><a class=text target=_top href='browse.php?browsenum=" .
                         htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
                         htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
@@ -340,16 +339,16 @@ if ($findby == "DOB" && $result = getPatientDOB("$patient","*, DATE_FORMAT(DOB,'
                         htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
                         htmlspecialchars( $iter{"pubpid"}, ENT_NOQUOTES) . "</a></td>";
 
-		$total++;
-	}
+        $total++;
+    }
 }
 
 if ($findby == "SSN" && $result = getPatientSSN("$patient","*, DATE_FORMAT(DOB,'%m/%d/%Y') as DOB_TS") ) {
-	foreach ($result as $iter) {
+    foreach ($result as $iter) {
 
-		if ($total >= $M) {
-			break;
-		}
+        if ($total >= $M) {
+            break;
+        }
                 print "<tr><td><a class=text target=_top href='browse.php?browsenum=" .
                         htmlspecialchars( $browsenum, ENT_QUOTES) . "&set_pid=" .
                         htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
@@ -374,8 +373,8 @@ if ($findby == "SSN" && $result = getPatientSSN("$patient","*, DATE_FORMAT(DOB,'
                         htmlspecialchars( $iter{"pid"}, ENT_QUOTES) . "'>" .
                         htmlspecialchars( $iter{"pubpid"}, ENT_NOQUOTES) . "</a></td>";
 
-		$total++;
-	}
+        $total++;
+    }
 }
 ?>
 </table>
