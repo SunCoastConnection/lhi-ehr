@@ -4513,12 +4513,26 @@ CREATE TABLE `libreehr_modules` (
   PRIMARY KEY  (`pn_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=47 ;
 
+
 --
 -- Dumping data for table `libreehr_modules`
 --
 
 INSERT INTO `libreehr_modules` VALUES (46, 'PostCalendar', 2, 'PostCalendar', 'PostNuke Calendar Module', 0, 'PostCalendar', '4.0.0', 1, 1, 3);
 
+--
+-- Table structure for table `libreehr_modules`
+--
+
+DROP TABLE IF EXISTS `wms_wards`;
+CREATE TABLE `wms_wards` (
+  `id` varchar(500) NOT NULL,
+  `name` varchar(500) NOT NULL,
+  `rooms` varchar(500) NOT NULL,
+  `rooms_capacity` varchar(500) NOT NULL,
+  `prefix` varchar(500) NOT NULL,
+  `owner` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `libreehr_postcalendar_categories`
@@ -7663,19 +7677,6 @@ CREATE TABLE `menu_entries` (
   `global_reqs` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
---
--- Table structure for table `wms_wards`
---
-DROP TABLE IF EXISTS `wms_wards`;
-CREATE TABLE `wms_wards` (
-  `id` int(11) NOT NULL,
-  `name` varchar(500) NOT NULL,
-  `rooms` varchar(500) NOT NULL,
-  `owner` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 --
 -- Dumping data for table `menu_entries`

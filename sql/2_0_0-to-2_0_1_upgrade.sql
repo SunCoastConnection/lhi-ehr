@@ -88,3 +88,16 @@
 #IfMissingColumn history_data risk_factors
 ALTER TABLE `history_data` ADD COLUMN `risk_factors` TEXT NULL DEFAULT NULL AFTER `exams`;
 #EndIf
+--
+-- Table structure for table `libreehr_modules`
+--
+
+DROP TABLE IF EXISTS `wms_wards`;
+CREATE TABLE `wms_wards` (
+  `id` varchar(500) NOT NULL,
+  `name` varchar(500) NOT NULL,
+  `rooms` varchar(500) NOT NULL,
+  `rooms_capacity` varchar(500) NOT NULL,
+  `prefix` varchar(500) NOT NULL,
+  `owner` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
