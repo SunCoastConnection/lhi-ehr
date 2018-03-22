@@ -1,10 +1,10 @@
-.ward {
+.ward, .room {
 width: 150px;
 height: 150px;
 background-color: #b9cd6d;
 }
 
-.ward:hover {
+.ward:hover, .room:hover {
 	border: 5px solid #888;
 }
 .col-xs-2 {
@@ -42,4 +42,8 @@ font-weight: bold;
 
 .error_create {
     background-color: red;
+}
+
+.badge {
+    background-color: #234242;
 }
