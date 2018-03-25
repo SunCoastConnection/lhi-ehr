@@ -88,6 +88,9 @@
           <input type='hidden' name='ccrAction'>
           <input type='hidden' name='raw'>
           <input type="checkbox" name="show_date" id="show_date" onchange="show_date_fun();" ><span class='text'><?php xl('Use Date Range','e'); ?>
+          <a href="../summary/demographics.php" class="css_button" onclick="top.restoreSession()">
+            <span><?php echo htmlspecialchars(xl('Back To Patient'),ENT_NOQUOTES);?></span>
+          </a>
           <br>
           <div id="date_div" style="display:none" >
             <br>
