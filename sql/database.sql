@@ -4526,13 +4526,20 @@ INSERT INTO `libreehr_modules` VALUES (46, 'PostCalendar', 2, 'PostCalendar', 'P
 
 DROP TABLE IF EXISTS `wms_wards`;
 CREATE TABLE `wms_wards` (
-  `id` varchar(500) NOT NULL,
+  `wid` varchar(500) NOT NULL,
   `name` varchar(500) NOT NULL,
   `rooms` varchar(500) NOT NULL,
   `rooms_capacity` varchar(500) NOT NULL,
   `prefix` varchar(500) NOT NULL,
   `owner` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `wms_rooms`;
+CREATE TABLE `wms_rooms` (
+  `rid` varchar(500) COLLATE utf8_persian_ci NOT NULL,
+  `wid` varchar(500) COLLATE utf8_persian_ci NOT NULL,
+  `pid` varchar(500) COLLATE utf8_persian_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 
 --
 -- Table structure for table `libreehr_postcalendar_categories`
