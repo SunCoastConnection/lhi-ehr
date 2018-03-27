@@ -48,6 +48,11 @@ if (isset($_POST["pubpid"]) && ($_POST["pubpid"] != "")) {
 
 if ($_POST['form_create']) {
 
+  //check if post request originated from wms module
+  if ($_POST['from_wms']) {
+      $from_wms = true;
+  }
+
   $form_fname = ucwords(trim($_POST["fname"]));
   $form_lname = ucwords(trim($_POST["lname"]));
   $form_mname = ucwords(trim($_POST["mname"]));
@@ -128,17 +133,27 @@ if ($_POST['form_create']) {
 
 }
 ?>
+
+<?php 
+if ($from_wms) {
+  echo $pid;
+}
+else {
+?>
 <html>
 <body>
 <script language="Javascript">
 <?php
-if ($alertmsg) {
+}
+if ($alertmsg && !$from_wms) {
   echo "alert('$alertmsg');\n";
 }
+if (!$from_wms) {
   echo "window.location='$rootdir/patient_file/summary/demographics.php?" .
     "set_pid=$pid&is_new=1';\n";
-?>
-</script>
-
+  echo "</script>
 </body>
-</html>
+</html>";
+}
+?>
+

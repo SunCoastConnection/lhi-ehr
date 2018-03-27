@@ -10,6 +10,12 @@ background-color: #b9cd6d;
 .col-xs-2 {
 	padding: 3px;
 }
+input[type="text"] {
+    text-transform: capitalize;
+}
+input[type="text"]:focus {
+    background-color: yellow;
+}
 .ui-widget-header,.ui-state-default, ui-button {
 background:#b9cd6d;
 border: 1px solid #b9cd6d;
@@ -20,8 +26,12 @@ font-weight: bold;
 .ui-widget-input {
 	background-color: #244354;
 }
+td
+{
+    padding:0 5px 0 5px;
+}
 
-.error_create, .success_create {
+.error_create, .success_create, #sc, #fc{
     width:200px;
     height:20px;
     height:auto;
@@ -46,4 +56,17 @@ font-weight: bold;
 
 .badge {
     background-color: #234242;
+}
+
+
+.add_patients_plus_icon {
+    cursor: pointer;
+    color: green;
+    font-size: 25px;
+}
+
+.fa-trash-o {
+    color: red;
+    font-size: 25px;
+    cursor: pointer;
 }

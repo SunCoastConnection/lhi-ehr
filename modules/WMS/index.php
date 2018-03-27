@@ -32,7 +32,6 @@ call_required_libraries($library_array);
 <h4><i class="fa fa-user"></i> Ward Management System</h4>
 <br/><br/>
 </div>
-
 <!--ROOMS SECTION-->
 <div id="rooms_screen" style="display: none;">
 <div class="container col-xs-12">              
@@ -92,15 +91,15 @@ $ward_rooms = $r['rooms'];
 
 //row id
 
-$row_id = $r['id'];
+$row_id = $r['wid'];
 
 //div id used for selection purpose
-$id = "w".$r['id'];
+$id = "w".$r['wid'];
 
 $uid = $id."_uid";
 
 //room id value, which is to be used in jquery
-$id_room = "w".$r['id']."_room";
+$id_room = "w".$r['wid']."_room";
 
 //prefix of rooms
 $prefix = $r['prefix'];
@@ -169,11 +168,55 @@ $iterator = $iterator + 1;
   <br/><br/>
   <div class="text-center">
   <br/>
-  <input type="submit"  value="update" style="background-color: #234342;" id="wms_edit_update">
+  <input type="submit"  value="add patient" style="background-color: #234342;" id="wms_patient_add">
   </div>
 </div>
 
+<div id="add_patients">
+<div id = "tabs-1">
+         <ul>
+            <li><a href = "#tabs-2">Add New Patient</a></li>
+            <li><a href = "#tabs-3">Add Existing Patient</a></li>
+            <li><a href="#tabs-4">Patients in this room</a></li>
+         </ul>
+<div id = "tabs-2">
 
+  <p>Name of the Patient </p>
+  <table>
+  <tr>
+  <td><input type="text" name="fname" id="wms_patient_fname" style="width: 60px;"></td>
+  <td><input type="text" name="mname" id="wms_patient_mname" style="width: 60px;"></td>
+  <td><input type="text" name="lname" id="wms_patient_lname" style="width: 60px;"></td>
+  <input type="hidden" name="form_create" value="true" id="form_create">
+  <input type="hidden" name="from_wms" value="true" id="from_wms">
+  </tr>
+  </table>
+  <br/>
+  <p>Sex</p>
+  <select name="sex" id="wms_patient_sex">
+    <option value="">Unassigned</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
+  <br/><br/>
+  <p>DOB</p>
+  <input type="date" id="wms_patient_dob" min="1900-01-01" max=<?php echo date("Y-m-d");?> name="DOB">
+  <br/><br/>
+  <input type="button" value="Add patient" style="background-color: #234342; color: white;" id="wms_patient_add_submit">
+  <input type="hidden" id="wms_patient_add_ward_id">
+</div>
+<div id = "tabs-3">
+<b>search patient</b>
+<h6>
+<input type="text" id="wms_search_patient" placeholder="patient name">
+<br/><br/>
+<div id="search_patient_results"></div>
+</h6>
+</div>
+</div>
+<div id="tabs-4">
+<div id="patient_view"></div>
+</div>
 
 
 <div class='success_create' style='display:none'>Successfully ward created</div>
@@ -181,13 +224,22 @@ $iterator = $iterator + 1;
 
 </div>
 
-<div style="display: none;" id="parsehtml">
-
-
-</div>
+<div id="search_box_add_patients" title="confirm add this patient?">
+Do you really want to add this patient?
 </div>
 
-
+<div id="search_box_add_failed" title="Cant add this patient.">
+This patient already exist in ward.
+</div>
+<div id="search_box_add_passed" title="successfully added the patient">
+The patient has been successfully added.
+</div>
+<div id="patient_view_delete_patient" title="Confirm delete this patient?">
+Do you really want to remove this patient from this room?
+</div>
+</div>
+<div id="sc" style="display: none;"></div>
+<div id="fc" style="display: none;"></div>
 <script type="text/javascript">
 
   ///////////////////////////////////////////////////////////////
@@ -212,13 +264,74 @@ $iterator = $iterator + 1;
   ///////////////////////////////////////////////////////////////
   //                      ROOM GLOBALS                         //       
   var deletedrooms = [];
-  var selectedroom;                                            //                                   //
+  var selectedroom;                                            //                                                             //
   var selectedroom_id;                                         //
-  var selectedroom_name;                                       //
+  var selectedroom_name; 
+  var ward_id_with_room_id;                                      //
   ///////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////
+//check whether a patient exists
+function checkpatientAlreadyExists() {
+  var bool = "";
+  var pid = $('#search_box_add_patients').data('pid');
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=check_patient_search_box&pid=" + pid;
 
+    $.ajax({url: url, async:false, success: function(result){
+        bool = result;
+    }});
+  return bool;
+} 
+
+//delete a patient from room
+function deletePatient(pid,wid) {
+  var bool = "";
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=delete_patient&pid=" + pid + "&wid=" + wid;
+    $.ajax({url: url, async:false, success: function(result){
+        bool = result;
+    }});
+  return bool;
+} 
+
+function insertPatient(pid, wid) {
+var url = "../../library/ajax/wms_ajax.php?wms_mode=add_patient&pid=" + pid + "&wid=" + wid;
+var bool = "";
+$.ajax({url: url, async:false, success: function(result){
+  bool = result;
+    }});
+return bool;
+}
+
+function checkPatient(wid) {
+var url = "../../library/ajax/wms_ajax.php?wms_mode=patients_in_room&wid=" + wid;
+var bool = "";
+$.ajax({url: url, async:false, success: function(result){
+  bool = result;
+    }});
+return bool;
+
+}
+
+function refreshPatientCountBadge(condition) {
+//REFRESH THE BADGE, NUMBER OF PATIENTS IN ROOM
+var number_of_patients = $("#" + ward_id_with_room_id).find("span").text();
+number_of_patients = parseInt(number_of_patients);
+if (condition == "add") {
+number_of_patients = number_of_patients + 1;
+}
+else {
+  number_of_patients = number_of_patients - 1;
+}
+$("#" + ward_id_with_room_id).find("span").text(number_of_patients);
+}      
+
+function refreshPatientView() {
+              //REFRESH THE PATIENT VIEW
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=view_patient&wid=" + ward_dbl_click_select + "&rid=" + ward_id_with_room_id;
+  $.get(url, function(data, status){
+    $('#patient_view').html(data);
+  });
+}  
 
 
 $(document).ready(function () {
@@ -271,6 +384,9 @@ $(document).ready(function () {
   ///////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////
 $('.ward').dblclick(function () {
+  id = $(this).attr('id');
+  selectedward_uid = "#" + id + "_uid";
+  ward_dbl_click_select = $(selectedward_uid).val();
 	//reset globlas to prevent conflicts
 	deletewards = [];
 	deletedwards_uid = [];
@@ -325,7 +441,6 @@ $('#c_ward').click(function () {
   var w_rooms_capacity = $('#w_rooms_capacity').val();
   var w_prefix = $('#w_prefix').val();
   var url = "../../library/ajax/wms_ajax.php?wms_mode=add&wms_name=" + ward_name  + "&wms_rooms=" + ward_rooms + "&wms_rooms_capacity=" + w_rooms_capacity + "&wms_prefix=" + w_prefix;
-  console.log(url);
   $.get(url, function(data, status){
   if (data == 2) {
     $('.error_create').text("Ward with same name already exists");
@@ -387,7 +502,7 @@ $('#wms_edit_update').click(function () {
 //edit dialog for ward
 $(function() {
   $("#edit_wms").dialog({
-    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 40}
+    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400}
   });
   $("#edit").click(function() {
   	if (selectedwards.length > 0) {
@@ -479,25 +594,197 @@ $('#rooms_place').on('click', '.room', function (){
       deletedrooms.push(id);
       $(this).css('background-color', 'yellow');
       }
-      console.log(deletedrooms.toString());
+});
+
+//edit dialog for ward
+$(function() {
+  $("#add_patients").dialog({
+    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400}
+  });
+});
+
+$('#rooms_place').on('dblclick', '.room', function () {
+  var id = $(this).attr('id');
+  ward_id_with_room_id = id;
+  var room_name = $(this).find("b").text();
+  //assign room id
+  var rid = id;
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=view_patient&wid=" + ward_dbl_click_select + "&rid=" + rid;
+  $.get(url, function(data, status){
+    $('#patient_view').html(data);
+  });
+  $('#add_patients').dialog("option", "title", room_name);
+  $('#wms_patient_add_ward_id').val(id);
+  $('#add_patients').dialog("option", "width", "600");
+  $('#add_patients').dialog("open");
+  var tabs_priority = checkPatient(ward_id_with_room_id);
+  console.log(tabs_priority);
+  if (tabs_priority == 1) {
+    tab_index = 2;
+  }
+  else {
+    tab_index = 0;
+  }
+  $(function() {
+  $('#tabs-1').tabs({active: tab_index});
+  $( "#tabs-1" ).tabs({ activate: function(event, ui) {
+    if (ui.newTab.index() == 2) {
+      $('#tabs-4').css('display', 'block');
+    }
+    else {
+      $('#tabs-4').css('display', 'none');
+    }
+        }});
+});
+});
+
+
+//when patient is newly created
+$('#wms_patient_add_submit').click(function () {
+//Before adding a patient we need to check for room capacity.
+  $('#add_patients').dialog("close");
+  //wid  = ward id
+  var wid = $('#wms_patient_add_ward_id').val();
+  var fname = $('#wms_patient_fname').val();
+  var mname = $('#wms_patient_mname').val();
+  var lname = $('#wms_patient_lname').val();
+  var DOB = $('#wms_patient_dob').val();
+  var sex = $('#wms_patient_sex').val();
+  var form_create = $('#form_create').val();
+  var from_wms = $('#from_wms').val();
+  $.post("../../interface/new/new_patient_save.php", {fname: fname, mname:mname, lname:lname, DOB:DOB, sex:sex, form_create:form_create, from_wms:from_wms}, function(result){
+    pid = parseInt(result);
+          var bool = "";
+          var url = "../../library/ajax/wms_ajax.php?wms_mode=add_patient&wid=" + wid + "&pid=" + pid;
+          $.ajax({url: url, async:false, success: function(result){
+              bool = result;
+          }});
+          if (bool) {
+            $('#search_box_add_passed').text("patient has been successfully added");
+            $('#search_box_add_passed').dialog("open");
+            refreshPatientView();
+            refreshPatientCountBadge("add");
+          }
+          else {
+            $('#search_box_add_failed').text("failure");
+            $('#search_box_add_failed').dialog("open");
+
+          }
+
+    });
+});
+
+//DELETE PATIENTS IN A PARTICULAR ROOM
+$('#patient_view').on('dblclick', '.deletable', function () {
+var pid = $(this).attr('href');
+var wid = ward_dbl_click_select;
+var url = "../../library/ajax/wms_ajax.php?wms_mode=delete_patients&wid=" + wid + "";
+});
+
+//SEARCH PATIENTS FROM SEARCH BOX
+$('#wms_search_patient').keyup(function () {
+  var searchQuery = $('#wms_search_patient').val();
+  //we will search for fname, mname, lname for now.
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=search_patient&search_patient_name=" + searchQuery;
+  $.get(url, function(data, status){
+    $('#search_patient_results').html(data);
+  });
+});
+ 
+//add patient dialog for search area
+$(function() {
+  $("#search_box_add_patients").dialog({
+    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400}
+  });  
+  $('#search_box_add_patients').dialog({
+       buttons : {
+        "Confirm" : function() {
+          var boolean =  checkpatientAlreadyExists();
+          if (boolean == 1) {
+            $(this).dialog("close");
+            var check_insert = insertPatient($('#search_box_add_patients').data('pid'), ward_id_with_room_id);
+            if (check_insert) {
+            $("#search_box_add_passed").dialog("open");
+            refreshPatientView();
+            refreshPatientCountBadge("add");
+            }
+            else {
+              $("#search_box_add_failed").text("Error in adding patient");
+              $("#search_box_add_failed").dialog("open");
+            }
+          }
+          else{
+            $(this).dialog("close");
+            $("#search_box_add_failed").dialog("open");
+          }
+        },
+        "Cancel" : function() {
+          $(this).dialog("close");
+        }
+  }
+});
 
 });
 
-  ///////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////
-  //  CREATES A CREATE ROOM DIALOG, WHERE USER CAN ENTER DETAIL//
-  //  AND CREATE THE ROOM                                      //
-  ///////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////
+
+
+//DELETE PATIENT FROM PATIENT VIEW
 $(function() {
-  $("#create_rooms").dialog({
-    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400 }
-  });
-  $("#rooms_add").click(function() {
-    $("#create_rooms").dialog("open");
-    return false;
-  });
+  $("#patient_view_delete_patient").dialog({
+    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400}
+  });  
+  $('#patient_view_delete_patient').dialog({
+       buttons : {
+        "Confirm" : function() {
+          var pid = $('#patient_view_delete_patient').data('pid');
+          var wid = ward_dbl_click_select;
+          var boolean = deletePatient(pid, wid);
+          if (boolean) {
+            $('#patient_view_delete_patient').dialog("close");
+            refreshPatientView();
+            refreshPatientCountBadge("sub");
+            $('#search_box_add_passed').text("patient deleted successfully");
+            $('#search_box_add_passed').dialog("open");
+          }
+          else {
+            $('#patient_view_delete_patient').dialog("close");
+            $('#search_box_add_failed').text("error in deleting this patient");
+            $('#search_box_add_failed').dialog("open");
+          }
+        },
+        "Cancel" : function() {
+          $(this).dialog("close");
+        }
+  }
+});
+
+});
+
+
+//failure dialog for add patients
+$(function() {
+  $("#search_box_add_failed").dialog({
+    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400}
+  }).prev(".ui-dialog-titlebar").css("background","red");  
+});
+
+//success dialog for add patients
+$(function() {
+  $("#search_box_add_passed").dialog({
+    autoOpen : false, modal : true, show : { effect: "explode", duration: 300 }, hide : { effect: "explode", duration: 400}
+  }).prev(".ui-dialog-titlebar").css("background","green");  
+});
+
+
+//ADD PATIENT FROM SEARCH BOX
+$('#search_patient_results').on('click', '.add_patients_plus_icon', function () {
+  var pid = $(this).attr('id');
+  $('#search_box_add_patients').data("pid", pid).dialog("open");
+});
+
+//DELETE PATIENT FROM ROOM
+$('#patient_view').on('click', '.deletable', function () {
+  var pid = $(this).attr('id');
+  $('#patient_view_delete_patient').data("pid", pid).dialog("open");
 });
 </script>
