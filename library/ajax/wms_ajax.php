@@ -18,6 +18,8 @@
 include_once("../../interface/globals.php");
 include_once("{$GLOBALS['srcdir']}/sql.inc");
 
+
+
 /**
 *	AJAX MODULE FOR THE WARDS SCREEN
 */
@@ -232,7 +234,7 @@ if (isset($_GET['wid']) && isset($_GET['rid'])) {
 				$qry = sqlQ($sql);
 				$patient_row = sqlFetchArray($qry);
 				echo "<tr>";
-				echo "<td><b>".$patient_row['fname']."</b></td>";
+				echo "<td><b><a href='../../interface/patient_file/summary/demographics.php?set_pid=".$r['pid']."' style='color: blue;'>".$patient_row['fname']."</a></b></td>";
 				echo "<td><b>".$patient_row['lname']."</b></td>";
 				echo "<td><b>".$patient_row['DOB']."</b></td>";
 				echo "<td><b>".$patient_row['sex']."</b></td>";

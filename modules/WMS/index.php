@@ -629,6 +629,7 @@ $('#rooms_place').on('dblclick', '.room', function () {
   $('#tabs-1').tabs({active: tab_index});
   $( "#tabs-1" ).tabs({ activate: function(event, ui) {
     if (ui.newTab.index() == 2) {
+      // #tabs-4 is refreshed regularly, so if condition needed to prevent nasty ui bug.
       $('#tabs-4').css('display', 'block');
     }
     else {
