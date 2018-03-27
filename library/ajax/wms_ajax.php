@@ -335,4 +335,26 @@ else {
 	echo "2";
 }
 }
+
+//used for priortizing tabs.
+if ($wms_mode == "patients_in_room") {
+	if (isset($_GET['wid'])) {
+		if (!empty($_GET['wid'])) {
+			$wid = $_GET['wid'];
+			$arr = explode("-", $wid);
+			$wid = $arr[0];
+			$rid = $arr[1];
+			$sql =  "SELECT * FROM wms_rooms WHERE wid=$wid AND rid=$rid";
+			$query = sqlQ($sql);
+			$occurences = sqlNumRows($query);
+			if ($occurences > 0) {
+				//this means patients are in the room
+				echo "1";
+			}
+			else {
+				echo "2";
+			}
+		}
+	}
+}
 ?>

@@ -214,7 +214,7 @@ $iterator = $iterator + 1;
 </h6>
 </div>
 </div>
-<div id="tabs-4" style="display: none;">
+<div id="tabs-4">
 <div id="patient_view"></div>
 </div>
 
@@ -271,7 +271,67 @@ Do you really want to remove this patient from this room?
   ///////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////
+//check whether a patient exists
+function checkpatientAlreadyExists() {
+  var bool = "";
+  var pid = $('#search_box_add_patients').data('pid');
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=check_patient_search_box&pid=" + pid;
 
+    $.ajax({url: url, async:false, success: function(result){
+        bool = result;
+    }});
+  return bool;
+} 
+
+//delete a patient from room
+function deletePatient(pid,wid) {
+  var bool = "";
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=delete_patient&pid=" + pid + "&wid=" + wid;
+    $.ajax({url: url, async:false, success: function(result){
+        bool = result;
+    }});
+  return bool;
+} 
+
+function insertPatient(pid, wid) {
+var url = "../../library/ajax/wms_ajax.php?wms_mode=add_patient&pid=" + pid + "&wid=" + wid;
+var bool = "";
+$.ajax({url: url, async:false, success: function(result){
+  bool = result;
+    }});
+return bool;
+}
+
+function checkPatient(wid) {
+var url = "../../library/ajax/wms_ajax.php?wms_mode=patients_in_room&wid=" + wid;
+var bool = "";
+$.ajax({url: url, async:false, success: function(result){
+  bool = result;
+    }});
+return bool;
+
+}
+
+function refreshPatientCountBadge(condition) {
+//REFRESH THE BADGE, NUMBER OF PATIENTS IN ROOM
+var number_of_patients = $("#" + ward_id_with_room_id).find("span").text();
+number_of_patients = parseInt(number_of_patients);
+if (condition == "add") {
+number_of_patients = number_of_patients + 1;
+}
+else {
+  number_of_patients = number_of_patients - 1;
+}
+$("#" + ward_id_with_room_id).find("span").text(number_of_patients);
+}      
+
+function refreshPatientView() {
+              //REFRESH THE PATIENT VIEW
+  var url = "../../library/ajax/wms_ajax.php?wms_mode=view_patient&wid=" + ward_dbl_click_select + "&rid=" + ward_id_with_room_id;
+  $.get(url, function(data, status){
+    $('#patient_view').html(data);
+  });
+}  
 
 
 $(document).ready(function () {
@@ -557,19 +617,27 @@ $('#rooms_place').on('dblclick', '.room', function () {
   $('#wms_patient_add_ward_id').val(id);
   $('#add_patients').dialog("option", "width", "600");
   $('#add_patients').dialog("open");
-});
-$(function() {
-  $( "#tabs-1" ).tabs({activate: function(event, ui) {
-          var div  = +ui.newTab.index();
-          div = div + 2;
-          if (div == 4) {
-          $('#tabs-' + div).css('display', 'block');
-          }
-          else {
-            $('#tabs-4').css('display', 'none');
-          }
+  var tabs_priority = checkPatient(ward_id_with_room_id);
+  console.log(tabs_priority);
+  if (tabs_priority == 1) {
+    tab_index = 2;
+  }
+  else {
+    tab_index = 0;
+  }
+  $(function() {
+  $('#tabs-1').tabs({active: tab_index});
+  $( "#tabs-1" ).tabs({ activate: function(event, ui) {
+    if (ui.newTab.index() == 2) {
+      $('#tabs-4').css('display', 'block');
+    }
+    else {
+      $('#tabs-4').css('display', 'none');
+    }
         }});
 });
+});
+
 
 //when patient is newly created
 $('#wms_patient_add_submit').click(function () {
@@ -622,58 +690,7 @@ $('#wms_search_patient').keyup(function () {
     $('#search_patient_results').html(data);
   });
 });
-//check whether a patient exists
-function checkpatientAlreadyExists() {
-  var bool = "";
-  var pid = $('#search_box_add_patients').data('pid');
-  var url = "../../library/ajax/wms_ajax.php?wms_mode=check_patient_search_box&pid=" + pid;
-
-    $.ajax({url: url, async:false, success: function(result){
-        bool = result;
-    }});
-  return bool;
-} 
-
-//delete a patient from room
-function deletePatient(pid,wid) {
-  var bool = "";
-  var url = "../../library/ajax/wms_ajax.php?wms_mode=delete_patient&pid=" + pid + "&wid=" + wid;
-  console.log(url);
-    $.ajax({url: url, async:false, success: function(result){
-        bool = result;
-    }});
-  return bool;
-} 
-
-function insertPatient(pid, wid) {
-var url = "../../library/ajax/wms_ajax.php?wms_mode=add_patient&pid=" + pid + "&wid=" + wid;
-var bool = "";
-$.ajax({url: url, async:false, success: function(result){
-  bool = result;
-    }});
-return bool;
-}
-
-function refreshPatientCountBadge(condition) {
-//REFRESH THE BADGE, NUMBER OF PATIENTS IN ROOM
-var number_of_patients = $("#" + ward_id_with_room_id).find("span").text();
-number_of_patients = parseInt(number_of_patients);
-if (condition == "add") {
-number_of_patients = number_of_patients + 1;
-}
-else {
-  number_of_patients = number_of_patients - 1;
-}
-$("#" + ward_id_with_room_id).find("span").text(number_of_patients);
-}      
-
-function refreshPatientView() {
-              //REFRESH THE PATIENT VIEW
-  var url = "../../library/ajax/wms_ajax.php?wms_mode=view_patient&wid=" + ward_dbl_click_select + "&rid=" + ward_id_with_room_id;
-  $.get(url, function(data, status){
-    $('#patient_view').html(data);
-  });
-}   
+ 
 //add patient dialog for search area
 $(function() {
   $("#search_box_add_patients").dialog({
