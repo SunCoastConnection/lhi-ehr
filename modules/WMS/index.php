@@ -789,10 +789,11 @@ $('#patient_view').on('click', '.deletable', function () {
 });
 
 
-//DELETE PATIENTS IN A PARTICULAR ROOM
+//REDIRECT TO DEMOGRAPHICS SCREEN
 $('#patient_view').on('click', '.redirect_demographics', function () {
   var pid = $(this).attr('id');
    top.restoreSession();
    top.RTop.location = "../../interface/patient_file/summary/demographics.php?set_pid=" + pid;
 });
 </script>
+	
