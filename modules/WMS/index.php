@@ -787,4 +787,13 @@ $('#patient_view').on('click', '.deletable', function () {
   var pid = $(this).attr('id');
   $('#patient_view_delete_patient').data("pid", pid).dialog("open");
 });
+
+
+//REDIRECT TO DEMOGRAPHICS SCREEN
+$('#patient_view').on('click', '.redirect_demographics', function () {
+  var pid = $(this).attr('id');
+   top.restoreSession();
+   top.RTop.location = "../../interface/patient_file/summary/demographics.php?set_pid=" + pid;
+});
 </script>
+	

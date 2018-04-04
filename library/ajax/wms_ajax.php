@@ -232,7 +232,7 @@ if (isset($_GET['wid']) && isset($_GET['rid'])) {
 				$qry = sqlQ($sql);
 				$patient_row = sqlFetchArray($qry);
 				echo "<tr>";
-				echo "<td><b>".$patient_row['fname']."</b></td>";
+				echo "<td><b class='redirect_demographics' id='".$pid."'style='color: blue; cursor:pointer;'>".$patient_row['fname']."</b></td>";
 				echo "<td><b>".$patient_row['lname']."</b></td>";
 				echo "<td><b>".$patient_row['DOB']."</b></td>";
 				echo "<td><b>".$patient_row['sex']."</b></td>";
