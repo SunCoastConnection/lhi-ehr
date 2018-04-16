@@ -1,27 +1,27 @@
 <?php
 /*
  *  Encounters report. (/interface/reports/encounters_report.php
- *  
  *
- *  This report shows past encounters with filtering and sorting, 
+ *
+ *  This report shows past encounters with filtering and sorting,
  *  Added filtering to show encounters not e-signed, encounters e-signed and forms e-signed.
- * 
- * Copyright (C) 2015-2017 Terry Hill <teryhill@librehealth.io> 
+ *
+ * Copyright (C) 2015-2017 Terry Hill <teryhill@librehealth.io>
  * Copyright (C) 2007-2010 Rod Roark <rod@sunsetsystems.com>
- * 
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
- * @package LibreHealth EHR 
- * @author Terry Hill <teryhill@librehealth.io> 
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package LibreHealth EHR
+ * @author Terry Hill <teryhill@librehealth.io>
  * @author Rod Roark <rod@sunsetsystems.com>
  * @link http://librehealth.io
  *
@@ -29,6 +29,7 @@
 
 require_once("../globals.php");
 require_once $GLOBALS['srcdir'].'/headers.inc.php';
+require_once("../../library/report_functions.php");
 require_once("$srcdir/forms.inc");
 require_once("$srcdir/billing.inc");
 require_once("$srcdir/patient.inc");
@@ -54,8 +55,8 @@ function show_doc_total($lastdocname, $doc_encounters) {
   }
 }
 
-$form_from_date = fixDate($_POST['form_from_date'], date('Y-m-d'));
-$form_to_date = fixDate($_POST['form_to_date'], date('Y-m-d'));
+$from_date = fixDate($_POST['form_from_date'], date('Y-m-d'));
+$to_date = fixDate($_POST['form_to_date'], date('Y-m-d'));
 $form_provider  = $_POST['form_provider'];
 $form_facility  = $_POST['form_facility'];
 $form_details   = $_POST['form_details'] ? true : false;
@@ -94,9 +95,9 @@ $query = "SELECT " .
   "$esign_joins" .
   "WHERE f.pid = fe.pid AND f.encounter = fe.encounter AND f.formdir = 'patient_encounter' ";
 if ($form_to_date) {
-  $query .= "AND fe.date >= '$form_from_date 00:00:00' AND fe.date <= '$form_to_date 23:59:59' ";
+  $query .= "AND fe.date >= '$from_date 00:00:00' AND fe.date <= '$to_date 23:59:59' ";
 } else {
-  $query .= "AND fe.date >= '$form_from_date 00:00:00' AND fe.date <= '$form_from_date 23:59:59' ";
+  $query .= "AND fe.date >= '$from_date 00:00:00' AND fe.date <= '$from_date 23:59:59' ";
 }
 if ($form_provider) {
   $query .= "AND fe.provider_id = '$form_provider' ";
@@ -216,27 +217,8 @@ $res = sqlStatement($query);
                <?php echo xlt('Provider'); ?>:
             </td>
             <td>
-                <?php
-
-                 // Build a drop-down list of providers.
-                 //
-
-                 $query = "SELECT id, lname, fname FROM users WHERE ".
-                  "authorized = 1 $provider_facility_filter ORDER BY lname, fname"; //(CHEMED) facility filter
-
-                 $ures = sqlStatement($query);
-
-                 echo "   <select name='form_provider'>\n";
-                 echo "    <option value=''>-- " . xlt('All') . " --\n";
-
-                 while ($urow = sqlFetchArray($ures)) {
-                  $provid = $urow['id'];
-                  echo "    <option value='" . attr($provid) . "'";
-                  if ($provid == $_POST['form_provider']) echo " selected";
-                  echo ">" . text($urow['lname']) . ", " . text($urow['fname']) . "\n";
-                 }
-
-                 echo "   </select>\n";
+              <?php // Build a drop-down list of providers.
+                dropDownProviders();
 
                 ?>
             </td>
@@ -254,20 +236,7 @@ $res = sqlStatement($query);
             </td>
         </tr>
         <tr>
-            <td class='label'>
-               <?php echo xlt('From'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_from_date' id="form_from_date" size='10'
-                      value='<?php echo htmlspecialchars(oeFormatShortDate(attr($form_from_date))) ?>'>
-            </td>
-            <td class='label'>
-               <?php echo xlt('To'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_to_date' id="form_to_date" size='10'
-                      value='<?php echo htmlspecialchars(oeFormatShortDate(attr($form_to_date))) ?>'>
-            </td>
+            <?php showFromAndToDates(); ?>
             <td>
                <label><input type='checkbox' name='form_details'<?php  if ($form_details) echo ' checked'; ?>>
                <?php echo xlt('Details'); ?></label>
@@ -282,29 +251,7 @@ $res = sqlStatement($query);
     </div>
 
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:100%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:15px'>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php echo xlt('Submit'); ?>
-                    </span>
-                    </a>
-
-                    <?php if ($_POST['form_refresh']) { ?>
-            <a href='#' class='css_button' id='printbutton'>
-                        <span>
-                            <?php echo xlt('Print'); ?>
-                        </span>
-                    </a>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-  </td>
+  <?php showSubmitPrintButtons(); ?>
  </tr>
 </table>
 
@@ -350,7 +297,7 @@ if ($res) {
     $errmsg  = "";
     if ($form_details) {
       // Fetch all other forms for this encounter.
-      $encnames = '';      
+      $encnames = '';
       $encarr = getFormByEncounter($patient_id, $row['encounter'],
         "formdir, user, form_name, form_id");
       if($encarr!='') {
@@ -359,7 +306,7 @@ if ($res) {
             if ($encnames) $encnames .= '<br />';
             $encnames .= text($enc['form_name']); // need to html escape it here for output below
           }
-      }     
+      }
 
       // Fetch coding and compute billing status.
       $coded = "";

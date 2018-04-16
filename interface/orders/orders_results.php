@@ -2,27 +2,27 @@
 /*
  * Orders Results
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  * Copyright (C) 2010-2013 Rod Roark <rod@sunsetsystems.com>
  *
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author Rod Roark <rod@sunsetsystems.com>
- * @link http://librehealth.io 
+ * @link http://librehealth.io
  */
 
 require_once("../globals.php");
@@ -31,6 +31,7 @@ require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/options.inc.php");
 require_once("$srcdir/formatting.inc.php");
 require_once("../orders/lab_exchange_tools.php");
+require_once("$srcdir/headers.inc.php");
 $DateFormat = DateFormatRead();
 
 // Indicates if we are entering in batch mode.
@@ -52,7 +53,7 @@ if ($_GET['set_pid'] && $form_review) {
   require_once("$srcdir/pid.inc");
   require_once("$srcdir/patient.inc");
   setpid($_GET['set_pid']);
-  
+
   $result = getPatientData($pid, "*, DATE_FORMAT(DOB,'%Y-%m-%d') as DOB_YMD");
   ?>
   <script language='JavaScript'>
@@ -81,7 +82,7 @@ function QuotedOrNull($fld) {
 
 $current_report_id = 0;
 
-if ($_POST['form_submit'] && !empty($_POST['form_line'])) { 
+if ($_POST['form_submit'] && !empty($_POST['form_line'])) {
   foreach ($_POST['form_line'] as $lino => $line_value) {
     list($order_id, $order_seq, $report_id, $result_id) = explode(':', $line_value);
 
@@ -101,9 +102,9 @@ if ($_POST['form_submit'] && !empty($_POST['form_line'])) {
         "report_status = '" . oresData("form_report_status", $lino) . "'";
 
       // Set the review status to reviewed.
-      if ($form_review) 
+      if ($form_review)
         $sets .= ", review_status = 'reviewed'";
-    
+
       if ($report_id) { // Report already exists.
         sqlStatement("UPDATE procedure_report SET $sets "  .
           "WHERE procedure_report_id = '$report_id'");
@@ -345,7 +346,7 @@ if ($form_batch) {
    <!-- removed by jcw -- check/submit sequece too tedious.  This is a quick fix -->
 <!--   <input type='checkbox' name='form_all' value='1' <?php if ($_POST['form_all']) echo " checked"; ?>><?php xl('Include Completed','e') ?>
    &nbsp;-->
-   <input type='submit' name='form_refresh' value=<?php xl('Refresh','e'); ?>>
+   <input type='submit' name='form_refresh' value=<?php xl('Refresh','e'); ?> class='cp-misc'>
   </td>
  </tr>
 </table>
@@ -377,7 +378,7 @@ if ($form_batch) {
   <td><?php xl('?','e'); ?></td>
  </tr>
 
-<?php 
+<?php
 $selects =
   "po.procedure_order_id, po.date_ordered, pc.procedure_order_seq, " .
   "pt1.procedure_type_id AS order_type_id, pc.procedure_name, " .
@@ -438,7 +439,7 @@ while ($row = sqlFetchArray($res)) {
   $date_report    = empty($row['date_report'     ]) ? '' : substr($row['date_report'], 0, 16);
   $date_collected = empty($row['date_collected'  ]) ? '' : substr($row['date_collected'], 0, 16);
   $specimen_num   = empty($row['specimen_num'    ]) ? '' : $row['specimen_num'];
-  $report_status  = empty($row['report_status'   ]) ? '' : $row['report_status']; 
+  $report_status  = empty($row['report_status'   ]) ? '' : $row['report_status'];
   $review_status  = empty($row['review_status'   ]) ? 'received' : $row['review_status'];
 
   // skip report_status = receive to make sure do not show the report before it reviewed and sign off by Physicians
@@ -662,7 +663,7 @@ while ($row = sqlFetchArray($res)) {
       "<td><textarea rows='3' cols='15' name='form_facility[$lino]'" .
       " title='" . xla('Supplier facility name') . "'" .
       " style='width:100%' />" . htmlspecialchars($result_facility) .
-      "</textarea></td></tr>\n" .     
+      "</textarea></td></tr>\n" .
       "<tr><td class='bold' nowrap>" . xlt('Comments') . ": </td>" .
       "<td><textarea rows='3' cols='15' name='form_comments[$lino]'" .
       " title='" . xla('Comments for this result or recommendation') . "'" .
@@ -714,14 +715,14 @@ if ($form_review) {
  if ($reviewauth) {
  ?>
   <center><p>
-   <input type='submit' name='form_submit' value='<?php xl('Sign Results','e'); ?>' />
+   <input type='submit' name='form_submit' value='<?php xl('Sign Results','e'); ?>' class='cp-positive'/>
   </p></center>
  <?php
  }
  else {
  ?>
   <center><p>
-   <input type='button' name='form_submit' value='<?php xl('Sign Results','e'); ?>' onclick="alert('<?php xl('Not authorized','e') ?>');" />
+   <input type='button' name='form_submit' value='<?php xl('Sign Results','e'); ?>' onclick="alert('<?php xl('Not authorized','e') ?>');" class='cp-positive'/>
   </p></center>
  <?php
  }
@@ -729,7 +730,7 @@ if ($form_review) {
 else {
 ?>
  <center><p>
-  <input type='submit' name='form_submit' value='<?php xl('Save','e'); ?>' />
+  <input type='submit' name='form_submit' value='<?php xl('Save','e'); ?>' class='cp-submit'/>
  </p></center>
 <?php
 }

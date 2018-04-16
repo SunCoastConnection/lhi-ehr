@@ -6,33 +6,34 @@
  * that are seen within a given time period.  Each patient that had
  * a visit is counted only once, regardless of how many visits.
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
- * 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  *
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
- * @author Terry Hill <teryhill@librehealth.io> 
- * @link http://librehealth.io 
+ * @package LibreHealth EHR
+ * @author Terry Hill <teryhill@librehealth.io>
+ * @link http://librehealth.io
  */
 
  include_once("../globals.php");
  include_once("../../library/patient.inc");
  include_once("../../library/acl.inc");
  require_once("../../library/formatting.inc.php");
+ require_once("../../library/report_functions.php");
  $DateFormat = DateFormatRead();
  $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 
@@ -131,52 +132,14 @@ else {
 
     <table class='text'>
         <tr>
-            <td class='label'>
-               <?php xl('From','e'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo $form_from_date ?>'>
-            </td>
-            <td class='label'>
-               <?php xl('To','e'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>'>
-            </td>
+            <?php showFromAndToDates(); ?>
         </tr>
     </table>
 
     </div>
 
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:100%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:15px'>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php xl('Submit','e'); ?>
-                    </span>
-                    </a>
-
-                    <?php if ($_POST['form_refresh']) { ?>
-                    <a href='#' class='css_button' id='printbutton'>
-                        <span>
-                            <?php xl('Print','e'); ?>
-                        </span>
-                    </a>
-                    <a href='#' class='css_button' onclick='$("#form_csvexport").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php xl('Export to CSV','e'); ?>
-                    </span>
-                    </a>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-  </td>
+  <?php showSubmitPrintButtons('form_csvexport'); ?>
  </tr>
 </table>
 

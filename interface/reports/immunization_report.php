@@ -2,42 +2,43 @@
 /*
  * Immunization report
  * This report lists  patient immunizations for a given date range.
- * 
+ *
  * Copyright (C) 2011 Ensoftek Inc.
  *
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author Ensoftek Inc.
- * @link http://librehealth.io 
+ * @link http://librehealth.io
  */
 
 require_once("../globals.php");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/formatting.inc.php");
+require_once("../../library/report_functions.php");
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 
 if(isset($_POST['form_from_date'])) {
-  $from_date = $_POST['form_from_date'] !== "" ? 
+  $from_date = $_POST['form_from_date'] !== "" ?
     fixDate($_POST['form_from_date'], date('Y-m-d')) :
     0;
 }
 if(isset($_POST['form_to_date'])) {
-  $to_date =$_POST['form_to_date'] !== "" ? 
+  $to_date =$_POST['form_to_date'] !== "" ?
     fixDate($_POST['form_to_date'], date('Y-m-d')) :
     0;
 }
@@ -60,9 +61,9 @@ function tr($a) {
 function format_cvx_code($cvx_code) {
 
     if ( $cvx_code < 10 ) {
-        return "0$cvx_code"; 
+        return "0$cvx_code";
     }
-    
+
     return $cvx_code;
 }
 
@@ -94,13 +95,13 @@ function format_ethnicity($ethnicity) {
  }
 
 
-  $query = 
+  $query =
   "select " .
   "i.patient_id as patientid, " .
   "p.language, ".
   "i.cvx_code , " ;
   if ($_POST['form_get_hl7']==='true') {
-    $query .= 
+    $query .=
       "DATE_FORMAT(p.DOB,'%Y%m%d') as DOB, ".
       "concat(p.street, '^^', p.city, '^', p.state, '^', p.postal_code) as address, ".
       "p.country_code, ".
@@ -109,8 +110,8 @@ function format_ethnicity($ethnicity) {
       "p.status, ".
       "p.sex, ".
       "p.ethnoracial, ".
-      "p.race, ". 
-      "p.ethnicity, ".   
+      "p.race, ".
+      "p.ethnicity, ".
       "c.code_text, ".
       "c.code, ".
       "c.code_type, ".
@@ -144,12 +145,12 @@ function format_ethnicity($ethnicity) {
   $query .= "i.patient_id=p.pid and ".
   $query_codes .
   "i.cvx_code = c.code and ";
-  
+
   //do not show immunization added erroneously
   $query .=  "i.added_erroneously = 0";
 
 //echo "<p> DEBUG query: $query </p>\n"; // debugging
-  
+
 
 $D="\r";
 $nowdate = date('Ymd');
@@ -159,7 +160,7 @@ $filename = "imm_reg_". $now . ".hl7";
 
 // GENERATE HL7 FILE
 if ($_POST['form_get_hl7']==='true') {
-    $content = ''; 
+    $content = '';
 
   $res = sqlStatement($query);
 
@@ -178,7 +179,7 @@ if ($_POST['form_get_hl7']==='true') {
     $content .= "PID|" . // [[ 3.72 ]]
         "|" . // 1. Set id
         "|" . // 2. (B)Patient id
-        $r['patientid']. "^^^MPI&2.16.840.1.113883.19.3.2.1&ISO^MR" . "|". // 3. (R) Patient indentifier list. TODO: Hard-coded the OID from NIST test. 
+        $r['patientid']. "^^^MPI&2.16.840.1.113883.19.3.2.1&ISO^MR" . "|". // 3. (R) Patient indentifier list. TODO: Hard-coded the OID from NIST test.
         "|" . // 4. (B) Alternate PID
         $r['patientname']."|" . // 5.R. Name
         "|" . // 6. Mather Maiden Name
@@ -217,10 +218,10 @@ if ($_POST['form_get_hl7']==='true') {
         ""  . // 39. Tribal Citizenship
         "$D" ;
     $content .= "ORC" . // ORC mandatory for RXA
-        "|" . 
+        "|" .
         "RE" .
         "$D" ;
-    $content .= "RXA|" . 
+    $content .= "RXA|" .
         "0|" . // 1. Give Sub-ID Counter
         "1|" . // 2. Administrattion Sub-ID Counter
         $r['administered_date']."|" . // 3. Date/Time Start of Administration
@@ -243,7 +244,7 @@ if ($_POST['form_get_hl7']==='true') {
         "|" . // 20.Completion Status
         "A" . // 21.Action Code - RXA
         "$D" ;
-        
+
 }
 
   // send the header here
@@ -310,8 +311,8 @@ if ($_POST['form_get_hl7']==='true') {
 <span class='title'><?php xl('Report','e'); ?> - <?php xl('Immunization Registry','e'); ?></span>
 
 <div id="report_parameters_daterange">
-    <?php date("d F Y", strtotime(oeFormatDateForPrintReport($form_from_date)))
-    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($form_to_date))); ?>
+    <?php date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_from_date'])))
+    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_to_date']))); ?>
 </div>
 
 <form name='theform' id='theform' method='post' action='immunization_report.php'
@@ -347,18 +348,7 @@ onsubmit='return top.restoreSession()'>
  echo "   </select>\n";
 ?>
           </td>
-          <td class='label'>
-            <?php xl('From','e'); ?>:
-          </td>
-          <td>
-            <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo $form_from_date ?>'>
-          </td>
-          <td class='label'>
-            <?php xl('To','e'); ?>:
-          </td>
-          <td>
-            <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>'>
-          </td>
+          <?php showFromAndToDates(); ?>
         </tr>
       </table>
     </div>
@@ -368,10 +358,10 @@ onsubmit='return top.restoreSession()'>
       <tr>
         <td>
           <div style='margin-left:15px'>
-            <a href='#' class='css_button' 
+            <a href='#' class='css_button'
             onclick='
-            $("#form_refresh").attr("value","true"); 
-            $("#form_get_hl7").attr("value","false"); 
+            $("#form_refresh").attr("value","true");
+            $("#form_get_hl7").attr("value","false");
             $("#theform").submit();
             '>
             <span>
@@ -386,7 +376,7 @@ onsubmit='return top.restoreSession()'>
               </a>
               <a href='#' class='css_button' onclick=
               "if(confirm('<?php xl('This step will generate a file which you have to save for future use. The file cannot be generated again. Do you want to proceed?','e'); ?>')) {
-                     $('#form_get_hl7').attr('value','true'); 
+                     $('#form_get_hl7').attr('value','true');
                      $('#theform').submit();
               }">
                 <span>

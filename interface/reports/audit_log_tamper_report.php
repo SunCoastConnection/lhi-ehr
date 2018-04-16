@@ -24,20 +24,8 @@
  * @link    http://librehealth.io
  */
 
-//SANITIZE ALL ESCAPES
-$sanitize_all_escapes=true;
-//
+require_once "reports_controllers/AuditLogTamperController.php";
 
-//STOP FAKE REGISTER GLOBALS
-$fake_register_globals=false;
-//
-
-include_once("../globals.php");
-include_once("$srcdir/log.inc");
-include_once("$srcdir/formdata.inc.php");
-require_once("$srcdir/formatting.inc.php");
-$DateFormat = DateFormatRead(true);
-$DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 ?>
 <html>
 <head>
@@ -83,10 +71,9 @@ function eventTypeChange(eventname)
 {
          if (eventname == "disclosure") {
             document.theform.type_event.disabled = true;
-          }
-         else {
+  } else {
             document.theform.type_event.disabled = false;
-         }              
+         }
 }
 
 // VicarePlus :: This invokes the find-patient popup.
@@ -106,76 +93,29 @@ function eventTypeChange(eventname)
 <body class="body_top">
 <font class="title"><?php echo xlt('Audit Log Tamper Report'); ?></font>
 <br>
-<?php 
-$err_message=0;
-if ($_GET["start_date"])
-$start_date = $_GET['start_date'];
-
-if ($_GET["end_date"])
-$end_date = $_GET['end_date'];
-
-if ($_GET["form_patient"])
-$form_patient = $_GET['form_patient'];
-
-/*
- * Start date should not be greater than end date - Date Validation
- */
-if ($start_date && $end_date)
-{
-    if($start_date > $end_date){
-        echo "<table><tr class='alert'><td colspan=7>"; echo xlt('Start Date should not be greater than End Date');
-        echo "</td></tr></table>"; 
-        $err_message=1; 
-    }
-}
-
-?>
-<?php
-$form_user = $_REQUEST['form_user'];
-$form_pid = $_REQUEST['form_pid'];
-if ($form_patient == '' ) $form_pid = '';
-
-$get_sdate=$start_date ? $start_date : date("Y-m-d H:i:s");
-$get_edate=$end_date ? $end_date : date("Y-m-d H:i:s");
-
-?>
 <br>
 <FORM METHOD="GET" name="theform" id="theform" onSubmit='top.restoreSession()'>
-<?php
-
-$sortby = $_GET['sortby'];
-?>
+  <?php $sortby = $_GET['sortby']; ?>
 <input type="hidden" name="sortby" id="sortby" value="<?php echo attr($sortby); ?>">
 <input type=hidden name=csum value="">
 <table>
-<tr><td>
-<span class="text"><?php echo xlt('Start Date'); ?>: </span>
-</td><td>
-<input type="text" size="18" name="start_date" id="start_date" value="<?php echo $start_date ? htmlspecialchars(oeFormatShortDate($start_date)) : date($DateFormat); ?>"/>
-</td>
-<td>
-<span class="text"><?php echo xlt('End Date'); ?>: </span>
-</td><td>
-<input type="text" size="18" name="end_date" id="end_date" value="<?php echo $end_date ? $end_date : date($DateFormat); ?>"/>
-</td>
-
-<td>
-&nbsp;&nbsp;<span class='text'><?php echo xlt('Patient'); ?>: </span>
-</td>
+    <tr>
+      <td><span class="text"><?php echo xlt('Start Date'); ?>: </span></td>
+      <td><input type="text" size="18" name="start_date" id="start_date" value="<?php echo $start_date ? htmlspecialchars(oeFormatShortDate($start_date)) : date($DateFormat); ?>"/></td>
+      <td><span class="text"><?php echo xlt('End Date'); ?>: </span></td>
+      <td><input type="text" size="18" name="end_date" id="end_date" value="<?php echo $end_date ? $end_date : date($DateFormat); ?>"/></td>
+      <td>&nbsp;&nbsp;<span class='text'><?php echo xlt('Patient'); ?>: </span></td>
 <td>
 <input type='text' size='20' name='form_patient' style='width:100%;cursor:pointer;cursor:hand' value='<?php echo attr($form_patient) ? attr($form_patient) : xla('Click To Select'); ?>' onclick='sel_patient()' title='<?php echo xlt('Click to select patient'); ?>' />
 <input type='hidden' name='form_pid' value='<?php echo attr($form_pid); ?>' />
 </td>
 </tr>
 
-<tr><td>
-<span class='text'><?php echo xlt('Include Checksum'); ?>: </span>
-</td><td>
-<?php
-
-$check_sum = $_GET['check_sum'];
-?>
-<input type="checkbox" name="check_sum" " <?php if ($check_sum == 'on') echo "checked";  ?>"></input>
+    <tr>
+      <td><span class='text'><?php echo xlt('Include Checksum'); ?>: </span></td>
+      <td>
+        <?php $check_sum = $_GET['check_sum']; ?>
+        <input type="checkbox" name="check_sum" <?php if ($check_sum == 'on') echo "checked"; ?>></input>
 </td>
 <td>
 <input type=hidden name="event" value=<?php echo attr($event) ; ?>>
@@ -200,101 +140,8 @@ $check_sum = $_GET['check_sum'];
   <th id="sortby_oldchecksum" class="text" title="<?php xla('Sort by Old Checksum'); ?>"><?php  xlt('Original Checksum'); ?></th>
   <?php } ?>
  </tr>
-<?php
-
-$eventname = $_GET['eventname'];
-$type_event = $_GET['type_event'];
-?>
-<input type=hidden name=event value=<?php echo attr($eventname)."-".attr($type_event) ?>>
-<?php
-$type_event = "update";
-$tevent=""; 
-$gev="";
-if($eventname != "" && $type_event != ""){
-    $getevent=$eventname."-".$type_event;
-}
-      
-if(($eventname == "") && ($type_event != "")){  
-    $tevent=$type_event;    
-}else if($type_event =="" && $eventname != ""){
-    $gev=$eventname;
-}else if ($eventname == ""){
-    $gev = "";
-}else{
-    $gev = $getevent;
-}
-
-$dispArr = array();
-$icnt = 1;
-if ($ret = getEvents(array('sdate' => $get_sdate,'edate' => $get_edate, 'user' => $form_user, 'patient' => $form_pid, 'sortby' => $_GET['sortby'], 'levent' =>$gev, 'tevent' =>$tevent))) {
-  foreach ($ret as $iter) {
-    //translate comments
-    $patterns = array ('/^success/','/^failure/','/ encounter/');
-    $replace = array ( xl('success'), xl('failure'), xl('encounter','',' '));
-    
-    $dispCheck = false;
-    $log_id = $iter['id'];
-    $commentEncrStatus = "No";
-    $logEncryptData = logCommentEncryptData($log_id);
-    
-    if(count($logEncryptData) > 0){
-        $commentEncrStatus = $logEncryptData['encrypt'];
-        $checkSumOld = $logEncryptData['checksum'];
-        $concatLogColumns = $iter['date'].$iter['event'].$iter['user'].$iter['groupname'].$iter['comments'].$iter['patient_id'].$iter['success'].$iter['checksum'].$iter['crt_user'];
-        $checkSumNew = sha1($concatLogColumns);
-        
-        if($checkSumOld != $checkSumNew){
-            $dispCheck = true;
-        }else{
-            $dispCheck = false;
-            continue;
-        }
-    }else{
-        continue;
-    }
-    
-    if($commentEncrStatus == "Yes"){
-        $decrypt_comment =  trim(aes256Decrypt($iter["comments"]));
-        $trans_comments = preg_replace($patterns, $replace, $decrypt_comment);
-    }else{
-        $comments = trim($iter["comments"]);
-        $trans_comments = preg_replace($patterns, $replace, $comments);
-    }
-    
-    //Alter Checksum value records only display here
-    if($dispCheck){
-        $dispArr[] = $icnt++;
-?>
-     <TR class="oneresult">
-          <TD class="text tamperColor"><?php echo oeFormatShortDate(substr($iter["date"], 0, 10)) . substr($iter["date"], 10) ?></TD>
-          <TD class="text tamperColor"><?php echo text($iter["user"]); ?></TD>
-          <TD class="text tamperColor"><?php echo text($iter["patient_id"]);?></TD>
-          <TD class="text tamperColor"><?php echo text($trans_comments);?></TD>
-          <?php  if($check_sum) { ?>
-          <TD class="text tamperColor"><?php echo text($checkSumNew);?></TD>
-          <TD class="text tamperColor"><?php echo text($checkSumOld);?></TD>
-          <?php } ?>
-     </TR>
-<?php
-      }
-    }
-  }
-  
-  if( count($dispArr) == 0 ){?>
-     <TR class="oneresult">
-         <?php 
-            $colspan = 4;
-            if($check_sum) $colspan=6;
-         ?>
-        <TD class="text" colspan="<?php echo $colspan;?>" align="center"><?php echo xlt('No audit log tampering detected in the selected date range.'); ?></TD>
-     </TR>
-<?php
-  }else{?>
-    <script type="text/javascript">$('#display_tamper').css('display', 'block');</script>
-  <?php
-  }
-  
-?>
+  <?php // Show the result of the search. (TRK)
+    showResults(); ?>
 </table>
 </div>
 <?php } ?>

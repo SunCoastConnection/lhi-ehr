@@ -44,13 +44,14 @@
  * JSON EDITOR is included from:
  *   https://github.com/josdejong/jsoneditor
  *   Copyright (C) 2011-2015 Jos de Jong
- *   usage docs etc in js/jsoneditor/docs 
+ *   usage docs etc in js/jsoneditor/docs
  */
 
  /* Include our required headers */
 
 require_once('../../globals.php');
 require_once("$srcdir/acl.inc");
+require_once $GLOBALS['srcdir'].'/headers.inc.php';
 
 if (!acl_check('admin', 'super')) die(xl('Not authorized','','','!'));
 
@@ -82,7 +83,7 @@ if (!empty($_POST['menuEdits'])) {
     <link href="js/jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
     <script src="js/jsoneditor/jsoneditor.js"></script>
 
-    <style>       
+    <style>
         body {
             font: 10.5pt arial;
             color: #4d4d4d;
@@ -103,7 +104,7 @@ if (!empty($_POST['menuEdits'])) {
     <input type="hidden" id="menuEdits" name="menuEdits" value="">
 </form>
 
-<?php echo xlt("Save Menu Changes for site ID") . ': ' . $_SESSION['site_id'];?> <input type="button" id="saveDocument" value="Save" />
+<?php echo xlt("Save Menu Changes for site ID") . ': ' . $_SESSION['site_id'];?> <input type="button" id="saveDocument" class='cp-submit' value="Save" />
 
 <div id="jsoneditor"></div>
 

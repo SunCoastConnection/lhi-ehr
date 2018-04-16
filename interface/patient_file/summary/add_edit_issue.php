@@ -136,8 +136,8 @@ function ActiveIssueCodeRecycleFn($thispid2, $ISSUE_TYPES2) {
 
     $modeIssueTypes[$idx2] = $issueTypeX;
     $issueTypeIdx2[$issueTypeX] = $idx2;
-    ++$idx2;    
-  
+    ++$idx2;
+
   }
 
   $pe2 = array($thispid2);
@@ -184,7 +184,7 @@ function ActiveIssueCodeRecycleFn($thispid2, $ISSUE_TYPES2) {
       list($codeTyX,) = explode(":", $listCode2);
 
       if (in_array($codeTyX, $allowCodes2)) {
-            
+
         array_push($memberCodes[$akey1], $listCode2);
 
       }
@@ -204,7 +204,7 @@ function ActiveIssueCodeRecycleFn($thispid2, $ISSUE_TYPES2) {
   foreach ($displayCodeSets as $akey => $displayCodeSet) {
 
     echo "listBoxOptionSets[" . attr($akey) . "] = new Array();\n";
-  
+
     if ($displayCodeSet) {
 
       foreach ($displayCodeSet as $dispCode2) {
@@ -213,9 +213,9 @@ function ActiveIssueCodeRecycleFn($thispid2, $ISSUE_TYPES2) {
         echo "listBoxOptionSets[" . attr($akey) . "][listBoxOptionSets[" . attr($akey) . "].length] = new Option('" . attr($dispCode2) . " (" . attr(trim($codeDesc2)) . ") ' ,'" . attr($dispCode2) . "' , false, false);\n";
 
       }
-    
+
     }
- 
+
   }
 
   // map issues to a set of display options
@@ -352,12 +352,14 @@ if ($_POST['form_save']) {
   echo "<html><body><script language='JavaScript'>\n";
   if ($info_msg) echo " alert('$info_msg');\n";
 
+  echo "alert('successfully added new issue');\n";
+
   echo " var myboss = opener ? opener : parent;\n";
   echo " if (myboss.refreshIssue) myboss.refreshIssue($issue,'$tmp_title');\n";
   echo " else if (myboss.reloadIssues) myboss.reloadIssues();\n";
   echo " else myboss.location.reload();\n";
   echo " if (parent.$ && parent.$.fancybox) parent.$.fancybox.close();\n";
-  echo " else window.close();\n";
+  echo " else {window.close(); window.setTimeout(function(){parent.$.fn.fancybox.close();},100);}\n";
 
   echo "</script></body></html>\n";
   exit();
@@ -414,7 +416,7 @@ div.section {
  var aitypes = new Array(); // issue type attributes
  var aopts   = new Array(); // Option objects
 <?php
- $i = 0;  
+ $i = 0;
  foreach ($ISSUE_TYPES as $key => $value) {
   echo " aitypes[$i] = " . attr($value[3]) . ";\n";
   echo " aopts[$i] = new Array();\n";
@@ -428,8 +430,8 @@ div.section {
   ++$i;
  }
 
-///////////     
-ActiveIssueCodeRecycleFn($thispid, $ISSUE_TYPES);  
+///////////
+ActiveIssueCodeRecycleFn($thispid, $ISSUE_TYPES);
 ///////////
 ?>
 

@@ -80,9 +80,9 @@ require_once("../globals.php");
 <table>
  <tr>
   <td width='470px'>
-	<div style='float:left'>
+    <div style='float:left'>
 
-	<table class='text'>
+            <!-- <table class='text'> -->
              <div style='margin-left:15px'>
                <a id='refresh_button' href='#' class='css_button' onclick='top.restoreSession(); $("#theform").submit()'>
                <span>
@@ -90,7 +90,8 @@ require_once("../globals.php");
                </span>
                </a>
              </div>
-        </table>
+            <!-- </table> -->
+          </div>
   </td>
  </tr>
 </table>
@@ -141,7 +142,7 @@ require_once("../globals.php");
 <?php
 
  $res = sqlStatement("SELECT *, (`next_run` - INTERVAL `execute_interval` MINUTE) as `last_run_start`" .
-	" FROM `background_services` ORDER BY `sort_order`");
+    " FROM `background_services` ORDER BY `sort_order`");
  while ($row = sqlFetchArray($res)) {
 ?>
  <tr>

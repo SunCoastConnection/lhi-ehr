@@ -20,6 +20,7 @@ require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/reminders.php");
 require_once("$srcdir/clinical_rules.php");
 require_once "$srcdir/report_database.inc";
+require_once("$srcdir/headers.inc.php");
 ?>
 
 <html>
@@ -83,7 +84,7 @@ if ($mode == "simple") {
 <div>
   <span class='title'><?php echo htmlspecialchars( xl('Patient Reminders'), ENT_NOQUOTES); ?></span>
 </div>
-<?php if ($mode == "simple") { ?> 
+<?php if ($mode == "simple") { ?>
   <div style='float:left;margin-right:10px'>
     <?php echo htmlspecialchars( xl('for'), ENT_NOQUOTES);?>&nbsp;
     <span class="title">
@@ -106,7 +107,7 @@ $sort = array("category, item", "lname, fname", "due_status", "date_created", "h
 if($sortby == "") {
   $sortby = $sort[0];
 }
-if($sortorder == "") { 
+if($sortorder == "") {
   $sortorder = "asc";
 }
 for($i = 0; $i < count($sort); $i++) {
@@ -158,7 +159,7 @@ if($end < $start) {
 if($prev >= 0) {
   $prevlink = "<a href=\"patient_reminders.php?patient_id=$patient_id&mode=$mode&sortby=$sortby&sortorder=$sortorder&begin=$prev\" onclick=\"top.restoreSession()\"><<</a>";
 }
-else { 
+else {
   $prevlink = "<<";
 }
 
@@ -205,10 +206,10 @@ else {
             <td>
               <div style='margin-left:15px'>
                 <?php if ($mode == "admin") { ?>
-                 <a id='process_button' href='#' class='css_button' onclick='return ReminderBatch("process")'>
+                 <a id='process_button' href='#' class='css_button cp-misc' onclick='return ReminderBatch("process")'>
                    <span><?php echo htmlspecialchars( xl('Process Reminders'), ENT_NOQUOTES); ?></span>
                  </a>
-                 <a id='process_send_button' href='#' class='css_button' onclick='return ReminderBatch("process_send")'>
+                 <a id='process_send_button' href='#' class='css_button cp-misc' onclick='return ReminderBatch("process_send")'>
                    <span><?php echo htmlspecialchars( xl('Process and Send Reminders'), ENT_NOQUOTES); ?></span>
                  </a>
                  <span id='status_span'></span>

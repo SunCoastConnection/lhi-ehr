@@ -2,27 +2,27 @@
 /*
 * List procedure orders and reports, and fetch new reports and their results.
 *
-* Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+* Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
 * Copyright (C) 2013-2015 Rod Roark <rod@sunsetsystems.com>
 *
 * LICENSE: This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
-* as published by the Free Software Foundation; either version 3 
+* as published by the Free Software Foundation; either version 3
 * of the License, or (at your option) any later version.
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
-* 
+* along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+*
 * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
 * See the Mozilla Public License for more details.
 * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 *
-* @package LibreHealth EHR 
+* @package LibreHealth EHR
 * @author    Rod Roark <rod@sunsetsystems.com>
-* @link http://librehealth.io 
+* @link http://librehealth.io
 */
 
 $sanitize_all_escapes = true;
@@ -38,6 +38,7 @@ require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/classes/Document.class.php");
 require_once("./receive_hl7_results.inc.php");
 require_once("./gen_hl7_order.inc.php");
+require_once("$srcdir/headers.inc.php");
 /** Current format date */
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
@@ -350,7 +351,7 @@ foreach (array(
 ?>
 
    &nbsp;
-   <input type='submit' name='form_refresh' value=<?php echo xla('Submit'); ?>>
+   <input type='submit' name='form_refresh' value=<?php echo xla('Submit'); ?> class="cp-submit">
   </td>
  </tr>
 </table>
@@ -376,7 +377,7 @@ foreach (array(
   <!-- <td><?php echo xlt('Reviewed'   ); ?></td> -->
  </tr>
 
-<?php 
+<?php
 $selects =
   "po.patient_id, po.procedure_order_id, po.date_ordered, po.date_transmitted, " .
   "pc.procedure_order_seq, pc.procedure_code, pc.procedure_name, pc.do_not_send, " .
@@ -454,7 +455,7 @@ while ($row = sqlFetchArray($res)) {
   $report_id        = empty($row['procedure_report_id']) ? 0 : ($row['procedure_report_id'] + 0);
   $date_report      = empty($row['date_report'        ]) ? '' : substr($row['date_report'], 0, 16);
   $date_report_suf  = empty($row['date_report_tz'     ]) ? '' : (' ' . $row['date_report_tz' ]);
-  $report_status    = empty($row['report_status'      ]) ? '' : $row['report_status']; 
+  $report_status    = empty($row['report_status'      ]) ? '' : $row['report_status'];
   $review_status    = empty($row['review_status'      ]) ? '' : $row['review_status'];
 
   // Sendable procedures sort first, so this also applies to the order on an order ID change.
@@ -498,7 +499,7 @@ while ($row = sqlFetchArray($res)) {
     echo " />";
     // Order date comes with a link to open results in the same frame.
     echo "<a href='javascript:openResults($order_id)' ";
-    echo "title='" . xla('Click for results') . "'>";    
+    echo "title='" . xla('Click for results') . "'>";
     echo text($date_ordered);
     echo "</a></td>\n";
     echo "  <td>";

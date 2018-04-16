@@ -52,20 +52,21 @@
     require_once "$srcdir/formdata.inc.php";
     include_once("$srcdir/calendar.inc");
     include_once("$srcdir/edi.inc");
+    require_once("../../library/report_functions.php");
 
     $DateFormat = DateFormatRead();
     $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 
-    // Element data seperator       
+    // Element data seperator
     $eleDataSep     = "*";
 
-    // Segment Terminator   
-    $segTer         = "~";  
+    // Segment Terminator
+    $segTer         = "~";
 
     // Component Element seperator
-    $compEleSep     = ":";  
-    
-    // filter conditions for the report and batch creation 
+    $compEleSep     = ":";
+
+    // filter conditions for the report and batch creation
 
     $from_date      = fixDate($_POST['form_from_date'], date($DateFormat));
     $to_date        = fixDate($_POST['form_to_date'], date($DateFormat));
@@ -79,7 +80,7 @@
 
     $where  = "e.pc_pid IS NOT NULL AND e.pc_eventDate >= ?";
     array_push($sqlBindArray, $from_date);
-    
+
     //$where .="and e.pc_eventDate = (select max(pc_eventDate) from libreehr_postcalendar_events where pc_aid = d.id)";
 
     if ($to_date) {
@@ -109,7 +110,7 @@
                                    e.pc_facility,
                                    p.lname,
                                    p.fname,
-                                   p.mname, 
+                                   p.mname,
                                    DATE_FORMAT(p.dob, '%%Y%%m%%d') as dob,
                                    p.ss,
                                    p.sex,
@@ -148,19 +149,19 @@
                             LEFT JOIN insurance_companies as c ON (c.id = i.provider)
                             WHERE %s ", $where );
 
-    // Run the query 
+    // Run the query
     $res            = sqlStatement($query, $sqlBindArray);
-    
-    // Get the facilities information 
+
+    // Get the facilities information
     $facilities     = getUserFacilities($_SESSION['authId']);
 
-    // Get the Providers information 
+    // Get the Providers information
     $providers      = getUsernames();
 
-    //Get the x12 partners information 
+    //Get the x12 partners information
     $clearinghouses = getX12Partner();
-        
-        
+
+
     if (isset($_POST['form_savefile']) && !empty($_POST['form_savefile']) && $res) {
         header('Content-Type: text/plain');
         header(sprintf('Content-Disposition: attachment; filename="elig-270..%s.%s.txt"',
@@ -168,7 +169,7 @@
             $to_date
         ));
         print_elig($res,$X12info,$segTer,$compEleSep);
-        exit; 
+        exit;
     }
 ?>
 
@@ -220,28 +221,28 @@
             var stringDelete = "<?php echo htmlspecialchars( xl('Do you want to remove this record?'), ENT_QUOTES); ?>?";
             var stringBatch  = "<?php echo htmlspecialchars( xl('Please select X12 partner, required to create the 270 batch'), ENT_QUOTES); ?>";
 
-            // for form refresh 
+            // for form refresh
 
             function refreshme() {
                 document.forms[0].submit();
             }
 
-            //  To delete the row from the reports section 
+            //  To delete the row from the reports section
             function deletetherow(id){
                 var suredelete = confirm(stringDelete);
                 if(suredelete == true){
                     document.getElementById('PR'+id).style.display="none";
                     if(document.getElementById('removedrows').value == ""){
-                        document.getElementById('removedrows').value = "'" + id + "'"; 
+                        document.getElementById('removedrows').value = "'" + id + "'";
                     }else{
-                        document.getElementById('removedrows').value = document.getElementById('removedrows').value + ",'" + id + "'"; 
-                    
+                        document.getElementById('removedrows').value = document.getElementById('removedrows').value + ",'" + id + "'";
+
                     }
                 }
-                
+
             }
 
-            //  To validate the batch file generation - for the required field [clearing house/x12 partner] 
+            //  To validate the batch file generation - for the required field [clearing house/x12 partner]
             function validate_batch()
             {
                 if(document.getElementById('form_x12').value=='')
@@ -253,13 +254,13 @@
                 {
                     document.getElementById('form_savefile').value = "true";
                     document.theform.submit();
-                    
+
                 }
 
 
             }
 
-            // To Clear the hidden input field 
+            // To Clear the hidden input field
 
             function validate_policy()
             {
@@ -268,14 +269,14 @@
                 return true;
             }
 
-            // To toggle the clearing house empty validation message 
+            // To toggle the clearing house empty validation message
             function toggleMessage(id,x12){
-                
+
                 var spanstyle = new String();
 
                 spanstyle       = document.getElementById(id).style.visibility;
                 selectoption    = document.getElementById(x12).value;
-                
+
                 if(selectoption != '')
                 {
                     document.getElementById(id).style.visibility = "hidden";
@@ -300,9 +301,9 @@
         <span class='title'><?php echo htmlspecialchars( xl('Report'), ENT_NOQUOTES); ?> - <?php echo htmlspecialchars( xl('Eligibility 270 Inquiry Batch'), ENT_NOQUOTES); ?></span>
 
         <div id="report_parameters_daterange">
-            <?php echo htmlspecialchars( date("d F Y", strtotime($form_from_date)), ENT_NOQUOTES) .
-                " &nbsp; " . htmlspecialchars( xl('to'), ENT_NOQUOTES) . 
-                "&nbsp; ". htmlspecialchars( date("d F Y", strtotime($form_to_date)), ENT_NOQUOTES); ?>
+            <?php echo htmlspecialchars( date("d F Y", strtotime($from_date)), ENT_NOQUOTES) .
+                " &nbsp; " . htmlspecialchars( xl('to'), ENT_NOQUOTES) .
+                "&nbsp; ". htmlspecialchars( date("d F Y", strtotime($to_date)), ENT_NOQUOTES); ?>
         </div>
 
         <form method='post' name='theform' id='theform' action='edi_270.php' onsubmit="return top.restoreSession()">
@@ -314,23 +315,10 @@
                             <div style='float:left'>
                                 <table class='text'>
                                     <tr>
-                                        <td class='label'>
-                                           <?php xl('From','e'); ?>:
-                                        </td>
-                                        <td>
-                                    <input type='text' name='form_from_date' id="form_from_date" size='10'
-                                           value='<?php echo htmlspecialchars(oeFormatShortDate($from_date), ENT_QUOTES) ?>'>
-                                        </td>
-                                        <td class='label'>
-                                           <?php echo htmlspecialchars( xl('To'), ENT_NOQUOTES); ?>:
-                                        </td>
-                                        <td>
-                                    <input type='text' name='form_to_date' id="form_to_date" size='10'
-                                           value='<?php echo htmlspecialchars(oeFormatShortDate($to_date), ENT_QUOTES) ?>'>
-                                        </td>
+                                        <?php showFromAndToDates(); ?>
                                         <td>&nbsp;</td>
                                     </tr>
-                                    
+
                                     <tr>
                                         <td class='label'>
                                             <?php echo htmlspecialchars( xl('Facility'), ENT_NOQUOTES); ?>:
@@ -354,7 +342,7 @@
                                         <td>&nbsp;
                                         </td>
                                     </tr>
-                                    
+
                                     <tr>
                                         <td class='label'>
                                             <?php echo htmlspecialchars( xl('X12 Partner'), ENT_NOQUOTES); ?>:
@@ -362,18 +350,18 @@
                                         <td colspan='5'>
                                             <select name='form_x12' id='form_x12' onchange='return toggleMessage("emptyVald","form_x12");' >
                                                         <option value=''>--<?php echo htmlspecialchars( xl('select'), ENT_NOQUOTES); ?>--</option>
-                                                        <?php 
+                                                        <?php
                                                             if(isset($clearinghouses) && !empty($clearinghouses))
                                                             {
                                                                 foreach($clearinghouses as $clearinghouse): ?>
                                                                     <option value='<?php echo htmlspecialchars( $clearinghouse['id']."|".$clearinghouse['id_number']."|".$clearinghouse['x12_sender_id']."|".$clearinghouse['x12_receiver_id']."|".$clearinghouse['x12_version']."|".$clearinghouse['processing_format'], ENT_QUOTES); ?>'
                                                                         <?php echo $clearinghouse['id'] == $X12info[0] ? " selected " : null; ?>
                                                                     ><?php echo htmlspecialchars( $clearinghouse['name'], ENT_NOQUOTES); ?></option>
-                                                        <?php   endforeach; 
+                                                        <?php   endforeach;
                                                             }
-                                                            
+
                                                         ?>
-                                                </select> 
+                                                </select>
                                                 <span id='emptyVald' style='color:red;font-size:12px;'> * <?php echo htmlspecialchars( xl('Clearing house info required for EDI 270 batch creation.'), ENT_NOQUOTES); ?></span>
                                         </td>
                                     </tr>
@@ -390,14 +378,14 @@
                                                 <?php echo htmlspecialchars( xl('Refresh'), ENT_NOQUOTES); ?>
                                             </span>
                                             </a>
-                                                                                        
+
                                             <a href='#' class='css_button' onclick='return validate_batch();'>
                                                 <span>
                                                     <?php echo htmlspecialchars( xl('Create batch'), ENT_NOQUOTES); ?>
                                                     <input type='hidden' name='form_savefile' id='form_savefile' value=''></input>
                                                 </span>
                                             </a>
-                                            
+
                                         </div>
                                     </td>
                                 </tr>
@@ -405,7 +393,7 @@
                         </td>
                     </tr>
                 </table>
-            </div> 
+            </div>
 
             <div class='text'>
                 <?php echo htmlspecialchars( xl('Please choose date range criteria above, and click Refresh to view results.'), ENT_NOQUOTES); ?>

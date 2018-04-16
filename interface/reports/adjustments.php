@@ -15,26 +15,11 @@
  * @link http://librehealth.io
  */
 
- require_once("../globals.php");
- require_once "$srcdir/patient.inc";
- require_once "$srcdir/acl.inc";
- require_once "$srcdir/options.inc.php";
- require_once "$srcdir/formatting.inc.php";
- $DateFormat = DateFormatRead();
- $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
-
-
- $from_date = fixDate($_POST['form_from_date']);
- $to_date   = fixDate($_POST['form_to_date'], date('Y-m-d'));
+require_once "reports_controllers/AdjustmentsController.php";
 
 
 if ($_POST['form_csvexport']) {
-  header("Pragma: public");
-  header("Expires: 0");
-  header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-  header("Content-Type: application/force-download");
-  header("Content-Disposition: attachment; filename=adjustment_codes.csv");
-  header("Content-Description: File Transfer");
+    csvexport('adjustment_codes'); // CSV headers. (TRK)
   // CSV headers:
   if (true) {
     echo '"Adjustment Code",';
@@ -46,6 +31,8 @@ else {
 <html>
 <head>
 <title><?php echo xlt('Adjustments'); ?></title>
+
+<link rel="stylesheet" href="<?php echo $GLOBALS['webroot'] ?>/library/css/jquery.datetimepicker.css">
 
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/overlib_mini.js"></script>
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/textformat.js"></script>
@@ -96,10 +83,7 @@ else {
 
 <span class='title'><?php echo xlt('Report'); ?> - <?php echo xlt('Adjustments'); ?></span>
 
-<div id="report_parameters_daterange">
-    <?php date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_from_date'])))
-    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_to_date']))); ?>
-</div>
+  <?php reportParametersDaterange(); #TRK ?>
 
 <form name='theform' method='post' action='adjustments.php' id='theform'>
 
@@ -109,24 +93,15 @@ else {
 
 <table>
  <tr>
-  <td width='100%'>
+    <td width='50%'>
     <div style='float:left'>
 
     <table class='text'>
         <tr>
+                <?php // Show From and To dates fields. (TRK)
+                  showFromAndToDates(); ?>
             <td class='label'>
-               <?php echo xlt('From'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo $form_from_date ?>'>
-            </td>
-            <td class='label'>
-               <?php echo xlt('To'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>'>
-            </td>
-               <td class='label'><?php echo xlt('Adjustment Code'); # Adjustment code drop down creation ?>;
+                  <?php echo xlt('Adjustment Code'); # Adjustment code drop down creation ?>:
             </td>
             <td>
                <?php generate_form_field(array('data_type'=>1,'field_id'=>'adjreason','list_id'=>'adjreason','empty_title'=>'All'),$_POST['form_adjreason']);?>
@@ -138,36 +113,10 @@ else {
     </div>
 
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:80%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:5px'>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php echo xlt('Submit'); ?>
-                    </span>
-                    </a>
-
-                    <?php if ($_POST['form_refresh']) { ?>
-                    <a href='#' class='css_button' id='printbutton'>
-                        <span>
-                            <?php echo xlt('Print'); ?>
-                        </span>
-                    </a>
-                    <a href='#' class='css_button' onclick='$("#form_csvexport").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php echo xlt('Export to CSV'); ?>
-                    </span>
-                    </a>
-                    <?php } ?>
-                </div>
-            </td>
+      <?php // Show submit, print and export to CSV buttons. (TRK)
+        showSubmitPrintButtons('form_csvexport'); ?>
         </tr>
     </table>
-  </td>
- </tr>
-</table>
 
 </form>
 </div> <!-- end parameters -->
@@ -184,53 +133,7 @@ else {
 } // end not export
 if ($_POST['form_refresh'] || $_POST['form_csvexport'])
 {
-  $adj_reason = $_POST['form_adjreason'];
-  $from_date = fixDate($_POST['form_from_date']);
-  $to_date   = fixDate($_POST['form_to_date'], date('Y-m-d'));
-
-  if ($adj_reason =='') 
-  {
-      $query = " Select   ar_activity.memo, Sum(ar_activity.adj_amount) As adj_amount " .
-    " From ar_activity" .
-    " Where ar_activity.post_time >= '$from_date' ".
-    " And ar_activity.post_time <= '$to_date' ".
-    " Group By ar_activity.memo ";
-  } else {
-
-    $query = " Select   ar_activity.memo, Sum(ar_activity.adj_amount) As adj_amount " .
-  " From ar_activity" .
-  " Where ar_activity.post_time >= '$from_date' ".
-  " And ar_activity.post_time <= '$to_date' ".
-  " And ar_activity.memo = '$adj_reason' " .
-  " Group By ar_activity.memo ";
-  }
-
-
-  $res = sqlStatement($query);
-  while ($row = sqlFetchArray($res))
-  {
-    $adj_name = $row['memo'];
-    $total = $row['adj_amount'];
-
-
-    if ($_POST['form_csvexport'])
-    {
-        echo '"' . $adj_name                                           . '",';
-        echo '"' . oeFormatMoney($total)                               . '"' . "\n";
-
-    } else {
-?>
- <tr>
-  <td align='left'>
-   <?php echo $adj_name ?>
-  </td>
-  <td align='right'>
-   <?php echo oeFormatMoney($total) ?>
-  </td>
- </tr>
-<?php
-         } // end not export
-  }
+  formRefreshOrCsvexport(); // Pulling out php code. (TRK)
 } // end if
 
 if (! $_POST['form_csvexport']) {
@@ -242,7 +145,6 @@ if (! $_POST['form_csvexport']) {
 
 </body>
 
-<link rel="stylesheet" href="<?php echo $GLOBALS['webroot'] ?>/library/css/jquery.datetimepicker.css">
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery.datetimepicker.full.min.js"></script>
 
 <script>

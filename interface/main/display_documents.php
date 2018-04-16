@@ -30,6 +30,7 @@ require_once('../globals.php');
 require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/payment_jav.inc.php");
+require_once("$srcdir/headers.inc.php");
 
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
@@ -49,8 +50,8 @@ if($GLOBALS['date_display_format'] == 1) {
    $title_tooltip = "YYYY-MM-DD";
 }
 
-$display_div = "style='display:block;'"; 
-$display_expand_msg = "display:none;"; 
+$display_div = "style='display:block;'";
+$display_expand_msg = "display:none;";
 $display_collapse_msg = "display:inline;";
 
 ?>
@@ -89,7 +90,7 @@ $display_collapse_msg = "display:inline;";
             })
         })
     });
-    
+
     function validateDate(fromDate,toDate){
         var frmdate = $("#" + fromDate).val();
         var todate = $("#" + toDate).val();
@@ -99,8 +100,8 @@ $display_collapse_msg = "display:inline;";
                 return false;
             }
         }
-        document.location='<?php echo $GLOBALS['webroot']; ?>/interface/main/display_documents.php?' + fromDate + '='+frmdate+'&' + toDate + '='+todate;                
-    }   
+        document.location='<?php echo $GLOBALS['webroot']; ?>/interface/main/display_documents.php?' + fromDate + '='+frmdate+'&' + toDate + '='+todate;
+    }
 
     function expandOrCollapse(type,prefixString) {
         if(type == 1 ) {
@@ -165,16 +166,16 @@ $display_collapse_msg = "display:inline;";
                 size='10' value='<?php echo attr($form_to_doc_date) ?>' title='<?php echo attr($title_tooltip) ?>'>
             <td>
                 <span style='float: left;' id="docrefresh">
-                    <a href='#' class='css_button'  onclick='return validateDate("form_from_doc_date","form_to_doc_date")'> <span><?php echo xlt('Refresh'); ?> </span></a> 
+                    <a href='#' class='css_button cp-misc'  onclick='return validateDate("form_from_doc_date","form_to_doc_date")'> <span><?php echo xlt('Refresh'); ?> </span></a>
                 </span>
             </td>
         </tr>
-    </table>    
+    </table>
     </div>
 </div>
 
 <div id='docdiv' <?php echo $display_div; ?>>
-    <?php        
+    <?php
     $current_user = $_SESSION["authId"];
     $date_filter = '';
         $query_array = array();
@@ -192,17 +193,17 @@ $display_collapse_msg = "display:inline;";
     $query = "SELECT rght FROM categories WHERE name = ?";
     $catIDRs = sqlQuery($query,array($GLOBALS['lab_results_category_name']));
     $catID = $catIDRs['rght'];
-    
-    $query = "SELECT d.*,CONCAT(pd.fname,' ',pd.lname) AS pname,GROUP_CONCAT(n.note ORDER BY n.date DESC SEPARATOR '|') AS docNotes, 
-        GROUP_CONCAT(n.date ORDER BY n.date DESC SEPARATOR '|') AS docDates FROM documents d 
-        INNER JOIN patient_data pd ON d.foreign_id = pd.pid 
-        INNER JOIN categories_to_documents ctd ON d.id = ctd.document_id AND ctd.category_id = ? 
-        LEFT JOIN notes n ON d.id = n.foreign_id 
+
+    $query = "SELECT d.*,CONCAT(pd.fname,' ',pd.lname) AS pname,GROUP_CONCAT(n.note ORDER BY n.date DESC SEPARATOR '|') AS docNotes,
+        GROUP_CONCAT(n.date ORDER BY n.date DESC SEPARATOR '|') AS docDates FROM documents d
+        INNER JOIN patient_data pd ON d.foreign_id = pd.pid
+        INNER JOIN categories_to_documents ctd ON d.id = ctd.document_id AND ctd.category_id = ?
+        LEFT JOIN notes n ON d.id = n.foreign_id
         WHERE " . $date_filter . " GROUP BY d.id ORDER BY date DESC";
         array_unshift($query_array,$catID);
     $resultSet = sqlStatement($query,$query_array);
     ?>
-    
+
     <table border="1" cellpadding=3 cellspacing=0>
     <tr class='text bold'>
         <th align="left" width="10%"><?php echo xlt('Date'); ?></th>
@@ -212,8 +213,8 @@ $display_collapse_msg = "display:inline;";
         <th width="10%"><?php echo xlt('Encounter ID'); ?></th>
     </tr>
     <?php
-    if (sqlNumRows($resultSet)) { 
-        while ( $row = sqlFetchArray($resultSet) ) { 
+    if (sqlNumRows($resultSet)) {
+        while ( $row = sqlFetchArray($resultSet) ) {
             $url = $GLOBALS['webroot'] . "/controller.php?document&retrieve&patient_id=" . attr($row["foreign_id"]) . "&document_id=" . attr($row["id"]) . '&as_file=false';
             // Get the notes for this document.
             $notes = array();

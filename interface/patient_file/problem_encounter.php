@@ -32,6 +32,7 @@
  include_once("$srcdir/patient.inc");
  include_once("$srcdir/acl.inc");
  include_once("$srcdir/lists.inc");
+ require_once("$srcdir/headers.inc.php");
 
  $patdata = getPatientData($pid, "fname,lname,squad");
 
@@ -100,6 +101,7 @@
 <?php html_header_show();?>
 <script type="text/javascript" src="<?php echo $webroot ?>/interface/main/tabs/js/include_opener.js"></script>
 <link rel=stylesheet href="<?php echo $css_header; ?>" type="text/css">
+<title><?php echo xlt('Issues and Encounters'); ?></title>
 
 <style>
 tr.head   { font-size:10pt; background-color:#cccccc; text-align:center; }
@@ -358,10 +360,10 @@ function doclick(pfx, id) {
 
  <tr>
   <td colspan='2' align='center'>
-   <input type='submit' name='form_save' value='<?php echo xla('Save'); ?>' disabled /> &nbsp;
-   <input type='button' value='<?php echo xla('Add Issue'); ?>' onclick='newIssue()' />
-   <input type='button' value='<?php echo xla('Add Encounter'); ?>' onclick='newEncounter()' />
-   <input type='button' value='<?php echo xla('Cancel'); ?>' onclick='window.close()' />
+   <input type='submit' name='form_save' class="cp-submit" value='<?php echo xla('Save'); ?>' disabled /> &nbsp;
+   <input type='button' class="cp-positive" value='<?php echo xla('Add Issue'); ?>' onclick='newIssue()' />
+   <input type='button' class="cp-positive" value='<?php echo xla('Add Encounter'); ?>' onclick='newEncounter()' />
+   <input type='button' class="cp-negative" value='<?php echo xla('Cancel'); ?>' onclick='window.close()' />
   </td>
  </tr>
 

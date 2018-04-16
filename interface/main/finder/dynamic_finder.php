@@ -123,7 +123,7 @@ $(document).ready(function() {
  $('#pt_table tbody tr').live('click', function () {
   // ID of a row element is pid_{value}
   var newpid = this.id.substring(4);
-  // If the pid is invalid, then don't attempt to set 
+  // If the pid is invalid, then don't attempt to set
   // The row display for "No matching records found" has no valid ID, but is
   // otherwise clickable. (Matches this CSS selector).  This prevents an invalid
   // state for the PID to be set.
@@ -158,8 +158,8 @@ $(document).ready(function() {
 
   search.addClass("form-control form-rounded");
   entries.addClass("form-control form-rounded");
-  paginate_pre.css('height','30px');
-  paginate_next.css('height','30px');
+  paginate_pre.css({'height':'30px', 'background-color':'#888'});
+  paginate_next.css({'height':'30px', 'background-color':'#888'});
 });
 
 </script>
