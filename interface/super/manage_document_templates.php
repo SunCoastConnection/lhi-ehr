@@ -28,6 +28,7 @@ require_once('../globals.php');
 require_once($GLOBALS['srcdir'].'/acl.inc');
 require_once($GLOBALS['srcdir'].'/htmlspecialchars.inc.php');
 require_once($GLOBALS['srcdir'].'/formdata.inc.php');
+require_once("$srcdir/headers.inc.php");
 
 if (!acl_check('admin', 'super')) die(htmlspecialchars(xl('Not authorized')));
 
@@ -125,7 +126,7 @@ if (!empty($_POST['bn_upload'])) {
    <?php echo htmlspecialchars(xl('Destination Filename')) ?>:
    <input type='text' name='form_dest_filename' size='30' />
    &nbsp;
-   <input type='submit' name='bn_upload' value='<?php echo xlt('Upload') ?>' />
+   <input type='submit' name='bn_upload' value='<?php echo xlt('Upload') ?>' class="cp-positive"/>
   </td>
  </tr>
 
@@ -161,9 +162,9 @@ if (!empty($_POST['bn_upload'])) {
 ?>
    </select>
    &nbsp;
-   <input type='submit' name='bn_download' value='<?php echo xlt('Download') ?>' />
+   <input type='submit' name='bn_download' value='<?php echo xlt('Download') ?>' class="cp-output"/>
    &nbsp;
-   <input type='submit' name='bn_delete' value='<?php echo xlt('Delete') ?>' />
+   <input type='submit' name='bn_delete' value='<?php echo xlt('Delete') ?>' class="cp-negative"/>
   </td>
  </tr>
 

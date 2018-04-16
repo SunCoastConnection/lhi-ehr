@@ -67,7 +67,7 @@
                         <option label="<?php echo $value; ?>" value="<?php echo $key; ?>" ><?php echo $value; ?></option>
                     <?php }
                 }
-                ?>     
+                ?>
             </select>
         </td>
         </tr>
@@ -89,12 +89,12 @@
                             <option label="<?php echo $value; ?>" value="<?php echo $key; ?>" ><?php echo $value; ?></option>
     <?php }
 }
-?>                     
+?>
                 </select>
         </tr>
         <tr>
             <td><?php echo xlt("Receiver ID ")."(".xlt("ISA08").")";?></td>
-            <td><input type="text" class="form-control" size="20" name="x12_receiver_id" 
+            <td><input type="text" class="form-control" size="20" name="x12_receiver_id"
                                                     value="<?php $this->partner->get_x12_receiver_id(); ?>" onKeyDown="PreventIt(event)" /></td>
         </tr>
         <tr>
@@ -111,8 +111,8 @@
                                                     <option label="<?php echo $value; ?>" value="<?php echo $key; ?>" ><?php echo $value; ?></option>
                             <?php }
                         }
-                        ?>                     
-                </select>            
+                        ?>
+                </select>
         </tr>
         <tr>
             <td><?php echo xlt("Usage Indicator ")."(".xlt("ISA15").")";?></td>
@@ -128,7 +128,7 @@
                                                     <option label="<?php echo $value; ?>" value="<?php echo $key; ?>" ><?php echo $value; ?></option>
                             <?php }
                         }
-                        ?>     
+                        ?>
                 </select>
         </tr>
         <tr>
@@ -153,13 +153,13 @@
                                                         <option label="<?php echo $value; ?>" value="<?php echo $key; ?>" ><?php echo $value; ?></option>
                                 <?php }
                             }
-                            ?>    
+                            ?>
                 </select>
         </tr>
         <tr>
             <td><?php echo xlt("Processing")."&nbsp;".xlt("Format");?></td>
             <td>
-                <!-- {html_options name="processing_format" options=$partner->get_processing_format_array() 
+                <!-- {html_options name="processing_format" options=$partner->get_processing_format_array()
                 selected=$partner->get_processing_format()}</td>-->
                 <select class="form-control" name="processing_format">
                         <?php
@@ -171,7 +171,7 @@
                                                     <option label="<?php echo $value; ?>" value="<?php echo $key; ?>" ><?php echo $value; ?></option>
                             <?php }
                         }
-                        ?>                
+                        ?>
                 </select>
         </tr>
         <tr>
@@ -183,12 +183,12 @@
         <tr>
             <td colspan="2">
             <?php if ($this->partner->get_id() == "") { ?>
-                                <a class="css_button" href="javascript:add_x12();"><span><?php echo xlt("Save");?></span></a>
+                                <a class="css_button cp-submit" href="javascript:add_x12();"><span><?php echo xlt("Save");?></span></a>
             <?php } else { ?>
-                                <a class="css_button" href="javascript:add_x12();"><span><?php echo xlt("Save");?></span></a>
-            <?php } ?>               
+                                <a class="css_button cp-submit" href="javascript:add_x12();"><span><?php echo xlt("Save");?></span></a>
+            <?php } ?>
 
-                <a href="controller.php?practice_settings&x12_partner&action=list"  class="css_button" onclick="top.restoreSession()">
+                <a href="controller.php?practice_settings&x12_partner&action=list"  class="css_button cp-negative" onclick="top.restoreSession()">
                     <span><?php echo xlt("Cancel");?></span></a></td>
         </tr>
     </table>

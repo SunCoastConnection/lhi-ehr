@@ -10,27 +10,27 @@
  * pos_checkout.php (e.g. weight loss clinics) because this plugs
  * a payment method like Cash, Check, VISA, etc. into the "source".
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  * Copyright (C) 2006-2015 Rod Roark <rod@sunsetsystems.com>
  *
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author Rod Roark <rod@sunsetsystems.com>
- * @link http://librehealth.io 
+ * @link http://librehealth.io
  */
 
 require_once("../globals.php");
@@ -40,6 +40,8 @@ require_once("$srcdir/formatting.inc.php");
 require_once "$srcdir/options.inc.php";
 require_once "$srcdir/formdata.inc.php";
 require_once("../../custom/code_types.inc.php");
+require_once("../../library/report_functions.php");
+
 /** Current format date */
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
@@ -314,47 +316,14 @@ function sel_procedure() {
                 <option value='1'<?php if ($form_use_edate) echo ' selected' ?>><?php xl('Invoice Date','e'); ?></option>
                </select>
             </td>
-            <td class='label'>
-                <?php xl('From','e'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo $form_from_date ?>'/>
-            </td>
-            <td class='label'>
-               <?php xl('To','e'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>'/>
-            </td>
+            <?php showFromAndToDates(); ?>
         </tr>
     </table>
 
     </div>
 
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:100%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:15px'>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php xl('Submit','e'); ?>
-                    </span>
-                    </a>
-
-                    <?php if ($_POST['form_refresh']) { ?>
-                    <a href='#' class='css_button' id='printbutton'>
-                        <span>
-                            <?php xl('Print','e'); ?>
-                        </span>
-                    </a>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-  </td>
+  <?php showSubmitPrintButtons(); ?>
  </tr>
 </table>
 
@@ -402,8 +371,8 @@ function sel_procedure() {
 
 
 if ($_POST['form_refresh']) {
-  $from_date = $form_from_date;
-  $to_date   = $form_to_date;
+  $from_date = $from_date;
+  $to_date   = $to_date;
 
   $paymethod   = "";
   $paymethodleft = "";

@@ -1,19 +1,19 @@
-<?php 
-/** 
+<?php
+/**
  * function to apply selected color in the color picker
- * 
+ *
  * Copyright (C) 2018 Naveen Muthusamy
- * 
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
- * See the Mozilla Public License for more details. 
+ * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
- * 
- * @package Librehealth EHR 
+ *
+ * @package Librehealth EHR
  * @author Naveen(kmnaveen101@gmail.com)
  * @link http://librehealth.io
- *  
+ *
  * Please help the overall project by sending changes you make to the author and to the LibreEHR community.
- * 
+ *
  */
 
 /**
@@ -70,15 +70,31 @@ echo " .body_title, .body_top, .body_nav, .body_filler, .body_login, .table_bg, 
 
 }
 
-td, tr, .table, .bgcolor1,  ul.tabNav, .navbar, .nav, .dropdown, .navbar-header, input[type='submit'], ul.tabNav a, .navbar-collapse{
+.table, .bgcolor1,  ul.tabNav, .navbar, .nav, .dropdown, .navbar-header, ul.tabNav a, .navbar-collapse{
 
   background-color: #$secondary_color;
   color: #$secondary_font_color;
 }
 
-input[type='submit'], input[type='button'],input[type='submit'], button, a[role='button'] {
-    background-color: #$button_color;
-    color: #$button_font_color;
-    border: 2px solid #$button_font_color;
-}";
+.cp-positive {
+background-color: green;
+color: white;
+}
+.cp-negative {
+background-color: red;
+color: white;
+}
+.cp-submit {
+background-color: blue;
+color: white;
+}
+.cp-misc {
+    background-color: #888;
+    color: white;
+}
+.cp-output {
+    background-color: purple;
+    color: white;
+}
+";
 ?>

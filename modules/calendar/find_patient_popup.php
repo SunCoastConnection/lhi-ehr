@@ -25,6 +25,7 @@ include_once('../../interface/globals.php');
 include_once("$srcdir/patient.inc");
 include_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/formatting.inc.php");
+require_once("$srcdir/headers.inc.php");
 
 $info_msg = "";
 
@@ -67,11 +68,11 @@ form {
     font-weight: bold;
     padding: 3px;
 }
-#searchResultsHeader { 
+#searchResultsHeader {
     width: 100%;
     background-color: lightgrey;
 }
-#searchResultsHeader table { 
+#searchResultsHeader table {
     width: 96%;  /* not 100% because the 'searchResults' table has a scrollbar */
     border-collapse: collapse;
 }
@@ -119,7 +120,7 @@ form {
 .noResults { background-color: #ccc; }
 .tooManyResults { background-color: #fc0; }
 .howManyResults { background-color: #9f6; }
-#searchspinner { 
+#searchspinner {
     display: inline;
     visibility: hidden;
 }
@@ -166,7 +167,7 @@ form {
    <input type='text' id='searchparm' name='searchparm' size='12' value='<?php echo htmlspecialchars( $_REQUEST['searchparm'], ENT_QUOTES); ?>'
     title='<?php echo htmlspecialchars( xl('If name, any part of lastname or lastname,firstname'), ENT_QUOTES); ?>' autofocus>
    &nbsp;
-   <input type='submit' id="submitbtn" value='<?php echo htmlspecialchars( xl('Search'), ENT_QUOTES); ?>'>
+   <input type='submit' id="submitbtn" class='cp-submit' value='<?php echo htmlspecialchars( xl('Search'), ENT_QUOTES); ?>'>
    <!-- &nbsp; <input type='button' value='<?php echo htmlspecialchars( xl('Close'), ENT_QUOTES); ?>' onclick='window.close()' /> -->
    <div id="searchspinner"><img src="<?php echo $GLOBALS['webroot'] ?>/interface/pic/ajax-loader.gif"></div>
 </form>
@@ -195,11 +196,11 @@ form {
   <th class="srDOB"><?php echo htmlspecialchars( xl('DOB'), ENT_NOQUOTES); ?></th>
   <th class="srID"><?php echo htmlspecialchars( xl('ID'), ENT_NOQUOTES); ?></th>
  </tr>
-</table> 
+</table>
 </div>
 
 <div id="searchResults">
-<table> 
+<table>
 <?php
 foreach ($result as $iter) {
     $iterpid   = $iter['pid'];
@@ -240,13 +241,13 @@ $(document).ready(function(){
     $(".oneresult").mouseover(function() { $(this).toggleClass("highlight"); });
     $(".oneresult").mouseout(function() { $(this).toggleClass("highlight"); });
     $(".oneresult").click(function() { SelectPatient(this); });
-    //ViSolve 
+    //ViSolve
     $(".noresult").click(function () { SubmitForm(this);});
 
     //$(".event").dblclick(function() { EditEvent(this); });
-    $('#searchparm').keyup(function (e) { 
+    $('#searchparm').keyup(function (e) {
 
-      setTimeout(function(){ 
+      setTimeout(function(){
       if(e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37 || e.keyCode == 39) {
         //no response for del,backspace, arrow keys
       }

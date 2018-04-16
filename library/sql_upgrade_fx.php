@@ -17,7 +17,7 @@
 * GNU General Public License for more details.
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://opensource.org/licenses/gpl-license.php>.
-* 
+*
 * @package   LibreHealth EHR
 * @author    Rod Roark <rod@sunsetsystems.com>
 * @author    Brady Miller <brady@sparmy.com>
@@ -152,7 +152,7 @@ function tableHasIndex($tblname, $colname) {
 function listExists($option_id) {
   $row = sqlQuery("SELECT * FROM list_options WHERE list_id = 'lists' AND option_id = ?", array($option_id));
   if (empty($row)) return false;
-  return true;  
+  return true;
 }
 
 /**
@@ -160,17 +160,17 @@ function listExists($option_id) {
 *  Note this function is only run once in the sql upgrade script  if the list Occupation does not exist
 */
 function CreateOccupationList() {
-   $res = sqlStatement("SELECT DISTINCT occupation FROM patient_data WHERE occupation <> ''"); 
+   $res = sqlStatement("SELECT DISTINCT occupation FROM patient_data WHERE occupation <> ''");
    while($row = sqlFetchArray($res)) {
-    $records[] = $row['occupation'];  
+    $records[] = $row['occupation'];
    }
    sqlStatement("INSERT INTO list_options (list_id, option_id, title) VALUES('lists', 'Occupation', 'Occupation')");
    if(count($records)>0) {
-    $seq = 0;    
+    $seq = 0;
     foreach ($records as $key => $value) {
      sqlStatement("INSERT INTO list_options ( list_id, option_id, title, seq) VALUES ('Occupation', ?, ?, ?)", array($value, $value, ($seq+10)));
-     $seq = $seq + 10;     
-    }   
+     $seq = $seq + 10;
+    }
    }
 }
 /**
@@ -178,17 +178,17 @@ function CreateOccupationList() {
 *  Note this function is only run once in the sql upgrade script  if the list reaction does not exist
 */
 function CreateReactionList() {
-   $res = sqlStatement("SELECT DISTINCT reaction FROM lists WHERE reaction <> ''"); 
+   $res = sqlStatement("SELECT DISTINCT reaction FROM lists WHERE reaction <> ''");
    while($row = sqlFetchArray($res)) {
-    $records[] = $row['reaction'];  
+    $records[] = $row['reaction'];
    }
    sqlStatement("INSERT INTO list_options (list_id, option_id, title) VALUES('lists', 'reaction', 'Reaction')");
    if(count($records)>0) {
-    $seq = 0;    
+    $seq = 0;
     foreach ($records as $key => $value) {
      sqlStatement("INSERT INTO list_options ( list_id, option_id, title, seq) VALUES ('reaction', ?, ?, ?)", array($value, $value, ($seq+10)));
      $seq = $seq + 10;
-    }   
+    }
    }
 }
 
@@ -199,15 +199,15 @@ function CreateReactionList() {
 function CreateImmunizationManufacturerList() {
   $res = sqlStatement("SELECT DISTINCT manufacturer FROM immunizations WHERE manufacturer <> ''");
   while($row = sqlFetchArray($res)) {
-    $records[] = $row['manufacturer'];  
+    $records[] = $row['manufacturer'];
   }
-  sqlStatement("INSERT INTO list_options (list_id, option_id, title) VALUES ('lists','Immunization_Manufacturer','Immunization Manufacturer')");    
+  sqlStatement("INSERT INTO list_options (list_id, option_id, title) VALUES ('lists','Immunization_Manufacturer','Immunization Manufacturer')");
   if(count($records)>0) {
     $seq = 0;
-    foreach ($records as $key => $value) {      
+    foreach ($records as $key => $value) {
       sqlStatement("INSERT INTO list_options ( list_id, option_id, title, seq) VALUES ('Immunization_Manufacturer', ?, ?, ?)", array($value, $value, ($seq+10)));
       $seq = $seq + 10;
-    }   
+    }
   }
 }
 
@@ -262,10 +262,10 @@ function CreateImmunizationManufacturerList() {
 * #IfRow2D
 *   arguments: table_name colname value colname2 value2
 *   behavior:  If the table table_name does have a row where colname = value AND colname2 = value2, the block will be executed.
-*   
+*
 * #IfRow3D
 *   arguments: table_name colname value colname2 value2 colname3 value3
-*   behavior:  If the table table_name does have a row where colname = value AND colname2 = value2 AND colname3 = value3, the block will be executed.   
+*   behavior:  If the table table_name does have a row where colname = value AND colname2 = value2 AND colname3 = value3, the block will be executed.
 *
 * #IfIndex
 *   desc:      This function is most often used for dropping of indexes/keys.
@@ -282,10 +282,10 @@ function CreateImmunizationManufacturerList() {
 *
 * #IfNotListOccupation
 * Custom function for creating Occupation List
-* 
+*
 * #IfNotListReaction
 * Custom function for creating Reaction List
-* 
+*
 * #EndIf
 *   all blocks are terminated with a #EndIf statement.
 *
@@ -303,6 +303,7 @@ function upgradeFromSqlFile($filename) {
   if ($fd == FALSE) {
     echo "ERROR.  Could not open '$fullname'.\n";
     flush();
+    return;
   }
 
   $query = "";
@@ -421,7 +422,7 @@ function upgradeFromSqlFile($filename) {
     $firstCheck = tableHasRow2D($matches[1], $matches[2], $matches[3], $matches[4], $matches[5]);
     $secondCheck = tableHasRow2D($matches[1], $matches[2], $matches[3], $matches[6], $matches[7]);
     if ($firstCheck || $secondCheck) {
-      $skipping = true;   
+      $skipping = true;
     }
     else {
           $skipping = false;
@@ -460,7 +461,7 @@ function upgradeFromSqlFile($filename) {
       }
       else {
         // Create Occupation list
-        CreateOccupationList(); 
+        CreateOccupationList();
         $skipping = false;
         echo "<font color='green'>Built Occupation List</font><br />\n";
       }
@@ -472,21 +473,21 @@ function upgradeFromSqlFile($filename) {
       }
       else {
         // Create Reaction list
-        CreateReactionList(); 
+        CreateReactionList();
         $skipping = false;
-        echo "<font color='green'>Built Reaction List</font><br />\n";        
+        echo "<font color='green'>Built Reaction List</font><br />\n";
       }
       if ($skipping) echo "<font color='green'>Skipping section $line</font><br />\n";
     }
-    else if (preg_match('/^#IfNotListImmunizationManufacturer/', $line)){      
+    else if (preg_match('/^#IfNotListImmunizationManufacturer/', $line)){
       if ( listExists("Immunization_Manufacturer") ) {
         $skipping = true;
       }
       else {
         // Create Immunization Manufacturer list
-        CreateImmunizationManufacturerList(); 
+        CreateImmunizationManufacturerList();
         $skipping = false;
-        echo "<font color='green'>Built Immunization Manufacturer List</font><br />\n";        
+        echo "<font color='green'>Built Immunization Manufacturer List</font><br />\n";
       }
       if ($skipping) echo "<font color='green'>Skipping section $line</font><br />\n";
     }

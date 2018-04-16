@@ -5,33 +5,34 @@
  * This report lists patients that were seen within a given date
  * range, or all patients if no date range is entered.
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  * Copyright (C) 2006-2015 Rod Roark <rod@sunsetsystems.com>
  *
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author Rod Roark <rod@sunsetsystems.com>
- * @link http://librehealth.io 
+ * @link http://librehealth.io
  */
 
  require_once("../globals.php");
  require_once("$srcdir/patient.inc");
  require_once("$srcdir/formatting.inc.php");
   require_once("$srcdir/options.inc.php");
+  require_once("../../library/report_functions.php");
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 
@@ -73,9 +74,9 @@ else {
 <link rel="stylesheet" href="../../library/css/jquery.datetimepicker.css">
 
 <script language="JavaScript">
-	$(document).ready(function() {
- 		top.printLogSetup(document.getElementById('printbutton'));
-	});
+    $(document).ready(function() {
+        top.printLogSetup(document.getElementById('printbutton'));
+    });
 </script>
 
 <link rel='stylesheet' href='<?php echo $css_header ?>' type='text/css'>
@@ -120,8 +121,8 @@ else {
 <span class='title'><?php xl('Report','e'); ?> - <?php xl('Patient List','e'); ?></span>
 
 <div id="report_parameters_daterange">
-    <?php date("d F Y", strtotime(oeFormatDateForPrintReport($form_from_date)))
-    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($form_to_date))); ?>
+    <?php date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_from_date'])))
+    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_to_date']))); ?>
 </div>
 
 <form name='theform' id='theform' method='post' action='patient_list.php'>
@@ -143,59 +144,17 @@ else {
       </td>
       <td>
           <?php
-         generate_form_field(array('data_type' => 10, 'field_id' => 'provider',
-           'empty_title' => '-- All --'), $_POST['form_provider']);
+                generate_form_field(array('data_type' => 10, 'field_id' => 'provider','empty_title' => '-- All Providers --'), $_POST['form_provider']);
           ?>
       </td>
-            <td class='label'>
-               <?php xl('Visits From','e'); ?>:
-            </td>
-            <td>
-                                    <input type='text' name='form_from_date' id="form_from_date"
-                                           size='10' value='<?= $form_from_date; ?>' title='yyyy-mm-dd'>
-            </td>
-            <td class='label'>
-               <?php xl('To','e'); ?>:
-            </td>
-            <td>
-                                    <input type='text' name='form_to_date' id="form_to_date" size='10'
-                                           value='<?= $form_to_date; ?>' title='yyyy-mm-dd'>
-            </td>
+            <?php showFromAndToDates(); ?>
         </tr>
     </table>
 
     </div>
 
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:100%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:15px'>
-                                    <a href='#' class='css_button'
-                                       onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php xl('Submit','e'); ?>
-                    </span>
-                    </a>
-                                    <a href='#' class='css_button'
-                                       onclick='$("#form_csvexport").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php xl('Export to CSV','e'); ?>
-                    </span>
-                    </a>
-                    <?php if ($_POST['form_refresh']) { ?>
-                    <a href='#' id='printbutton' class='css_button'>
-                        <span>
-                            <?php xl('Print','e'); ?>
-                        </span>
-                    </a>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-  </td>
+  <?php showSubmitPrintButtons('form_csvexport'); ?>
  </tr>
 </table>
 </div> <!-- end of parameters -->

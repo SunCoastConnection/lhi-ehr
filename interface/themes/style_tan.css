@@ -6,7 +6,7 @@
 body {
     margin: 0px 0px 0px 2px;
     /* set the base font and size for all DOM children */
-    font-family: 'open sans', 'source_sans_pro','FontAwesome'!important; 
+    font-family: 'open sans', 'source_sans_pro','FontAwesome'!important;
     content: "\f0c4";
 }
 
@@ -164,7 +164,7 @@ a:hover {
 }
 
 .sorting_1:hover{
-    cursor: url('theme_assets/cursors/refresh_icon.png'), pointer;
+    cursor: pointer;
     color:#ff5555;
 }
 
@@ -608,7 +608,7 @@ font-weight: bold;
     background-color:#ffffff;
 }
 tr.odd {
-    background-color: grey;
+    background-color: #ffffff;
 
     } td.even {
     background-color: #ffffff;

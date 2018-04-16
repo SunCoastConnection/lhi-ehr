@@ -1,4 +1,4 @@
-<a href="<?php echo $this->current_action;?>action=edit&id=default" onclick="top.restoreSession()" class="css_button" >
+<a href="<?php echo $this->current_action;?>action=edit&id=default" onclick="top.restoreSession()" class="css_button cp-positive" >
 <span><?php echo xlt("Add New Partner");?></span></a><br><br>
 <table class="table table-hover">
     <tr>
@@ -7,7 +7,7 @@
         <th><?php echo xlt("Receiver ID");?></th>
         <th><?php echo xlt("Version");?></th>
     </tr>
-    
+
     <?php if(is_array($this->partners)) {?>
         <?php foreach ($this->partners as $partner) {?>
             <tr height="22">
@@ -24,4 +24,4 @@
             </tr>
       <?php }?>
 </table>
-         
+

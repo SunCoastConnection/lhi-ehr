@@ -41,7 +41,7 @@ require_once(dirname(dirname(__FILE__)) ."/interface/globals.php");
 if ($GLOBALS['mod_nn'] == true){
         require_once(dirname(dirname(__FILE__)) . "/modules/nation_notes/nn_library_options.inc");}
 else{
-  
+
 require_once("formdata.inc.php");
 require_once("formatting.inc.php");
 require_once("user.inc");
@@ -343,7 +343,7 @@ function generate_form_field($frow, $currvalue) {
     $tmp = htmlspecialchars( $GLOBALS['gbl_mask_patient_id'], ENT_QUOTES);
     if ($field_id == 'pubpid' && strlen($tmp) > 0) {
       echo " onkeyup='maskkeyup(this,\"$tmp\")'";
-      echo " onblur='maskblur(this,\"$tmp\")'";      
+      echo " onblur='maskblur(this,\"$tmp\")'";
     }
     if (strpos($frow['edit_options'], '1') !== FALSE && strlen($currescaped) > 0) {
       echo " readonly";
@@ -390,35 +390,35 @@ function generate_form_field($frow, $currvalue) {
       echo "</td></tr><tr><td id='span_$field_id' class='text'>" . text($agestr) . "</td></tr></table>";
     }
   }
-  
+
   // Email datatype.
   elseif ($data_type == 5) {
       $fldlength = htmlspecialchars( $frow['fld_length'], ENT_QUOTES);
       $maxlength = $frow['max_length'];
       $string_maxlength = "";
-      if ($maxlength) $string_maxlength = "maxlength='".attr($maxlength)."'";  
-      else $string_maxlength = "";    
-      
+      if ($maxlength) $string_maxlength = "maxlength='".attr($maxlength)."'";
+      else $string_maxlength = "";
+
       echo "<input type='email'" .
       " name='form_$field_id_esc'" .
       " id='form_$field_id_esc'" .
       " size='$fldlength'" .
       " $string_maxlength" .
       " title='$description'" .
-      " value='$currescaped'";  
+      " value='$currescaped'";
       if ($disabled) echo ' disabled';
       echo " />";
-    }    
-    
-    // Integer Datatype (This allows only digits (doesn't allow hyphens or decimal points)) 
+    }
+
+    // Integer Datatype (This allows only digits (doesn't allow hyphens or decimal points))
     elseif ($data_type == 6) {
       $fldlength = htmlspecialchars( $frow['fld_length'], ENT_QUOTES);
       $string_maxlength = "";
-      $maxlength = $frow['max_length'];      
+      $maxlength = $frow['max_length'];
       // if max_length is set to zero, then do not set a maxlength
-      if ($maxlength) $string_maxlength = "maxlength='".attr($maxlength)."'";  
-      else $string_maxlength = "";    
-      
+      if ($maxlength) $string_maxlength = "maxlength='".attr($maxlength)."'";
+      else $string_maxlength = "";
+
       echo "<input type='text'" .
       " name='form_$field_id_esc'" .
       " id='form_$field_id_esc'".
@@ -429,27 +429,27 @@ function generate_form_field($frow, $currvalue) {
       " onfocus = 'allowOnlyDigits(this.name)'";
       if ($disabled) echo ' disabled';
       echo " />";
-    } 
-    
+    }
+
     // URL Datatype (URL's can have following types: http://www.google.com.. or www.google.com or google.com)
     elseif ($data_type == 7) {
       $fldlength = htmlspecialchars( $frow['fld_length'], ENT_QUOTES);
       $maxlength = $frow['max_length'];
       $string_maxlength = "";
-      if ($maxlength) $string_maxlength = "maxlength='".attr($maxlength)."'";  
-      else $string_maxlength = "";    
-      
+      if ($maxlength) $string_maxlength = "maxlength='".attr($maxlength)."'";
+      else $string_maxlength = "";
+
       echo "<input type='url'" .
       " name='form_$field_id_esc'" .
       " id='form_$field_id_esc'".
       " title='$description'" .
       " size='$fldlength'" .
       " $string_maxlength" .
-      " value='$currescaped'";    
+      " value='$currescaped'";
       if ($disabled) echo ' disabled';
       echo " />";
-    }      
-    
+    }
+
   // provider list, local providers only
   else if ($data_type == 10) {
     $ures = sqlStatement("SELECT id, fname, lname, specialty FROM users " .
@@ -1006,13 +1006,13 @@ function generate_form_field($frow, $currvalue) {
       case "4": {
         $resnote = $tmp[0];
         $restype = $tmp[1];
-        $resdate = $tmp[2];
+        $resdate = oeFormatShortDate($tmp[2]);
         $reslist = $tmp[3];
       } break;
       case "3": {
         $resnote = $tmp[0];
         $restype = $tmp[1];
-        $resdate = $tmp[2];
+        $resdate = oeFormatShortDate($tmp[2]);
       } break;
       case "2": {
         $resnote = $tmp[0];
@@ -1593,13 +1593,13 @@ function generate_print_field($frow, $currvalue) {
       case "4": {
         $resnote = $tmp[0];
         $restype = $tmp[1];
-        $resdate = $tmp[2];
+        $resdate = oeFormatShortDate($tmp[2])   ;
         $reslist = $tmp[3];
       } break;
       case "3": {
         $resnote = $tmp[0];
         $restype = $tmp[1];
-        $resdate = $tmp[2];
+        $resdate = oeFormatShortDate($tmp[2]);
       } break;
       case "2": {
         $resnote = $tmp[0];
@@ -1764,13 +1764,13 @@ function generate_display_field($frow, $currvalue) {
       $s = nl2br(htmlspecialchars($currvalue,ENT_NOQUOTES));
     }
   }
-  
+
   // for datatypes email ,numeric and URL
   else if($data_type == 5 || $data_type == 6 ||$data_type==7 )
   {
        $s = nl2br(htmlspecialchars($currvalue,ENT_NOQUOTES));
-  }  
- 
+  }
+
 
   // long or multi-line text field
   else if ($data_type == 3) {
@@ -2000,13 +2000,13 @@ function generate_display_field($frow, $currvalue) {
       case "4": {
         $resnote = $tmp[0];
         $restype = $tmp[1];
-        $resdate = $tmp[2];
+        $resdate = oeFormatShortDate($tmp[2]);
         $reslist = $tmp[3];
       } break;
       case "3": {
         $resnote = $tmp[0];
         $restype = $tmp[1];
-        $resdate = $tmp[2];
+        $resdate = oeFormatShortDate($tmp[2]);
       } break;
       case "2": {
         $resnote = $tmp[0];
@@ -2058,7 +2058,7 @@ function generate_display_field($frow, $currvalue) {
   else if ($data_type == 31) {
     $s .= nl2br($frow['description']);
   }
-  
+
 
   // facility
   else if ($data_type == 35) {
@@ -2298,7 +2298,7 @@ function generate_plaintext_field($frow, $currvalue) {
     $tmp = explode('|', $currvalue);
     $resnote = count($tmp) > 0 ? $tmp[0] : '';
     $restype = count($tmp) > 1 ? $tmp[1] : '';
-    $resdate = count($tmp) > 2 ? $tmp[2] : '';
+    $resdate = count($tmp) > 2 ? oeFormatShortDate($tmp[2]) : '';
     $reslist = count($tmp) > 3 ? $tmp[3] : '';
     $res = "";
     if ($restype == "current"       . $field_id) $res = xl('Current');
@@ -2431,15 +2431,10 @@ function display_layout_rows($formtype, $result1, $result2='') {
       echo "<tr>";
       if ($group_name) {
         echo "<td class='groupname'>";
-        //echo "<td class='groupname' style='padding-right:5pt' valign='top'>";
-        //echo "<font color='#008800'>$group_name</font>";
-
-        // Added 5-09 by BM - Translate label if applicable
-        echo htmlspecialchars(xl_layout_label($group_name),ENT_NOQUOTES);
+        echo text(xl_layout_label($group_name));
 
         $group_name = '';
       } else {
-        //echo "<td class='' style='padding-right:5pt' valign='top'>";
         echo "<td valign='top'>&nbsp;";
       }
       echo "</td>";
@@ -2809,7 +2804,7 @@ function get_layout_form_value($frow, $prefix='form_') {
       // radio buttons to be imploded into "notes|type|date".
       $restype = $_POST["radio_{$field_id}"];
       if (empty($restype)) $restype = '0';
-      $resdate = str_replace('|', ' ', $_POST["date_$field_id"]);
+      $resdate = DateToYYYYMMDD(str_replace('|', ' ', $_POST["date_$field_id"]));
       $resnote = str_replace('|', ' ', $_POST["$prefix$field_id"]);
       if ($data_type == 32)
       {
@@ -3028,10 +3023,10 @@ function expand_collapse_widget($title, $label, $buttonLabel, $buttonLink, $butt
     // show button, since authorized
     // first prepare class string
     if ($buttonClass) {
-      $class_string = "css_button_small ".htmlspecialchars( $buttonClass, ENT_NOQUOTES);
+      $class_string = "css_button_small cp-positive".htmlspecialchars( $buttonClass, ENT_NOQUOTES);
     }
     else {
-      $class_string = "css_button_small";
+      $class_string = "css_button_small cp-positive";
     }
     // next, create the link
     if ($linkMethod == "javascript") {

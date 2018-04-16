@@ -24,8 +24,8 @@
 </tr>
 <tr>
     <td><?php echo xlt("City").",".xlt("state").",".xlt("zip");?></td>
-    <td class="form-group form-inline">        
-        <input type="text" class="form-control input-sm " size="25" name="city" value="<?php echo $this->pharmacy->address->city;?>" onKeyDown="PreventIt(event)" /> , 
+    <td class="form-group form-inline">
+        <input type="text" class="form-control input-sm " size="25" name="city" value="<?php echo $this->pharmacy->address->city;?>" onKeyDown="PreventIt(event)" /> ,
         <input type="text" class="form-control input-sm " size="2" maxlength="2" name="state" value="<?php echo $this->pharmacy->address->state;?>" onKeyDown="PreventIt(event)" /> ,
         <input type="text" class="form-control input-sm " size="5" name="zip" value="<?php $this->pharmacy->address->zip;?>" onKeyDown="PreventIt(event)" />
     </td>
@@ -54,21 +54,21 @@
     <td>
         <select class="form-control input-sm" name="transmit_method">
             <!--{html_options    options=$pharmacy->transmit_method_array  selected=$pharmacy->transmit_method}-->
-            <?php foreach ($this->pharmacy->transmit_method_array as $key => $value) 
-                { 
+            <?php foreach ($this->pharmacy->transmit_method_array as $key => $value)
+                {
                 if($key==$this->pharmacy->transmit_method) { ?>
                 <option label="<?php echo $value;?>" value="<?php echo $key;?>" selected="selected" ><?php echo $value;?></option>
                 <?php } else { ?>
                 <option label="<?php echo $value;?>" value="<?php echo $key;?>" ><?php echo $value;?></option>
-                <?php }                
-                } ?>            
+                <?php }
+                } ?>
         </select>
     </td>
 </tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr>
-    <td colspan="2"><a href="javascript:submit_pharmacy();" class="css_button"><span><?php echo xlt("Save");?></span></a>
-        <a href="controller.php?practice_settings&pharmacy&action=list" class="css_button" onclick="top.restoreSession()">
+    <td colspan="2"><a href="javascript:submit_pharmacy();" class="css_button cp-submit"><span><?php echo xlt("Save");?></span></a>
+        <a href="controller.php?practice_settings&pharmacy&action=list" class="css_button cp-negative" onclick="top.restoreSession()">
                     <span><?php echo xlt("Cancel");?></span></a>
     </td>
 </tr>

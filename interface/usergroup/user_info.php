@@ -20,7 +20,7 @@
           // Not Empty
           // Strong if required
           // Matches
-      
+
           $.post("user_info_ajax.php",
               {
                   curPass:    $("input[name='curPass']").val(),
@@ -32,11 +32,11 @@
                   $("input[type='password']").val("");
                   $("#display_msg").html(data);
               }
-      
+
           );
           return false;
       }
-      
+
     </script>
   </head>
   <body class="body_top">
@@ -44,7 +44,7 @@
     <br><br>
     <?php
       $ip=$_SERVER['REMOTE_ADDR'];
-      $res = sqlStatement("select fname,lname,username from users where id=?",array($_SESSION["authId"])); 
+      $res = sqlStatement("select fname,lname,username from users where id=?",array($_SESSION["authId"]));
       $row = sqlFetchArray($res);
             $iter=$row;
       ?>
@@ -76,7 +76,7 @@
         </TR>
       </TABLE>
       <br>&nbsp;&nbsp;&nbsp;
-      <INPUT TYPE="Submit" VALUE=<?php echo xla('Save Changes'); ?> onClick="return update_password()">
+      <INPUT TYPE="Submit" VALUE=<?php echo xla('Save Changes'); ?> onClick="return update_password()" class="cp-submit">
     </FORM>
     <br><br>
   </BODY>
@@ -84,4 +84,4 @@
 <?php
   //  da39a3ee5e6b4b0d3255bfef95601890afd80709 == blank
   ?>
-  
+

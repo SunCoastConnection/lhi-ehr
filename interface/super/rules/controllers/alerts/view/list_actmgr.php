@@ -21,21 +21,24 @@
  * @link    http://librehealth.io
  */
 
-require_once(dirname(__FILE__)."/../../../../../../library/acl.inc"); 
+require_once(dirname(__FILE__)."/../../../../../../library/acl.inc");
 global $phpgacl_location;
 require_once("$phpgacl_location/gacl_api.class.php");
+
+ require_once("../../../../../globals");
+ require_once("$srcdir/headers.inc.php");
 ?>
 
 <table class="header">
   <tr>
         <td class="title"><?php echo out( xl('Clinical Decision Rules Alert Manager') ); ?></td>
-        
+
   </tr>
   <tr>
         <td>
-        	<a href="javascript:document.cdralertmgr.submit();" class="css_button" onclick="top.restoreSession()"><span><?php echo out( xl('Save') ); ?></span></a><a href="javascript:document.cdralertmgr.reset();" class="css_button" onclick="top.restoreSession()"><span><?php echo out( xl('Reset') ); ?></span></a>
+            <a href="javascript:document.cdralertmgr.submit();" class="css_button cp-submit" onclick="top.restoreSession()"><span><?php echo out( xl('Save') ); ?></span></a><a href="javascript:document.cdralertmgr.reset();" class="css_button cp-negative" onclick="top.restoreSession()"><span><?php echo out( xl('Reset') ); ?></span></a>
         </td>
-  </tr>        
+  </tr>
 </table>
 
 &nbsp;
@@ -59,28 +62,28 @@ require_once("$phpgacl_location/gacl_api.class.php");
         <?php $index++; ?>
         <tr height="22">
                 <td><?php echo out( xl($rule->get_rule()) );?></td>
-				<td>&nbsp;</td>
-				<?php if ($rule->active_alert_flag() == "1"){  ?>
-                	<td><input type="checkbox" name="active[<?php echo $index ?>]" checked="yes"></td>
+                <td>&nbsp;</td>
+                <?php if ($rule->active_alert_flag() == "1"){  ?>
+                    <td><input type="checkbox" name="active[<?php echo $index ?>]" checked="yes"></td>
                 <?php }else {?>
-                	<td><input type="checkbox" name="active[<?php echo $index ?>]" ></td>
-				<?php } ?>                
-				<td>&nbsp;</td>
+                    <td><input type="checkbox" name="active[<?php echo $index ?>]" ></td>
+                <?php } ?>
+                <td>&nbsp;</td>
                 <?php if ($rule->passive_alert_flag() == "1"){ ?>
-                	<td><input type="checkbox" name="passive[<?php echo $index ?>]]" checked="yes"></td>
+                    <td><input type="checkbox" name="passive[<?php echo $index ?>]]" checked="yes"></td>
                 <?php }else {?>
-	                <td><input type="checkbox" name="passive[<?php echo $index ?>]]"></td>
-				<?php } ?>                
-				<td>&nbsp;</td>
+                    <td><input type="checkbox" name="passive[<?php echo $index ?>]]"></td>
+                <?php } ?>
+                <td>&nbsp;</td>
                 <?php if ($rule->patient_reminder_flag() == "1"){ ?>
-                	<td><input type="checkbox" name="reminder[<?php echo $index ?>]]" checked="yes"></td>
+                    <td><input type="checkbox" name="reminder[<?php echo $index ?>]]" checked="yes"></td>
                 <?php }else {?>
-	                <td><input type="checkbox" name="reminder[<?php echo $index ?>]]"></td>
-				<?php } ?>               
+                    <td><input type="checkbox" name="reminder[<?php echo $index ?>]]"></td>
+                <?php } ?>
                  <td>&nbsp;</td>
                  <td>
                         <?php //Place the ACO selector here
-                        $gacl_temp = new gacl_api(); 
+                        $gacl_temp = new gacl_api();
                         $list_aco_objects = $gacl_temp->get_objects(NULL, 0, 'ACO');
                         foreach ($list_aco_objects as $key => $value) {
                           asort($list_aco_objects[$key]);
@@ -102,10 +105,10 @@ require_once("$phpgacl_location/gacl_api.class.php");
                         }
                         echo "</select>";
                         ?>
-                 </td> 
-                <td><input style="display:none" name="id[<?php echo $index ?>]]" value=<?php echo out($rule->get_id()); ?> /></td>								
+                 </td>
+                <td><input style="display:none" name="id[<?php echo $index ?>]]" value=<?php echo out($rule->get_id()); ?> /></td>
         </tr>
-		<?php }?>
+        <?php }?>
 </table>
 </form>
 

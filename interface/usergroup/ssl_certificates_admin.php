@@ -4,6 +4,7 @@ require_once("../../library/create_ssl_certificate.php");
 require_once("../../library/sql.inc");
 require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/translation.inc.php");
+require_once("$srcdir/headers.inc.php");
 
 /********************************************************************************\
  * Copyright (C) Visolve (vicareplus_engg@visolve.com)                          *
@@ -57,7 +58,7 @@ $error_msg = "";
     if($_POST['cacrt_location']) { $Authority_crt = formData('cacrt_location','P',true); }
     if($_POST['clientCertValidity_hidden']) { $clientCertValidity = formData('clientCertValidity_hidden','P',true); }
     if($_POST['isClientAuthenticationEnabled']) { $isClientAuthenticationEnabled = formData('isClientAuthenticationEnabled','P',true); }
-    
+
     if ($isClientAuthenticationEnabled == "Yes") {
         $isClientAuthenticationEnabled = "true";
     } else{
@@ -69,7 +70,7 @@ $error_msg = "";
     if ($Authority_key != "" && !file_exists($Authority_key)) {
         $error_msg .= xl('Error: the file does not exist', 'e') . ' ' . $Authority_key . '<br>';
     }
- 
+
     if ($Authority_crt != "" && !file_exists($Authority_crt)) {
         $error_msg .= xl('Error, the file does not exist', 'e') . ' ' . $Authority_crt . '<br>';
     }
@@ -83,7 +84,7 @@ $error_msg = "";
     $Authority_crt = str_replace('\\\\', '/', $Authority_crt);
     $Authority_crt = str_replace('\\', '/', $Authority_crt);
 
-    // Read in the globals.php file 
+    // Read in the globals.php file
     $globals_file = $GLOBALS['webserver_root'] . "/interface/globals.php";
     $inputdata = file($globals_file) or die( xl('Could not read file','e')." ". $globals_file);
     $outputdata = "";
@@ -94,7 +95,7 @@ $error_msg = "";
     $wrote_validity = false;
 
     // Loop through each line in globals.php, replacing any certificate variables with the new settings.
-     
+
     foreach ($inputdata as $line) {
         if ((strpos($line,"\$certificate_authority_key = \"")) !== false) {
             $wrote_key = true;
@@ -116,7 +117,7 @@ $error_msg = "";
             $outputdata .= $line;
         }
     }
-    if ($wrote_key === false || $wrote_crt === false || 
+    if ($wrote_key === false || $wrote_crt === false ||
         $wrote_enable === false || $wrote_validity === false) {
 
         $outputdata .= "<?php\n";
@@ -136,7 +137,7 @@ $error_msg = "";
         $outputdata .= "\n?>\n";
     }
 
-    // Write the modified globals.php back to disk 
+    // Write the modified globals.php back to disk
     $fd = @fopen($globals_file, 'w');
     if ($fd === false) {
         $error_msg .= xl('Error, unable to open file', 'e') . ' ' . $globals_file;
@@ -168,7 +169,7 @@ function download_file($filename, $filetype) {
     readfile($filename);
     exit;
     flush();
-    @unlink($filename);   
+    @unlink($filename);
 }
 
 /* This function is called when the "Create Client Certificate" button is clicked.
@@ -255,16 +256,16 @@ function create_and_download_certificates()
     if ($_POST["organizationName"]) {    $organizationName = formData('organizationName','P',true);  }
     if ($_POST["organizationalUnitName"]) {    $organizationName = formData('organizationalUnitName','P',true);  }
     if ($_POST["clientCertValidity"]) {    $clientCertValidity = formData('clientCertValidity','P',true);  }
-    
+
 
     /* Create the Certficate Authority (CA) */
     $arr = create_csr("LibreEHR CA for " . $commonName, $emailAddress, $countryName, $stateOrProvinceName,$localityName, $organizationName, $organizationalUnitName);
-        
+
     if ($arr === false) {
         $error_msg .= xl('Error, unable to create the Certificate Authority certificate.', 'e');
         delete_certificates();
         return;
-    } 
+    }
     $ca_csr = $arr[0];
     $ca_key = $arr[1];
     $ca_crt = create_crt($ca_key, $ca_csr, NULL, $ca_key);
@@ -284,11 +285,11 @@ function create_and_download_certificates()
         delete_certificates();
         return;
     }
- 
+
     $server_csr = $arr[0];
     $server_key = $arr[1];
     $server_crt = create_crt($server_key, $server_csr, $ca_crt, $ca_key);
-    
+
     if (server_crt === false) {
         $error_msg .= xl('Error, unable to create the Server certificate.', 'e');
         delete_certificates();
@@ -305,7 +306,7 @@ function create_and_download_certificates()
         $serial = $row['id'];
     }
 
-    $user_cert = create_user_certificate("admin", $emailAddress, $serial, 
+    $user_cert = create_user_certificate("admin", $emailAddress, $serial,
                                          $tempDir . "/CertificateAuthority.crt",
                                          $tempDir . "/CertificateAuthority.key",
                                          $clientCertValidity);
@@ -318,17 +319,17 @@ function create_and_download_certificates()
     $handle = fopen($adminFile, 'w');
     fwrite($handle, $user_cert);
     fclose($handle);
-	
+
     /* Create a zip file containing the CertificateAuthority, Server, and admin files */
    try {
-    if (! (class_exists('ZipArchive')) ) {  
-     	 $_SESSION["zip_error"]="Error, Class ZipArchive does not exist";
-	 return;
+    if (! (class_exists('ZipArchive')) ) {
+         $_SESSION["zip_error"]="Error, Class ZipArchive does not exist";
+     return;
     }
 
     $zip = new ZipArchive;
-    if(!($zip)) { 
-      $_SESSION["zip_error"]="Error, Could not create file archive"; 
+    if(!($zip)) {
+      $_SESSION["zip_error"]="Error, Could not create file archive";
       return;
     }
 
@@ -338,7 +339,7 @@ function create_and_download_certificates()
         foreach ($files as $file) {
             $zip->addFile($tempDir . "/" . $file, $file);
         }
-    } 
+    }
     else {
         $_SESSION["zip_error"]="Error, unable to create zip file with all the certificates";
         return;
@@ -352,7 +353,7 @@ function create_and_download_certificates()
    catch (Exception $e) {
     $_SESSION["zip_error"]="Error, Could not create file archive";
     return;
-   } 
+   }
 
     download_file($zipName, "zip");
 }
@@ -413,41 +414,41 @@ else if ($_POST["mode"] == "download_certificates") {
 
     //check whether email id is valid or not
     function checkEmail(email) {
-	var str=email;
-	var at="@";
-	var dot=".";
-	var lat=str.indexOf(at);
-	var lstr=str.length;
-	var ldot=str.indexOf(dot);
-	if (str.indexOf(at)==-1){
-	   return false;
-	}
+    var str=email;
+    var at="@";
+    var dot=".";
+    var lat=str.indexOf(at);
+    var lstr=str.length;
+    var ldot=str.indexOf(dot);
+    if (str.indexOf(at)==-1){
+       return false;
+    }
 
-	if (str.indexOf(at)==-1 || str.indexOf(at)==0 || str.indexOf(at)==lstr){
-	   return false;
-	}
+    if (str.indexOf(at)==-1 || str.indexOf(at)==0 || str.indexOf(at)==lstr){
+       return false;
+    }
 
-	if (str.indexOf(dot)==-1 || str.indexOf(dot)==0 || str.indexOf(dot)==lstr){
-	    return false;
-	}
+    if (str.indexOf(dot)==-1 || str.indexOf(dot)==0 || str.indexOf(dot)==lstr){
+        return false;
+    }
 
-	 if (str.indexOf(at,(lat+1))!=-1){
-	    return false;
-	 }
+     if (str.indexOf(at,(lat+1))!=-1){
+        return false;
+     }
 
-	 if (str.substring(lat-1,lat)==dot || str.substring(lat+1,lat+2)==dot){
-	    return false;
-	 }
+     if (str.substring(lat-1,lat)==dot || str.substring(lat+1,lat+2)==dot){
+        return false;
+     }
 
-	 if (str.indexOf(dot,(lat+2))==-1){
-	    return false;
-	 }
+     if (str.indexOf(dot,(lat+2))==-1){
+        return false;
+     }
 
-	 if (str.indexOf(" ")!=-1){
-	    return false;
-	 }
+     if (str.indexOf(" ")!=-1){
+        return false;
+     }
 
-	return true;
+    return true;
     }
     function download_click(){
         if (document.ssl_certificate_frm.commonName.value == "") {
@@ -455,13 +456,13 @@ else if ($_POST["mode"] == "download_certificates") {
             document.ssl_certificate_frm.commonName.focus();
             return false;
         }
-    
+
         if (document.ssl_certificate_frm.emailAddress.value) {
-	     //call checkEmail function
+         //call checkEmail function
              if(checkEmail(document.ssl_certificate_frm.emailAddress.value) == false){
-		alert ("<?php xl('Provide valid Email Address', 'e'); ?>");
-		return false;
-	     }
+        alert ("<?php xl('Provide valid Email Address', 'e'); ?>");
+        return false;
+         }
         }
 
         if (document.ssl_certificate_frm.countryName.value.length > 2) {
@@ -479,21 +480,21 @@ else if ($_POST["mode"] == "download_certificates") {
 
         /*if(document.ssl_frm.isClientAuthenticationEnabled[1].checked == true)
         {
-	    alert ("<?php xl('User Certificate Authentication is disabled', 'e'); ?>");
+        alert ("<?php xl('User Certificate Authentication is disabled', 'e'); ?>");
             return false;
         }*/
-	    
+
         if (document.client_cert_frm.client_cert_user.value == "") {
             alert ("<?php xl('User name or Host name cannot be empty', 'e'); ?>");
             document.ssl_certificate_frm.commonName.focus();
             return false;
         }
-	if (document.client_cert_frm.client_cert_email.value) {
-	     //call checkEmail function
+    if (document.client_cert_frm.client_cert_email.value) {
+         //call checkEmail function
              if(checkEmail(document.client_cert_frm.client_cert_email.value) == false){
-		alert ("<?php xl('Provide valid Email Address', 'e'); ?>");
-		return false;
-	     }
+        alert ("<?php xl('Provide valid Email Address', 'e'); ?>");
+        return false;
+         }
         }
     }
 
@@ -504,7 +505,7 @@ else if ($_POST["mode"] == "download_certificates") {
         else
             return true;
     }
-    
+
     </script>
 
     <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
@@ -519,8 +520,8 @@ else if ($_POST["mode"] == "download_certificates") {
 
   </head>
   <body class="body_top">
-  <span class='title'><b><?php xl('SSL Certificate Administration', 'e'); ?></b></span> 
-  </br> </br>   
+  <span class='title'><b><?php xl('SSL Certificate Administration', 'e'); ?></b></span>
+  </br> </br>
   <?php if($_SESSION["zip_error"]) { ?>
   <div>  <table align="center" >
   <tr valign="top"> <td rowspan="3"> <?php echo "<font class='redtext'>" . xl($_SESSION["zip_error"]) ?> </td> </tr>
@@ -528,9 +529,9 @@ else if ($_POST["mode"] == "download_certificates") {
   unset($_SESSION["zip_error"]); ?></div>
   <?php } else { ?>
   <span class='text'>
-  <?php 
-    if ($error_msg != "") { 
-      echo "<font class='redtext'>" . $error_msg . "</font><br><br>"; 
+  <?php
+    if ($error_msg != "") {
+      echo "<font class='redtext'>" . $error_msg . "</font><br><br>";
     }
   ?>
   <?php xl('To setup https access with client certificate authentication, do the following', 'e'); ?>
@@ -602,7 +603,7 @@ else if ($_POST["mode"] == "download_certificates") {
         </tr>
         <tr>
           <td colspan=3 align='center'>
-            <input name='sslcrt' type='submit' onclick='return download_click();' value='<?php xl('Download Certificates', 'e'); ?>'></td>
+            <input name='sslcrt' type='submit' class='cp-output' onclick='return download_click();' value='<?php xl('Download Certificates', 'e'); ?>'></td>
         </tr>
       </table>
     </form>
@@ -644,7 +645,7 @@ else if ($_POST["mode"] == "download_certificates") {
           <td><?php xl('Enable User Certificate Authentication', 'e'); ?>:</td>
           <td>
             <input name='isClientAuthenticationEnabled' type='radio' value='Yes'
-             <?php if ($GLOBALS['is_client_ssl_enabled']) echo "checked"; ?> > <?php xl('Yes', 'e'); ?> 
+             <?php if ($GLOBALS['is_client_ssl_enabled']) echo "checked"; ?> > <?php xl('Yes', 'e'); ?>
             <input name='isClientAuthenticationEnabled' type='radio' value='No'  <?php if (!$GLOBALS['is_client_ssl_enabled']) echo "checked"; ?> > <?php xl('No', 'e'); ?>
           </td>
         </tr>
@@ -653,7 +654,7 @@ else if ($_POST["mode"] == "download_certificates") {
           <td>CertificateAuthority.key <?php xl('file location', 'e'); ?>: </td>
           <td>
             <input type='hidden' name='hiden_cakey' />
-            <input name='cakey_location' type='text' size=20 value='<?php echo $GLOBALS['certificate_authority_key'] ?>' /> (<?php xl('Provide absolute path', 'e'); ?>) 
+            <input name='cakey_location' type='text' size=20 value='<?php echo $GLOBALS['certificate_authority_key'] ?>' /> (<?php xl('Provide absolute path', 'e'); ?>)
           </td>
         </tr>
         <tr class='text'>
@@ -665,18 +666,18 @@ else if ($_POST["mode"] == "download_certificates") {
         </tr>
       </table>
       </br>
-      <input type='submit' value='<?php xl('Save Certificate Settings', 'e'); ?>' onclick='return save_click();'-->    
+      <input type='submit' value='<?php xl('Save Certificate Settings', 'e'); ?>' onclick='return save_click();'-->
     </br> <b><?php xl('Configure LIBREEHR to use Client side SSL certificates', 'e'); ?> </b></br>
       <input type='hidden' name='clientCertValidity_hidden' value=''>
       </br>
-           
+
           <?php xl('Update the following variables in file', 'e'); ?>: globals.php</br></br>
-	  <?php xl('To enable Client side ssl certificates', 'e'); ?></br>
-	  <?php xl('Set', 'e'); ?> 'is_client_ssl_enabled' <?php xl('to', 'e'); ?> 'true' </br></br>
-	  <?php xl('Provide absolute path of file', 'e'); ?> CertificateAuthority.key</br>	
- 	  <?php xl('Set', 'e'); ?> 'certificate_authority_key' <?php xl('to absolute path of file', 'e'); ?> 'CertificateAuthority.key'</br></br>
-	  <?php xl('Provide absolute path of file', 'e'); ?> CertificateAuthority.crt</br>
-          <?php xl('Set', 'e'); ?> 'certificate_authority_crt' <?php xl('to absolute path of file', 'e'); ?> 'CertificateAuthority.crt'</br>          
+      <?php xl('To enable Client side ssl certificates', 'e'); ?></br>
+      <?php xl('Set', 'e'); ?> 'is_client_ssl_enabled' <?php xl('to', 'e'); ?> 'true' </br></br>
+      <?php xl('Provide absolute path of file', 'e'); ?> CertificateAuthority.key</br>
+      <?php xl('Set', 'e'); ?> 'certificate_authority_key' <?php xl('to absolute path of file', 'e'); ?> 'CertificateAuthority.key'</br></br>
+      <?php xl('Provide absolute path of file', 'e'); ?> CertificateAuthority.crt</br>
+          <?php xl('Set', 'e'); ?> 'certificate_authority_crt' <?php xl('to absolute path of file', 'e'); ?> 'CertificateAuthority.crt'</br>
      <br>
     </br><?php xl('Note','e'); ?>:
     <ul>
@@ -710,7 +711,7 @@ else if ($_POST["mode"] == "download_certificates") {
         </tr>
         <tr>
           <td colspan=2>
-            <input type='submit' onclick='return create_client_certificate_click();' value='<?php xl('Create Client Certificate', 'e'); ?>'>
+            <input type='submit' class='cp-positive' onclick='return create_client_certificate_click();' value='<?php xl('Create Client Certificate', 'e'); ?>'>
           </td>
         </tr>
       </table>

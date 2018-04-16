@@ -1,7 +1,7 @@
 
 <script language="javascript">
 function submit_insurancecompany() {
-    if(document.insurancecompany.name.value.length>0) { 
+    if(document.insurancecompany.name.value.length>0) {
         top.restoreSession();
         document.insurancecompany.submit();
         //Z&H Removed redirection
@@ -28,7 +28,7 @@ function jsWaitForDelay(delay) {
 <tr>
     <td><?php echo xlt("Name");?> </td>
     <td>
-        <input type="text" class="form-control input-sm" size="40" name="name" value="<?php echo $this->insurancecompany->get_name();?>" onKeyDown="PreventIt(event)" /> 
+        <input type="text" class="form-control input-sm" size="40" name="name" value="<?php echo $this->insurancecompany->get_name();?>" onKeyDown="PreventIt(event)" />
         *Required
     </td>
 </tr>
@@ -42,21 +42,21 @@ function jsWaitForDelay(delay) {
 <tr>
     <td><?php echo xlt("Address")."(".xlt("line1").")";?> </td>
     <td>
-        <input type="text" class="form-control input-sm" size="40" name="address_line1" value="<?php $this->insurancecompany->address->line1;?>" 
+        <input type="text" class="form-control input-sm" size="40" name="address_line1" value="<?php $this->insurancecompany->address->line1;?>"
                onKeyDown="PreventIt(event)" />
     </td>
 </tr>
 <tr>
     <td><?php echo xlt("Address")."(".xlt("line2").")";?> </td>
     <td>
-        <input type="text" class="form-control input-sm" size="40" name="address_line2" value="<?php echo $this->insurancecompany->address->line2;?>" 
+        <input type="text" class="form-control input-sm" size="40" name="address_line2" value="<?php echo $this->insurancecompany->address->line2;?>"
                onKeyDown="PreventIt(event)" />
     </td>
 </tr>
 <tr>
     <td><?php echo xlt("City").",".xlt("state").",".xlt("zip");?> </td>
     <td class="form-inline">
-        <input type="text" class="form-control input-sm" size="25" name="city" value="<?php echo $this->insurancecompany->address->city;?>" onKeyDown="PreventIt(event)" /> , 
+        <input type="text" class="form-control input-sm" size="25" name="city" value="<?php echo $this->insurancecompany->address->city;?>" onKeyDown="PreventIt(event)" /> ,
         <input type="text" class="form-control input-sm" size="2" maxlength="2" name="state" value="<?php echo $this->insurancecompany->address->state;?>"
                onKeyDown="PreventIt(event)" /> ,
         <input type="text" class="form-control input-sm" size="5" name="zip" value="<?php $this->insurancecompany->address->zip;?>" onKeyDown="PreventIt(event)" />
@@ -69,33 +69,33 @@ function jsWaitForDelay(delay) {
     </td>
 </tr>
 <tr>
-    
+
     <td><?php echo xlt("CMS ID");?> </td>
     <td>
         <input type="text" class="form-control input-sm" size="15" name="cms_id" value="<?php echo $this->insurancecompany->get_cms_id();?>" onKeyDown="PreventIt(event)" />
-    
+
         <?php if ($GLOBALS['support_encounter_claims']) {?>
                     &nbsp;&nbsp;For Encounter Claims:
                     <input type="text" class="form-control input-sm" size="15" name="alt_cms_id" value="<?php echo $this->insurancecompany->get_alt_cms_id();?>" onKeyDown="PreventIt(event)" />
-        <?php }?>           
-                    
+        <?php }?>
+
 
     </td>
 </tr>
 <tr>
     <td><?php echo xlt("Payer Type");?> </td>
     <td>
-        <!--{html_options name="ins_type_code" options=$insurancecompany->ins_type_code_array 
+        <!--{html_options name="ins_type_code" options=$insurancecompany->ins_type_code_array
         selected=$insurancecompany->get_ins_type_code()}-->
         <select class="form-control input-sm" name="ins_type_code">
-            <?php foreach ($this->insurancecompany->ins_type_code_array   as $key => $value) 
-                { 
+            <?php foreach ($this->insurancecompany->ins_type_code_array   as $key => $value)
+                {
                 if($key==$this->insurancecompany->get_ins_type_code() ) { ?>
                 <option label="<?php echo $value;?>" value="<?php echo $key;?>" selected="selected" ><?php echo $value;?></option>
                 <?php } else { ?>
                 <option label="<?php echo $value;?>" value="<?php echo $key;?>" ><?php echo $value;?></option>
-                <?php }                
-                } ?>           
+                <?php }
+                } ?>
         </select>
     </td>
 </tr>
@@ -112,14 +112,14 @@ This is now deprecated use the newer x12 partner code instead
     <td>
         <!--{html_options name="x12_default_partner_id" options=$x12_partners selected=$insurancecompany->get_x12_default_partner_id()}-->
         <select class="form-control input-sm" name="x12_default_partner_id">
-            <?php foreach ($this->x12_partners  as $key => $value) 
-                { 
+            <?php foreach ($this->x12_partners  as $key => $value)
+                {
                 if($key==$this->insurancecompany->get_x12_default_partner_id() ) { ?>
                 <option label="<?php echo $value;?>" value="<?php echo $key;?>" selected="selected" ><?php echo $value;?></option>
                 <?php } else { ?>
                 <option label="<?php echo $value;?>" value="<?php echo $key;?>" ><?php echo $value;?></option>
-                <?php }                
-                } ?> 
+                <?php }
+                } ?>
         </select>
     </td>
 </tr>
@@ -130,7 +130,7 @@ This is now deprecated use the newer x12 partner code instead
     <td>
         <input type="checkbox" class="control-label col-sm-2" size="1" name='allow_print_statement' class="checkbox" value="1" onKeyDown="PreventIt(event)" />
     </td>
-    <?php } else { ?> 
+    <?php } else { ?>
     <td><?php echo xlt("Print Statements");?> </td>
     <td>
         <input type="checkbox" class="control-label col-sm-2" size="1" name='allow_print_statement' class="checkbox" value="0" onKeyDown="PreventIt(event)" />
@@ -143,7 +143,7 @@ This is now deprecated use the newer x12 partner code instead
       <td>
       <input type="checkbox" class="control-label col-sm-2" size="1" name='ins_inactive' class="checkbox" value="1" onKeyDown="PreventIt(event)" />
       </td>
-   <?php } else { ?> 
+   <?php } else { ?>
       <td><?php echo xlt("Activate");?></td>
       <td>
       <input type="checkbox" class="control-label col-sm-2" size="1" name='ins_inactive' class="checkbox" value="0" onKeyDown="PreventIt(event)" />
@@ -153,8 +153,8 @@ This is now deprecated use the newer x12 partner code instead
 <tr>
 <tr height="25"><td colspan=2>&nbsp;</td></tr>
 <tr>
-    <td colspan="2"><a href="javascript:submit_insurancecompany();" class="css_button"><span><?php echo xlt("Save");?></span></a>
-        <a href="controller.php?practice_settings&insurance_company&action=list" class="css_button" onclick="top.restoreSession()">
+    <td colspan="2"><a href="javascript:submit_insurancecompany();" class="css_button cp-submit"><span><?php echo xlt("Save");?></span></a>
+        <a href="controller.php?practice_settings&insurance_company&action=list" class="css_button cp-negative" onclick="top.restoreSession()">
             <span><?php echo xlt("Cancel");?></span></a></td>
 </tr>
 </table>

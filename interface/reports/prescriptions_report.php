@@ -4,31 +4,31 @@
  *
  * This report lists prescriptions and their dispensations according
  * to various input selection criteria.
- * 
+ *
  * Fix drug name search to work in a broader sense - tony@mi-squared.com 2010
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  * Copyright (C) 2006-2015 Rod Roark <rod@sunsetsystems.com>
  *
- * LICENSE: This program is free software; you can redistribute it and/or 
- * modify it under the terms of the GNU General Public License 
- * as published by the Free Software Foundation; either version 3 
- * of the License, or (at your option) any later version. 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- * GNU General Public License for more details. 
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;. 
- * 
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
  * LICENSE: This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author Rod Roark <rod@sunsetsystems.com>
  * @author Tony McCormick <tony@mi-squared.com>
- * @link http://librehealth.io 
+ * @link http://librehealth.io
  */
  // Copyright (C) 2006-2015 Rod Roark <rod@sunsetsystems.com>
  //
@@ -39,15 +39,16 @@
 
  // This report lists prescriptions and their dispensations according
  // to various input selection criteria.
- // 
+ //
  // Fix drug name search to work in a broader sense - tony@mi-squared.com 2010
- 
+
  require_once("../globals.php");
  require_once("$srcdir/patient.inc");
  require_once("$srcdir/options.inc.php");
  require_once("../drugs/drugs.inc.php");
  require_once("$srcdir/formatting.inc.php");
- require_once "$srcdir/formdata.inc.php";
+ require_once("$srcdir/formdata.inc.php");
+ require_once("../../library/report_functions.php");
 
  /** Current format date */
  $DateFormat = DateFormatRead();
@@ -100,7 +101,7 @@ $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
     }
     #report_results table {
        margin-top: 0px;
-    }    
+    }
 }
 
 /* specifically exclude some from the screen */
@@ -122,8 +123,8 @@ $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 <span class='title'><?php xl('Report','e'); ?> - <?php xl('Prescriptions and Dispensations','e'); ?></span>
 
 <div id="report_parameters_daterange">
-<?php date("d F Y", strtotime(oeFormatDateForPrintReport($form_from_date)))
-    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($form_to_date))); ?>
+<?php date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_from_date'])))
+    . " &nbsp; to &nbsp; ". date("d F Y", strtotime(oeFormatDateForPrintReport($_POST['form_to_date']))); ?>
 </div>
 
 <form name='theform' id='theform' method='post' action='prescriptions_report.php'>
@@ -144,18 +145,7 @@ $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
             <td>
             <?php dropdown_facility(strip_escape_custom($form_facility), 'form_facility', true); ?>
             </td>
-            <td class='label'>
-               <?php xl('From','e'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_from_date' id="form_from_date" size='10' value='<?php echo $form_from_date ?>' title='yyyy-mm-dd'>
-            </td>
-            <td class='label'>
-               <?php xl('To','e'); ?>:
-            </td>
-            <td>
-               <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>' title='yyyy-mm-dd'>
-            </td>
+            <?php showFromAndToDates(); ?>
         </tr>
         <tr>
             <td class='label'>
@@ -185,29 +175,7 @@ $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
     </div>
 
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:100%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:15px'>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
-                    <span>
-                        <?php xl('Submit','e'); ?>
-                    </span>
-                    </a>
-
-                    <?php if ($_POST['form_refresh']) { ?>
-                    <a href='#' class='css_button' id='printbutton'>
-                        <span>
-                            <?php xl('Print','e'); ?>
-                        </span>
-                    </a>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-  </td>
+  <?php showSubmitPrintButtons(); ?>
  </tr>
 </table>
 </div> <!-- end of parameters -->
@@ -235,8 +203,8 @@ $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
  <tbody>
 <?php
  if ($_POST['form_refresh']) {
-  $where = "r.date_modified >= '" . prepareDateBeforeSave($form_from_date) . "' AND " .
-   "r.date_modified <= '" . prepareDateBeforeSave($form_to_date) . "'";
+  $where = "r.date_modified >= '" . prepareDateBeforeSave($from_date) . "' AND " .
+   "r.date_modified <= '" . prepareDateBeforeSave($to_date) . "'";
   //if ($form_patient_id) $where .= " AND r.patient_id = '$form_patient_id'";
   if ($form_patient_id) $where .= " AND p.pid = '$form_patient_id'";
   if ($form_drug_name ) $where .= " AND (d.name LIKE '$form_drug_name' OR r.drug LIKE '$form_drug_name')";

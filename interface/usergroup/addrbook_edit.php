@@ -42,10 +42,11 @@
  require_once("$srcdir/options.inc.php");
  require_once("$srcdir/formdata.inc.php");
  require_once("$srcdir/htmlspecialchars.inc.php");
+ require_once("$srcdir/headers.inc.php");
 
  // Collect user id if editing entry
  $userid = $_REQUEST['userid'];
- 
+
  // Collect type if creating a new entry
  $type = $_REQUEST['type'];
 
@@ -172,7 +173,7 @@ td { font-size:10pt; }
     "upin = "         . invalue('form_upin')         . ", " .
     "npi = "          . invalue('form_npi')          . ", " .
     "taxonomy = "     . invalue('form_taxonomy')     . ", " .
-    "cpoe = "         . invalue('form_cpoe')         . ", " .    
+    "cpoe = "         . invalue('form_cpoe')         . ", " .
     "email = "        . invalue('form_email')        . ", " .
     "email_direct = " . invalue('form_email_direct') . ", " .
     "url = "          . invalue('form_url')          . ", " .
@@ -388,7 +389,7 @@ td { font-size:10pt; }
    <input type='tel' size='15' name='form_phone' onblur="validate(this.form,this.name,'tel')" value='<?php echo attr($row['phone']); ?>'
     title='<?php echo xla("Example (123)456-7890") #at some point we need to make these phone number tips a settable variable ?>' maxlength='30' class='inputtext' />&nbsp;&nbsp;&nbsp;
    <b><?php echo xlt('Mobile'); ?>:</b> &nbsp;&nbsp;&nbsp;<input type='tel' size='15' onblur="validate(this.form,this.name,'tel')" name='form_phonecell'
-    title='<?php echo xla("Example (123)456-7890") ?>' maxlength='30' 
+    title='<?php echo xla("Example (123)456-7890") ?>' maxlength='30'
     <?php echo ($GLOBALS['phone_country_code'] == '1') ? xl('State','e') : xl('Locality','e') ?>: value='<?php echo attr($row['phonecell']); ?>' class='inputtext' />
   </td>
  </tr>
@@ -525,15 +526,15 @@ td { font-size:10pt; }
 
 <br />
 
-<input type='submit' name='form_save' value='<?php echo xla('Save'); ?>' />
+<input type='submit' name='form_save' class='cp-submit' value='<?php echo xla('Save'); ?>' />
 
 <?php if ($userid && !$row['username']) { ?>
 &nbsp;
-<input type='submit' name='form_delete' value='<?php echo xla('Delete'); ?>' style='color:red' />
+<input type='submit' name='form_delete' class='cp-negative' value='<?php echo xla('Delete'); ?>' style='color:red' />
 <?php } ?>
 
 &nbsp;
-<input type='button' value='<?php echo xla('Cancel'); ?>' onclick='window.close()' />
+<input type='button' class='cp-negative' value='<?php echo xla('Cancel'); ?>' onclick='window.close()' />
 </p>
 
 </center>

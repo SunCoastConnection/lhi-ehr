@@ -131,6 +131,7 @@ $USER_SPECIFIC_GLOBALS = array('default_tab_1',
                                'print_next_appointment_on_ledger',
                                'calendar_view_type',
                                'calendar_refresh_freq',
+                               'check_appt_time',
                                'event_color',
                                'pat_trkr_timer',
                                'ptkr_visit_reason',
@@ -275,7 +276,7 @@ $GLOBALS_METADATA = array(
       xl('Enable Fees In Menu')
     ),
     // EDI history  2012-09-13
-    
+
     'enable_edihistory_in_menu' => array(
       xl('Enable EDI History In Fees Menu'),
        'bool',                          // data type
@@ -600,6 +601,13 @@ $GLOBALS_METADATA = array(
        'bool',                          // data type
        '0',                             // default = false
       xl('Support export/import of configuration data via the Backup page.')
+    ),
+
+    'tags_filters_enabled' => array(
+      xl('Enable Demographics Tag filtering feature'),
+       'bool',                          // data type
+       '0',                             // default
+      xl('Enable patient Tag filtering feature.')
     ),
 
     'restrict_user_facility' => array(
@@ -1271,7 +1279,7 @@ $GLOBALS_METADATA = array(
   // Claim Tab
   //
   'Claims' => array(
-  
+
     'claim_type' => array(
      xl('Insurance Claim Type'),
         array(
@@ -1282,7 +1290,7 @@ $GLOBALS_METADATA = array(
         '0',                              // default = CMS 1500
         xl('Insurance Claim Type CMS 1500 , UB-04 or Both Displayed in the Billing Screen'),
     ),
- 
+
     'preprinted_cms_1500' => array(
       xl('Prints the CMS 1500 on the Preprinted form.'),
        'bool',                          // data type
@@ -1406,7 +1414,7 @@ $GLOBALS_METADATA = array(
       '',     // default
       xl('Other Physician #2 Box 79 of the UB04')
     ),
-    
+
   ),
 
 
@@ -1520,7 +1528,14 @@ $GLOBALS_METADATA = array(
        '17',                            // default
       xl('Ending hour of day for calendar events.')
     ),
-    
+
+    'check_appt_time' => array(
+      xl('Check Selected Appointment Time'),
+       'bool',                          // data type
+       '1',                             // default
+      xl('Do not register appointments with time outside clinic hours.')
+    ),
+
     'calendar_refresh_freq' => array(
       xl('Calendar Refresh Frequency'),
       array(
@@ -1532,7 +1547,7 @@ $GLOBALS_METADATA = array(
        '360000',                     // default
       xl('How often the calendar automatically refetches events.')
     ),
-    
+
     'calendar_provider_view_type' => array(
       xl('Resource Title'),
       array(
@@ -1668,7 +1683,7 @@ $GLOBALS_METADATA = array(
        'bool',                          // data type
        '1',                             // default
       xl('Display Canceled Appointments in Calendar.')
-    ), 
+    ),
 
     'auto_create_new_encounters' => array(
       xl('Auto-Create New Encounters'),
@@ -1742,6 +1757,9 @@ $GLOBALS_METADATA = array(
         'M6' => xl('Six Months Ahead'),
         'M3' => xl('Three Months Ahead'),
         'M1' => xl('One Month Ahead'),
+        'W3' => xl('Three Weeks Ahead'),
+        'W2' => xl('Two Weeks Ahead'),
+        'W1' => xl('One Week Ahead'),
         'D1' => xl('One Day Ahead'),
       ),
       'Y1',                     // default = One Year
@@ -3162,14 +3180,14 @@ $GLOBALS_METADATA = array(
       '0',                               // default
       xl('Show demo system "Save/Load database presets" menu')
     ),
-    
+
     'report_itemizing_pqrs' => array(
       xl('Enable MIPS report itemization'),     // for itemizing reports
       'bool',                           // data type
       '1',                     // default
       xl('Creates patient lists from reports')
     ),
-    
+
 
     'pqrs_creator' => array(
       xl('MIPS Report Creator Name'),       // for XML generation
@@ -3199,7 +3217,7 @@ $GLOBALS_METADATA = array(
       xl('MIPS Registry Name')
     ),
      'pqrs_attestation_date' => array(
-      xl('Default Direct Entry Date'),  
+      xl('Default Direct Entry Date'),
       'text',                           // data type
       '2017-06-06',            // default
       xl('Default date that direct entry encounters will be created on.')

@@ -1,5 +1,5 @@
-<a href="controller.php?practice_settings&<?php echo $top_action;?>insurance_company&action=edit" 
-   onclick="top.restoreSession()" class="css_button" >
+<a href="controller.php?practice_settings&<?php echo $top_action;?>insurance_company&action=edit"
+   onclick="top.restoreSession()" class="css_button cp-positive" >
 <span><?php echo xlt("Add a company");?> </span></a><br>
 <br>
 <table class="table table-hover ">
@@ -10,9 +10,9 @@
         <th><b><?php echo xlt("Inactive");?></b></th>
         <th><b><?php echo xlt("Statements");?></b></th>
     </tr>
-    
-    
-    
+
+
+
    <?php if(is_array($this->icompanies)) {?>
     <?php foreach ($this->icompanies as $insurancecompany) { ?>
     <tr>
@@ -22,7 +22,7 @@
         <td>
             <?php echo $insurancecompany->address->city ;?>
                 <?php echo $insurancecompany->address->state;?>
-            
+
         </td>
         <td>
             <?php echo $insurancecompany->get_x12_default_partner_name();?>&nbsp;
@@ -38,7 +38,7 @@
             <?php }?>
         </td>
     </tr>
-   <?php }   
+   <?php }
     }
     else {
     ?>

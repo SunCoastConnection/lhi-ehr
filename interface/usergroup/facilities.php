@@ -31,7 +31,7 @@
 $fake_register_globals=false;
 $sanitize_all_escapes=true;
 
- 
+
 require_once("../globals.php");
 require_once("../../library/acl.inc");
 require_once("$srcdir/sql.inc");
@@ -92,14 +92,14 @@ if ($_POST["mode"] == "facility" && $_POST["newmode"] == "admin_facility")
         facility_npi='" . trim(formData('facility_npi')) . "',
         attn='" . trim(formData('attn')) . "' ,
         primary_business_entity='" . trim(formData('primary_business_entity')) . "' ,
-        tax_id_type='" . trim(formData('tax_id_type')) . "' 
+        tax_id_type='" . trim(formData('tax_id_type')) . "'
     where id='" . trim(formData('fid')) . "'" );
 }
 
 ?>
 <html>
 <head>
-<?php 
+<?php
   call_required_libraries(array("jquery-min-3-1-1","bootstrap","fancybox"));
     resolveFancyboxCompatibility();
 ?>
@@ -117,7 +117,7 @@ $(document).ready(function(){
         'overlayOpacity' : 0.0,
         'showCloseButton' : true,
         'frameHeight' : 460,
-        'frameWidth' : 650        
+        'frameWidth' : 650
     });
 
     // special size for
@@ -143,7 +143,7 @@ $(document).ready(function(){
                 <b><?php echo xlt('Facilities'); ?></b>&nbsp;
             </td>
             <td>
-                 <a href="facilities_add.php" class="iframe addfac_modal css_button"><span><?php echo xlt('Add');?></span></a>
+                 <a href="facilities_add.php" class="iframe addfac_modal css_button cp-positive"><span><?php echo xlt('Add');?></span></a>
             </td>
         </tr>
     </table>

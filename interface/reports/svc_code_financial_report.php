@@ -8,12 +8,12 @@
  * Administration->Service section by assigning code with
  * 'Service Reporting'.
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  * Copyright (C) 2006-2015 Rod Roark <rod@sunsetsystems.com>
  *
  * LICENSE: This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3 
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,7 @@
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author  Visolve
  * @author Rod Roark <rod@sunsetsystems.com>
  * @link    http://librehealth.io
@@ -36,6 +36,7 @@ $sanitize_all_escapes=true;
 $fake_register_globals=false;
 
 require_once("../globals.php");
+require_once("../../library/report_functions.php");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/formatting.inc.php");
@@ -56,8 +57,8 @@ $grand_total_amt_balance  = 0;
   if (! acl_check('acct', 'rep')) die(xlt("Unauthorized access."));
 
 if (isset($_POST['form_from_date']) && isset($_POST['form_to_date']) && !empty($_POST['form_to_date']) && $_POST['form_from_date']) {
-    $form_from_date = fixDate($_POST['form_from_date'], date(DateFormatRead(true)));
-    $form_to_date   = fixDate($_POST['form_to_date']  , date(DateFormatRead(true)));
+    $from_date = fixDate($_POST['form_from_date'], date(DateFormatRead(true)));
+    $to_date   = fixDate($_POST['form_to_date']  , date(DateFormatRead(true)));
 }
   $form_facility  = $_POST['form_facility'];
   $form_provider  = $_POST['form_provider'];
@@ -67,7 +68,7 @@ if (isset($_POST['form_from_date']) && isset($_POST['form_to_date']) && !empty($
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Content-Type: application/force-download");
-    header("Content-Disposition: attachment; filename=svc_financial_report_".attr($form_from_date)."--".attr($form_to_date).".csv");
+    header("Content-Disposition: attachment; filename=svc_financial_report_".attr($from_date)."--".attr($to_date).".csv");
     header("Content-Description: File Transfer");
     // CSV headers:
     } // end export
@@ -137,36 +138,14 @@ if (isset($_POST['form_from_date']) && isset($_POST['form_to_date']) && !empty($
             <?php dropdown_facility($form_facility, 'form_facility', true); ?>
             </td>
                         <td><?php echo xlt('Provider'); ?>:</td>
-                <td><?php
-                        // Build a drop-down list of providers.
-                                //
-                                $query = "SELECT id, lname, fname FROM users WHERE ".
-                                  "authorized = 1 ORDER BY lname, fname"; //(CHEMED) facility filter
-                                $ures = sqlStatement($query);
-                                echo "   <select name='form_provider'>\n";
-                                echo "    <option value=''>-- " . xlt('All') . " --\n";
-                                while ($urow = sqlFetchArray($ures)) {
-                                        $provid = $urow['id'];
-                                        echo "    <option value='" . attr($provid) ."'";
-                                        if ($provid == $_POST['form_provider']) echo " selected";
-                                        echo ">" . text($urow['lname']) . ", " . text($urow['fname']) . "\n";
-                                }
-                                echo "   </select>\n";
+                        <td>
+                  <?php // Build a drop-down list of providers.
+                    dropDownProviders();
                                 ?>
                 </td>
-        </tr><tr>
-                 <td colspan="2">
-                          <?php echo xlt('From'); ?>:&nbsp;&nbsp;&nbsp;&nbsp;
-                           <input type='text' name='form_from_date' id="form_from_date" size='10'
-                                  value='<?= ($form_from_date) ? oeFormatShortDate(attr($form_from_date)) : ''; ?>'>
-                        </td>
-                        <td class='label'>
-                           <?php echo xlt('To'); ?>:
-                        </td>
-                        <td>
-                           <input type='text' name='form_to_date' id="form_to_date" size='10'
-                                  value='<?= ($form_to_date) ? oeFormatShortDate(attr($form_to_date)) : ''; ?>'>
-                        </td>
+        </tr>
+        <tr>
+          <?php showFromAndToDates(); ?>
                         <td>
                            <input type='checkbox' name='form_details'<?php  if ($_POST['form_details']) echo ' checked'; ?>>
                            <?php echo xlt('Important Codes'); ?>
@@ -175,36 +154,7 @@ if (isset($_POST['form_from_date']) && isset($_POST['form_to_date']) && !empty($
     </table>
     </div>
   </td>
-  <td align='left' valign='middle' height="100%">
-    <table style='border-left:1px solid; width:100%; height:100%' >
-        <tr>
-            <td>
-                <div style='margin-left:15px'>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#form_csvexport").attr("value",""); $("#theform").submit();'>
-                    <span>
-                        <?php echo xlt('Submit'); ?>
-                    </span>
-                    </a>
-
-                    <?php if ($_POST['form_refresh'] || $_POST['form_csvexport']) { ?>
-                    <div id="controls">
-                    <a href='#' class='css_button' id='printbutton'>
-                        <span>
-                            <?php echo xlt('Print'); ?>
-                        </span>
-                    </a>
-                    <a href='#' class='css_button' onclick='$("#form_refresh").attr("value",""); $("#form_csvexport").attr("value","true"); $("#theform").submit();'>
-                        <span>
-                            <?php echo xlt('CSV Export'); ?>
-                        </span>
-                    </a>
-                    </div>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-    </table>
-  </td>
+  <?php showSubmitPrintButtons('form_csvexport'); ?>
  </tr>
 </table>
 </div> <!-- end of parameters -->
@@ -215,8 +165,8 @@ if (isset($_POST['form_from_date']) && isset($_POST['form_to_date']) && !empty($
 
   if ($_POST['form_refresh'] || $_POST['form_csvexport']) {
     $rows = array();
-    $from_date = $form_from_date;
-    $to_date   = $form_to_date;
+    $from_date = $from_date;
+    $to_date   = $to_date;
     $sqlBindArray = array();
     $query = "select b.code,sum(b.units) as units,sum(b.fee) as billed,sum(ar_act.paid) as PaidAmount, " .
         "sum(ar_act.adjust) as AdjustAmount,(sum(b.fee)-(sum(ar_act.paid)+sum(ar_act.adjust))) as Balance, " .
@@ -251,7 +201,7 @@ if (isset($_POST['form_from_date']) && isset($_POST['form_to_date']) && !empty($
       $grand_total_amt_paid  = 0;
       $grand_total_amt_adjustment  = 0;
       $grand_total_amt_balance  = 0;
- 
+
       while ($erow = sqlFetchArray($res)) {
       $row = array();
       $row['pid'] = $erow['pid'];
@@ -307,7 +257,7 @@ $print = '';
 $csv = '';
 
 if($row['financial_reporting']){ $bgcolor = "#FFFFDD";  }else { $bgcolor = "#FFDDDD";  }
-$print = "<tr bgcolor='$bgcolor'><td class='detail'>".text($row['Procedure codes'])."</td><td class='detail'>".text($row['Units'])."</td><td class='detail'>".text(oeFormatMoney($row['Amt Billed']))."</td><td class='detail'>".text(oeFormatMoney($row['Paid Amt']))."</td><td class='detail'>".text(oeFormatMoney($row['Adjustment Amt']))."</td><td class='detail'>".text(oeFormatMoney($row['Balance Amt']))."</td>"; 
+$print = "<tr bgcolor='$bgcolor'><td class='detail'>".text($row['Procedure codes'])."</td><td class='detail'>".text($row['Units'])."</td><td class='detail'>".text(oeFormatMoney($row['Amt Billed']))."</td><td class='detail'>".text(oeFormatMoney($row['Paid Amt']))."</td><td class='detail'>".text(oeFormatMoney($row['Adjustment Amt']))."</td><td class='detail'>".text(oeFormatMoney($row['Balance Amt']))."</td>";
 
 $csv = '"' . text($row['Procedure codes']) . '","' . text($row['Units']) . '","' . text(oeFormatMoney($row['Amt Billed'])) . '","' . text(oeFormatMoney($row['Paid Amt'])) . '","' . text(oeFormatMoney($row['Adjustment Amt'])) . '","' . text(oeFormatMoney($row['Balance Amt'])) . '"' . "\n";
 
@@ -318,13 +268,13 @@ $bgcolor = ((++$orow & 1) ? "#ffdddd" : "#ddddff");
                                                 $grand_total_amt_adjustment  += $row['Adjustment Amt'];
                                                 $grand_total_amt_balance  += $row['Balance Amt'];
 
-        if ($_POST['form_csvexport']) { echo $csv; } 
+        if ($_POST['form_csvexport']) { echo $csv; }
     else { echo $print;
  }
      }
        if (!$_POST['form_csvexport']) {
          echo "<tr bgcolor='#ffffff'>\n";
-         echo " <td class='detail'>" . xlt("Grand Total") . "</td>\n"; 
+         echo " <td class='detail'>" . xlt("Grand Total") . "</td>\n";
          echo " <td class='detail'>" . text($grand_total_units) . "</td>\n";
          echo " <td class='detail'>" .
          text(oeFormatMoney($grand_total_amt_billed)) . "</td>\n";
@@ -350,7 +300,7 @@ $bgcolor = ((++$orow & 1) ? "#ffdddd" : "#ddddff");
         echo '<script>document.getElementById("report_results").style.display="none";</script>';
         echo '<script>document.getElementById("controls").style.display="none";</script>';
         }
-        
+
 if (!$_POST['form_refresh'] && !$_POST['form_csvexport']) { ?>
 <div class='text'>
     <?php echo xlt('Please input search criteria above, and click Submit to view results.' ); ?>
