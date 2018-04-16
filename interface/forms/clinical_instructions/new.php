@@ -1,5 +1,5 @@
 <?php
-// +-----------------------------------------------------------------------------+ 
+// +-----------------------------------------------------------------------------+
 // Copyright (C) 2015 Z&H Consultancy Services Private Limited <sam@zhservices.com>
 //
 //
@@ -61,7 +61,7 @@ $check_res = $formid ? formFetch("form_clinical_instructions", $formid) : array(
                     <?php echo text($check_res['instruction']); ?>
                 </textarea>
                 <br/>
-                <input type='submit' value='<?php echo xla('Save'); ?>' class="button-css" style="float: right">&nbsp;
+                <input type='submit' value='<?php echo xla('Save'); ?>' class="button-css cp-submit" style="float: right">&nbsp;
             </div>
 
         </form>

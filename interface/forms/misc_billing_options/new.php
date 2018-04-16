@@ -44,7 +44,7 @@ formHeader("Misc Billing Options");
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
 
-    
+
 if (! $encounter) { // comes from globals.php
  die(xl("Internal error: we do not seem to be in an encounter!"));
 }
@@ -136,7 +136,7 @@ function generateDateQualifierSelect($name,$options,$obj)
           <span class="text" title="<?php echo xla("For HCFA 02/12 Onset date specified on the Encounter Form needs a qualifier");?>"></span>
 
           <div id="box-14">
-            <span class="text"><?php echo xlt('BOX 14. Onset Date and Qualifier');?>.</span>    
+            <span class="text"><?php echo xlt('BOX 14. Onset Date and Qualifier');?>.</span>
             <br><br>
             <?php $onset_date = $obj{"onset_date"}; ?>
             <input
@@ -153,11 +153,11 @@ function generateDateQualifierSelect($name,$options,$obj)
             <?php generateDateQualifierSelect("box_14_date_qual",$box_14_qualifier_options,$obj); ?></span></td>
             <br><br>
           </div>
-          
+
           <div id="box-15">
 
           <span class="text" title="<?php echo xla('For HCFA 02/12 Box 15 is Other Date with a qualifier to specify what the date indicates');?>"></span>
-            <span class="text"><?php echo xlt('BOX 15. Other Date and Qualifier');?>.</span>    
+            <span class="text"><?php echo xlt('BOX 15. Other Date and Qualifier');?>.</span>
             <br><br>
             <?php $date_initial_treatment = $obj{"date_initial_treatment"}; ?>
             <input
@@ -225,24 +225,24 @@ function generateDateQualifierSelect($name,$options,$obj)
             <br><br>
             <span><?php echo xlt('From Date');?>:</span>
             <?php $hospitalization_date_from = $obj{"hospitalization_date_from"}; ?>
-            <input 
+            <input
               class="form-control"
               style="display: inline-block; width: 100px"
-              type='text' 
-              name='hospitalization_date_from' 
+              type='text'
+              name='hospitalization_date_from'
               id="hospitalization_date_from"
-              size='10' 
+              size='10'
               value='<?php echo oeFormatShortDate(attr($hospitalization_date_to)) ?>'
             />
             <span><?php echo xlt('To Date');?>:</span>
             <?php $hospitalization_date_from = $obj{"hospitalization_date_to"}; ?>
-            <input 
+            <input
               class="form-control"
               style="display: inline-block; width: 100px"
-              type='text' 
-              name='hospitalization_date_to' 
+              type='text'
+              name='hospitalization_date_to'
               id="hospitalization_date_to"
-              size='10' 
+              size='10'
               value='<?php echo oeFormatShortDate(attr($hospitalization_date_to)) ?>'
             />
             <br><br>
@@ -302,8 +302,8 @@ function generateDateQualifierSelect($name,$options,$obj)
 
           <div>
             <!-- Save/Cancel buttons -->
-            <input type="button" id="save" value="<?php echo xla('Save'); ?>"> &nbsp; 
-            <input type="button" id="dontsave" class="deleter" value="<?php echo xla('Cancel'); ?>"> &nbsp; 
+            <input type="button" id="save" class='cp-submit' value="<?php echo xla('Save'); ?>"> &nbsp;
+            <input type="button" id="dontsave" class="deleter cp-negative" value="<?php echo xla('Cancel'); ?>"> &nbsp;
           </div>
         </form>
       </div>

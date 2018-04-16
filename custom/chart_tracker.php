@@ -30,6 +30,7 @@ $sanitize_all_escapes=true;
 require_once("../interface/globals.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/options.inc.php");
+require_once("$srcdir/headers.inc.php");
 
 $form_newid   = isset($_POST['form_newid'  ]) ? trim($_POST['form_newid'  ]) : '';
 $form_curpid  = isset($_POST['form_curpid' ]) ? trim($_POST['form_curpid' ]) : '';
@@ -122,7 +123,7 @@ if (!empty($row)) {
     $current_location = text( $urow['lname'] . ", " . $urow['fname'] . " " . $urow['mname'] . " " . $row['ct_when'] );
   }
   else if ($ct_location) {
-    $current_location = generate_display_field(array('data_type'=>'1','list_id'=>'chartloc'),$ct_location);  
+    $current_location = generate_display_field(array('data_type'=>'1','list_id'=>'chartloc'),$ct_location);
   }
 
   echo " <tr>\n";
@@ -198,7 +199,7 @@ if (!empty($row)) {
  <tr>
   <td class='bold'>&nbsp;</td>
   <td class='text'>
-   <input type='submit' class='button' name='form_lookup' value='<?php echo xla("Look Up"); ?>' />
+   <input type='submit' class='cp-submit button' name='form_lookup' value='<?php echo xla("Look Up"); ?>' />
   </td>
  </tr>
 

@@ -31,6 +31,7 @@ set_time_limit(0);
 require_once("../globals.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/log.inc");
+require_once("$srcdir/headers.inc.php");
 
 if (!extension_loaded('zlib'))
     {
@@ -43,8 +44,8 @@ if (!function_exists('gzopen') && function_exists('gzopen64'))
         return gzopen64($filename, $mode, $use_include_path);
       }
     }
-    
-    
+
+
 if (!acl_check('admin', 'super')) die(xl('Not authorized','','','!'));
 
 include_once("Archive/Tar.php");
@@ -60,7 +61,7 @@ elseif (IS_WINDOWS) {
 }
 else {
  # without the tar.php module, can run via system commands in non-windows
- $newBackupMethod = false;   
+ $newBackupMethod = false;
 }
 
 $BTN_TEXT_CREATE = xl('Create Backup');
@@ -136,29 +137,29 @@ if ($form_step == 104) {
 $cmd = '';
 $mysql_cmd = $MYSQL_PATH . DIRECTORY_SEPARATOR . 'mysql';
 $mysql_dump_cmd = $mysql_cmd . 'dump';
-$file_to_compress = '';  // if named, this iteration's file will be gzipped after it is created 
+$file_to_compress = '';  // if named, this iteration's file will be gzipped after it is created
 $eventlog=0;  // Eventlog Flag
 
 if ($form_step == 0) {
   echo "<table>\n";
   echo " <tr>\n";
-  echo "  <td><input type='submit' name='form_create' value='$BTN_TEXT_CREATE' /></td>\n";
+  echo "  <td><input type='submit' class='cp-output' name='form_create' value='$BTN_TEXT_CREATE' /></td>\n";
   echo "  <td>" . xl('Create and download a full backup') . "</td>\n";
   echo " </tr>\n";
   // The config import/export feature is optional.
   if (!empty($GLOBALS['configuration_import_export'])) {
     echo " <tr>\n";
-    echo "  <td><input type='submit' name='form_export' value='$BTN_TEXT_EXPORT' /></td>\n";
+    echo "  <td><input type='submit' class='cp-misc' name='form_export' value='$BTN_TEXT_EXPORT' /></td>\n";
     echo "  <td>" . xl('Download configuration data') . "</td>\n";
     echo " </tr>\n";
     echo " <tr>\n";
-    echo "  <td><input type='submit' name='form_import' value='$BTN_TEXT_IMPORT' /></td>\n";
+    echo "  <td><input type='submit' class='cp-misc' name='form_import' value='$BTN_TEXT_IMPORT' /></td>\n";
     echo "  <td>" . xl('Upload configuration data') . "</td>\n";
     echo " </tr>\n";
     }
 // ViSolve : Add ' Create Log table backup Button'
    echo " <tr>\n";
-   echo "  <td><input type='submit' name='form_backup' value='$BTN_TEXT_CREATE_EVENTLOG' /></td>\n";
+   echo "  <td><input type='submit' class='cp-output' name='form_backup' value='$BTN_TEXT_CREATE_EVENTLOG' /></td>\n";
    echo "  <td>" . xl('Create Eventlog Backup') . "</td>\n";
    echo " </tr>\n";
    echo " <tr>\n";
@@ -175,7 +176,7 @@ if ($form_step == 1) {
   if (! obliterate_dir($TMP_BASE)) die(xl("Couldn't remove dir:"). " " . $TMP_BASE);
   if (! mkdir($BACKUP_DIR, 0777, true)) die(xl("Couldn't create backup dir:") . " " . $BACKUP_DIR);
   $file_to_compress = "$BACKUP_DIR/libreehr.sql";   // gzip this file after creation
-  
+
   if($GLOBALS['include_de_identification']==1)
   {
     //include routines during backup when de-identification is enabled
@@ -188,14 +189,14 @@ if ($form_step == 1) {
     escapeshellarg($sqlconf["dbase"]);
   }
   else
-  { 
+  {
     $cmd = "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
     " -p" . escapeshellarg($sqlconf["pass"]) .
     " -h" . escapeshellarg($sqlconf["host"]) .
     " --port=".escapeshellarg($sqlconf["port"]) .
     " --opt --quote-names -r $file_to_compress " .
     escapeshellarg($sqlconf["dbase"]);
-  } 
+  }
   $auto_continue = true;
 }
 
@@ -326,7 +327,7 @@ if ($form_step == 101) {
   echo "&nbsp;<br /><input type='submit' value='" . xl('Continue') . "' />\n";
 }
 
-if ($form_step == 102) 
+if ($form_step == 102)
 {
   $tables = '';
   if ($_POST['form_cb_services'  ]) $tables .= ' codes';
@@ -335,11 +336,11 @@ if ($form_step == 102)
   if ($_POST['form_cb_categories']) $tables .= ' categories categories_seq';
   if ($_POST['form_cb_feesheet'  ]) $tables .= ' fee_sheet_options';
   if ($_POST['form_cb_lang'      ]) $tables .= ' lang_languages lang_constants lang_definitions';
-  if ($tables || is_array($_POST['form_sel_lists']) || is_array($_POST['form_sel_layouts'])) 
+  if ($tables || is_array($_POST['form_sel_lists']) || is_array($_POST['form_sel_layouts']))
   {
     $form_status .= xl('Creating export file') . "...<br />";
     echo nl2br($form_status);
-    if (file_exists($EXPORT_FILE)) 
+    if (file_exists($EXPORT_FILE))
     {
       if (! unlink($EXPORT_FILE)) die(xl("Couldn't remove old export file: ") . $EXPORT_FILE);
     }
@@ -349,47 +350,47 @@ if ($form_step == 102)
 
     # This condition was added because the windows operating system uses different syntax for the shell commands.
     # The test is if it is the windows operating system.
-    if (IS_WINDOWS) 
+    if (IS_WINDOWS)
     {
       # This section sets the character_set_client to utf8 in the sql file as part or the import property.
-      # windows will place the quotes in the outputted code if they are there. we removed them here.      
+      # windows will place the quotes in the outputted code if they are there. we removed them here.
       $cmd = "echo SET character_set_client = utf8; > $EXPORT_FILE & ";
     }
     else
     {
       $cmd = "echo 'SET character_set_client = utf8;' > $EXPORT_FILE;";
-    } 
-      if ($tables) 
+    }
+      if ($tables)
       {
         $cmd .= "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
                 " -p" . escapeshellarg($sqlconf["pass"]) .
                 " --opt --quote-names " .
                 escapeshellarg($sqlconf["dbase"]) . " $tables";
-                if (IS_WINDOWS) 
+                if (IS_WINDOWS)
                 {
                   # The Perl script differs in windows also.
                   $cmd .= " | $perl -pe \"s/ DEFAULT CHARSET=utf8//i; s/ collate[ =][^ ;,]*//i;\"" .
                   " >> $EXPORT_FILE & ";
                 }
                 else
-                {                   
+                {
                   $cmd .= " | $perl -pe 's/ DEFAULT CHARSET=utf8//i; s/ collate[ =][^ ;,]*//i;'" .
                   " > $EXPORT_FILE;";
                 }
-      } 
+      }
       $dumppfx = "$mysql_dump_cmd -u " . escapeshellarg($sqlconf["login"]) .
                  " -p" . escapeshellarg($sqlconf["pass"]) .
                  " --skip-opt --quote-names --complete-insert --no-create-info";
       // Individual lists.
-      if (is_array($_POST['form_sel_lists'])) 
+      if (is_array($_POST['form_sel_lists']))
       {
-        foreach ($_POST['form_sel_lists'] as $listid) 
+        foreach ($_POST['form_sel_lists'] as $listid)
         {
-          if (IS_WINDOWS) 
+          if (IS_WINDOWS)
           {
             # windows will place the quotes in the outputted code if they are there. we removed them here.
             $cmd .= " echo DELETE FROM list_options WHERE list_id = '$listid'; >> $EXPORT_FILE & ";
-            $cmd .= " echo DELETE FROM list_options WHERE list_id = 'lists' AND option_id = '$listid'; >> $EXPORT_FILE & ";     
+            $cmd .= " echo DELETE FROM list_options WHERE list_id = 'lists' AND option_id = '$listid'; >> $EXPORT_FILE & ";
           }
           else
           {
@@ -399,10 +400,10 @@ if ($form_step == 102)
           $cmd .= $dumppfx .
             " --where=\"list_id = 'lists' AND option_id = '$listid' OR list_id = '$listid'\" " .
             escapeshellarg($sqlconf["dbase"]) . " list_options";
-            if (IS_WINDOWS) 
+            if (IS_WINDOWS)
             {
               # windows uses the & to join statements.
-              $cmd .=  " >> $EXPORT_FILE & ";    
+              $cmd .=  " >> $EXPORT_FILE & ";
             }
             else
             {
@@ -411,22 +412,22 @@ if ($form_step == 102)
         }
       }
       // Individual layouts.
-      if (is_array($_POST['form_sel_layouts'])) 
+      if (is_array($_POST['form_sel_layouts']))
       {
-        foreach ($_POST['form_sel_layouts'] as $layoutid) 
+        foreach ($_POST['form_sel_layouts'] as $layoutid)
         {
-          if (IS_WINDOWS) 
+          if (IS_WINDOWS)
           {
             # windows will place the quotes in the outputted code if they are there. we removed them here.
-            $cmd .= " echo DELETE FROM layout_options WHERE form_id = '$layoutid'; >> $EXPORT_FILE & ";              
+            $cmd .= " echo DELETE FROM layout_options WHERE form_id = '$layoutid'; >> $EXPORT_FILE & ";
           }
           else
           {
             $cmd .= "echo \"DELETE FROM layout_options WHERE form_id = '$layoutid';\" >> $EXPORT_FILE;";
           }
-          if (strpos($layoutid, 'LBF') === 0) 
+          if (strpos($layoutid, 'LBF') === 0)
           {
-           if (IS_WINDOWS) 
+           if (IS_WINDOWS)
            {
              # windows will place the quotes in the outputted code if they are there. we removed them here.
              $cmd .= " echo DELETE FROM list_options WHERE list_id = 'lbfnames' AND option_id = '$layoutid'; >> $EXPORT_FILE & ";
@@ -434,14 +435,14 @@ if ($form_step == 102)
            else
            {
              $cmd .= "echo \"DELETE FROM list_options WHERE list_id = 'lbfnames' AND option_id = '$layoutid';\" >> $EXPORT_FILE;";
-           } 
+           }
             $cmd .= $dumppfx .
               " --where=\"list_id = 'lbfnames' AND option_id = '$layoutid'\" " .
               escapeshellarg($sqlconf["dbase"]) . " list_options" ;
-            if (IS_WINDOWS) 
+            if (IS_WINDOWS)
             {
               # windows uses the & to join statements.
-             $cmd .=  " >> $EXPORT_FILE & ";    
+             $cmd .=  " >> $EXPORT_FILE & ";
             }
             else
             {
@@ -451,19 +452,19 @@ if ($form_step == 102)
           $cmd .= $dumppfx .
             " --where=\"form_id = '$layoutid'\" " .
             escapeshellarg($sqlconf["dbase"]) . " layout_options" ;
-            if (IS_WINDOWS) 
+            if (IS_WINDOWS)
             {
               # windows uses the & to join statements.
-             $cmd .=  " >> $EXPORT_FILE & ";    
+             $cmd .=  " >> $EXPORT_FILE & ";
             }
             else
             {
              $cmd .=  " >> $EXPORT_FILE;";
             }
         }
-      }      
+      }
   }
-  else 
+  else
   {
     echo xl('No items were selected!');
     $form_step = -1;
@@ -564,7 +565,7 @@ flush();
 if ($cmd) {
   $tmp0 = exec($cmd, $tmp1, $tmp2);
 
-  if ($tmp2) 
+  if ($tmp2)
   {
     if ($eventlog==1)
      {
@@ -582,7 +583,7 @@ if ($cmd) {
         $res=sqlStatement("drop table if exists log_comment_encrypt_backup");
         echo "<br><b>";
         echo xl('Backup Successfully taken in')." ";
-        echo  $BACKUP_EVENTLOG_DIR; 
+        echo  $BACKUP_EVENTLOG_DIR;
         echo "</b>";
      }
  //  ViSolve:  If the Eventlog is set, then clear the temporary table  -- Ends here
@@ -590,7 +591,7 @@ if ($cmd) {
 // If a file was flagged to be gzip-compressed after this cmd, do it.
 if ($file_to_compress) {
   if (!gz_compress_file($file_to_compress))
-    die (xl("Error in gzip compression of file: ") . $file_to_compress);  
+    die (xl("Error in gzip compression of file: ") . $file_to_compress);
 }
 ?>
 
@@ -618,9 +619,9 @@ function obliterate_dir($dir) {
 
 // Create a tar archive given the archive file name, compression method if any, and the
 // array of file/directory names to archive
-function create_tar_archive($archiveName, $compressMethod, $itemArray) {  
+function create_tar_archive($archiveName, $compressMethod, $itemArray) {
   global $newBackupMethod;
-    
+
   if ($newBackupMethod) {
    // Create a tar object using the pear library
    //  (this is the preferred method)
@@ -629,7 +630,7 @@ function create_tar_archive($archiveName, $compressMethod, $itemArray) {
   }
   else {
    // Create the tar files via command line tools
-   //  (this method used when the tar pear library is not available)  
+   //  (this method used when the tar pear library is not available)
    $files = '"' . implode('" "', $itemArray) . '"';
    if ($compressMethod == "gz") {
     $command = "tar --same-owner --ignore-failed-read -zcphf $archiveName $files";

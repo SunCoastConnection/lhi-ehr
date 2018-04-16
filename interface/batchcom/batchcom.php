@@ -2,12 +2,12 @@
 /*
  * Batch Communications Script
  *
- * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io> 
+ * Copyright (C) 2016-2017 Terry Hill <teryhill@librehealth.io>
  * No other copyright information in the previous header
  *
  * LICENSE: This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 3 
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,7 +20,7 @@
  * See the Mozilla Public License for more details.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * @package LibreHealth EHR 
+ * @package LibreHealth EHR
  * @author  Brady Miller <brady@sparmy.com>
  * @link    http://librehealth.io
  */
@@ -32,6 +32,7 @@ include_once("$srcdir/sql.inc");
 require_once("$srcdir/formatting.inc.php");
 include_once("../../library/acl.inc");
 include_once("batchcom.inc.php");
+require_once("$srcdir/headers.inc.php");
 /** Current format date */
 $DateFormat = DateFormatRead();
 $DateLocale = getLocaleCodeForDisplayLanguage($GLOBALS['language_default']);
@@ -77,24 +78,24 @@ if ($_POST['form_action']=='Process') {
     //process sql
     if (!$form_err) {
 
-           
+
          $sql="select patient_data.*, cal_events.pc_eventDate as next_appt,cal_events.pc_startTime as appt_start_time,cal_date.last_appt,forms.last_visit from patient_data left outer join libreehr_postcalendar_events as cal_events on patient_data.pid=cal_events.pc_pid and curdate() < cal_events.pc_eventDate left outer join (select pc_pid,max(pc_eventDate) as last_appt from libreehr_postcalendar_events where curdate() >= pc_eventDate group by pc_pid ) as cal_date on cal_date.pc_pid=patient_data.pid left outer join (select pid,max(date) as last_visit from forms where curdate() >= date group by pid) as forms on forms.pid=patient_data.pid";
         //appointment dates
         if ($_POST['app_s']!=0 AND $_POST['app_s']!='') {
-            $and=where_or_and ($and);        
+            $and=where_or_and ($and);
             $sql_where_a=" $and cal_events.pc_eventDate > '".$_POST['app_s']."'";
-        } 
+        }
         if ($_POST['app_e']!=0 AND $_POST['app_e']!='') {
             $and=where_or_and ($and);
             $sql_where_a.=" $and cal_events.pc_endDate < '".$_POST['app_e']."'";
-        } 
+        }
         $sql.=$sql_where_a;
-        
+
         // encounter dates
         if ($_POST['seen_since']!=0 AND $_POST['seen_since']!='') {
             $and=where_or_and ($and);
             $sql.=" $and forms.last_visit > '".$_POST['seen_since']."' " ;
-        } 
+        }
         if ($_POST['seen_upto']!=0 AND $_POST['not_seen_since']!='') {
             $and=where_or_and ($and);
             $sql.=" $and forms.last_visit > '".$_POST['seen_since']."' " ;
@@ -104,7 +105,7 @@ if ($_POST['form_action']=='Process') {
         if ($_POST['age_from']!=0 AND $_POST['age_from']!='') {
             $and=where_or_and ($and);
             $sql.=" $and DATEDIFF( CURDATE( ), patient_data.DOB )/ 365.25 >= '".$_POST['age_from']."' ";
-        } 
+        }
         if ($_POST['age_upto']!=0 AND $_POST['age_upto']!='') {
             $and=where_or_and ($and);
             $sql.=" $and DATEDIFF( CURDATE( ), patient_data.DOB )/ 365.25 <= '".$_POST['age_upto']."' ";
@@ -121,7 +122,7 @@ if ($_POST['form_action']=='Process') {
             $and=where_or_and ($and);
             $sql.=" $and patient_data.hipaa_mail='YES' ";
         }
-        
+
         switch ($_POST['process_type']):
             case $choices[1]: // Email
                 $and=where_or_and ($and);
@@ -154,11 +155,11 @@ if ($_POST['form_action']=='Process') {
     <span class="title"><?php xl('Batch Communication Tool','e')?></span>
     <br><br>
     <div class="text">
-        <?php    
+        <?php
             echo (xl('No results found, please try again.','','<br>'));
         ?> </div></body></html> <?php
         //if results
-        } else { 
+        } else {
             switch ($_POST['process_type']):
                 case $choices[0]: // CSV File
                     require_once ('batchCSV.php');
@@ -174,7 +175,7 @@ if ($_POST['form_action']=='Process') {
         // end results
 
         exit ();
-    } 
+    }
 }
 
 //START OUT OUR PAGE....
@@ -301,7 +302,7 @@ if ($_POST['form_action']=='Process') {
     <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
      </tr><tr><td>
 
-    <INPUT TYPE="submit" name="form_action" value=<?php xl('Process','e','\'','\''); ?>> </td><td><?php xl('Process takes some time','e')?></td> <td>&nbsp;</td><td>&nbsp;</td></tr>
+    <INPUT TYPE="submit" class="cp-submit" name="form_action" value=<?php xl('Process','e','\'','\''); ?>> </td><td><?php xl('Process takes some time','e')?></td> <td>&nbsp;</td><td>&nbsp;</td></tr>
 </table>
 </div>
 </div>

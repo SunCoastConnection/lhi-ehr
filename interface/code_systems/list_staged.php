@@ -45,6 +45,7 @@ $fake_register_globals=false;
 
 require_once("../../interface/globals.php");
 require_once("$srcdir/acl.inc");
+require_once("$srcdir/headers.inc.php");
 
 // Ensure script doesn't time out and has enough memory
 set_time_limit(0);
@@ -102,7 +103,7 @@ if (is_dir($mainPATH)) {
     //
     // this foreach loop only encounters 1 file for SNOMED, RXNORM and ICD9 but will cycle through all the
     // the release files for ICD10
-    // 
+    //
     $i = -1;
     foreach ($files_array as $file) {
         $i++;
@@ -115,7 +116,7 @@ if (is_dir($mainPATH)) {
         $supported_file = 0;
             if ($db == 'RXNORM') {
                 if (preg_match("/RxNorm_full_([0-9]{8}).zip/",$file,$matches)) {
-    
+
             // Hard code the version RxNorm feed to be Standard
                     //  (if add different RxNorm types/versions/lanuages, then can use this)
             //
@@ -128,7 +129,7 @@ if (is_dir($mainPATH)) {
             }
             else if ($db == 'SNOMED') {
                 if (preg_match("/SnomedCT_INT_([0-9]{8}).zip/",$file,$matches)) {
-    
+
                     // Hard code the version SNOMED feed to be International:English
                     //  (if add different SNOMED types/versions/languages, then can use this)
                     //
@@ -139,7 +140,7 @@ if (is_dir($mainPATH)) {
                 $supported_file = 1;
                 }
                 else if (preg_match("/SnomedCT_Release_INT_([0-9]{8}).zip/",$file,$matches)) {
-    
+
             // Hard code the version SNOMED feed to be International:English
                     //  (if add different SNOMED types/versions/languages, then can use this)
                     //
@@ -188,13 +189,13 @@ if (is_dir($mainPATH)) {
                 }
             }
             else if (is_numeric(strpos($db, "ICD"))) {
-            
+
                 $qry_str = "SELECT `load_checksum`,`load_source`,`load_release_date` FROM `supported_external_dataloads` WHERE `load_type` = ? and `load_filename` = ? and `load_checksum` = ? ORDER BY `load_release_date` DESC";
 
-        // this query determines whether you can load the data into LibreHealth EHR. you must have the correct 
-        // filename and checksum for each file that are part of the same release. 
-        // 
-        // IMPORTANT: Releases that contain mutliple zip file (e.g. ICD10) are grouped together based 
+        // this query determines whether you can load the data into LibreHealth EHR. you must have the correct
+        // filename and checksum for each file that are part of the same release.
+        //
+        // IMPORTANT: Releases that contain mutliple zip file (e.g. ICD10) are grouped together based
         // on the load_release_date attribute value specified in the supported_external_dataloads table
                 //
                 // Just in case same filename is released on different release dates, best to actually include the md5sum in the query itself.
@@ -383,10 +384,10 @@ if ($supported_file === 1) {
     }
     if (strlen($action) > 0) {
     ?>
-      <input id="<?php echo attr($db); ?>_install_button" version="<?php echo attr($file_revision); ?>" file_revision_date="<?php echo attr($file_revision_date); ?>" file_checksum="<?php echo attr($file_checksum); ?>" type="button" value="<?php echo attr($action); ?>"/>
-      </div> 
+      <input id="<?php echo attr($db); ?>_install_button" class='cp-misc' version="<?php echo attr($file_revision); ?>" file_revision_date="<?php echo attr($file_revision_date); ?>" file_checksum="<?php echo attr($file_checksum); ?>" type="button" value="<?php echo attr($action); ?>"/>
+      </div>
     <?php
     }
   }
-} 
+}
 ?>

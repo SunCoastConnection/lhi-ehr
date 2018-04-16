@@ -59,7 +59,7 @@ $ires = sqlStatement("SELECT id, type, title, begdate FROM lists WHERE " .
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<?php 
+<?php
   html_header_show();
   call_required_libraries(array("jquery-min-3-1-1","bootstrap","datepicker","fancybox"));
 ?>
@@ -146,7 +146,7 @@ function cancelClicked() {
 
 <div>
     <div style = 'float:left; margin-left:8px;margin-top:-3px'>
-      <a href="javascript:saveClicked();" class="css_button link_submit"><span><?php echo xlt('Save'); ?></span></a>
+      <a href="javascript:saveClicked();" class="css_button link_submit cp-submit"><span><?php echo xlt('Save'); ?></span></a>
       <?php if ($viewmode || !isset($_GET["autoloaded"]) || $_GET["autoloaded"] != "1") { ?>
     </div>
 
@@ -154,7 +154,7 @@ function cancelClicked() {
       <a href="<?php echo "$rootdir/patient_file/encounter/encounter_top.php"; ?>"
         class="css_button link_submit" onClick="top.restoreSession()"><span><?php echo xlt('Cancel'); ?></span></a>
   <?php } else { // not $viewmode ?>
-      <a href="" class="css_button link_submit" onClick="return cancelClicked()">
+      <a href="" class="css_button link_submit cp-negative" onClick="return cancelClicked()">
       <span><?php echo xlt('Cancel'); ?></span></a>
   <?php } // end not $viewmode ?>
     </div>
@@ -170,7 +170,7 @@ function cancelClicked() {
     <textarea class="form-control input-sm" style="resize:none" name='reason' cols='40' rows='12' wrap='virtual'>
       <?php echo $viewmode ? text($result['reason']) : text($GLOBALS['default_chief_complaint']); ?>
     </textarea>
-    <hr>  
+    <hr>
   </div>
   <div class="col-xs-12 col-sm-4 col-lg-4 ">
    <table>
@@ -287,7 +287,7 @@ function cancelClicked() {
     <tr<?php if ($GLOBALS['ippf_specific']) echo " style='visibility:hidden;'"; ?>>
      <td class='bold' ><?php echo xlt('Onset/hosp. date:'); ?></td>
      <td class='text' ><!-- default is blank so that while generating claim the date is blank. -->
-      <input type='text' size='10' name='form_onset_date' id='form_onset_date' 
+      <input type='text' size='10' name='form_onset_date' id='form_onset_date'
              value='<?php echo $viewmode && $result['onset_date']!='0000-00-00 00:00:00' ? oeFormatShortDate(substr($result['onset_date'], 0, 10)) : ''; ?>'
              title='<?php echo xla('Date of onset or hospitalization'); ?>'/>
      </td>
@@ -307,11 +307,11 @@ function cancelClicked() {
    <?php echo xlt('Issues (Injuries/Medical/Allergy)'); ?>
     </div>
     <div>
-      <a href="../../patient_file/summary/add_edit_issue.php" class="css_button_small link_submit iframe"
+      <a href="../../patient_file/summary/add_edit_issue.php" class="css_button_small link_submit iframe cp-positive"
        onclick="top.restoreSession()"><span><?php echo xlt('Add'); ?></span></a>
     </div>
     <div>
-    <select multiple class="form-control input-sm" name='issues[]' size='8' 
+    <select multiple class="form-control input-sm" name='issues[]' size='8'
       title='<?php echo xla('Hold down [Ctrl] for multiple selections or to unselect'); ?>'>
         <?php
         while ($irow = sqlFetchArray($ires)) {
@@ -340,7 +340,7 @@ function cancelClicked() {
    . 'Hold down [Ctrl] button to select multiple issues.'); ?>
    </i></p>
 
- </div> 
+ </div>
 
 </div>
 
@@ -375,14 +375,14 @@ if (!$viewmode) { ?>
             return;
         }
         // otherwise just continue normally
-    }    
+    }
 <?php
 
   // Search for an encounter from today
   $erow = sqlQuery("SELECT fe.encounter, fe.date " .
     "FROM form_encounter AS fe, forms AS f WHERE " .
-    "fe.pid = ? " . 
-    " AND fe.date >= ? " . 
+    "fe.pid = ? " .
+    " AND fe.date >= ? " .
     " AND fe.date <= ? " .
     " AND " .
     "f.formdir = 'patient_encounter' AND f.form_id = fe.id AND f.deleted = 0 " .
@@ -396,7 +396,7 @@ if (!$viewmode) { ?>
 }
 ?>
 </script>
-<?php 
+<?php
   /*
    Making fancybox compatible with jquery 3.1.1 as $.browser is removed in jquery 1.9
   */

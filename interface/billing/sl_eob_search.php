@@ -35,6 +35,7 @@ require_once("$srcdir/sl_eob.inc.php");
 require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/classes/class.ezpdf.php");//for the purpose of pdf creation
 require_once("$srcdir/options.inc.php");
+require_once("$srcdir/headers.inc.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/classes/Document.class.php");
 require_once("$srcdir/classes/Note.class.php");
@@ -162,7 +163,7 @@ function upload_file_to_client_pdf($file_to_send) {
                            $_SESSION['language_direction'] == 'rtl' ? true : false
                            );
     ob_start();
-    echo readfile($file_to_send, "r");//this file contains the HTML to be converted to pdf.
+    readfile($file_to_send, "r");//this file contains the HTML to be converted to pdf.
     //echo $file;
     $content = ob_get_clean();
     // Fix a nasty html2pdf bug - it ignores document root!
@@ -234,6 +235,17 @@ $today = date("Y-m-d");
   // Print or download statements if requested.
   //
 if (($_POST['form_print'] || $_POST['form_download'] || $_POST['form_pdf'] || $_POST['form_portalnotify']) && $_POST['form_cb']) {
+    //some global variables to keep count of statements ignored
+    //and corresponding patient names, in final print due to:
+    //1) having amount value less than minimum amount to print
+    $GLOBALS['stmts_below_minimum_amount'] = 0;
+    $GLOBALS['pat_below_minimum_amount'] = array();
+    //2) the patient is set to no statement
+    $GLOBALS['stmts_set_no_patient'] = 0;
+    $GLOBALS['pat_set_no_stmt'] = array();
+    //3) the insurance company does not allow statements
+    $GLOBALS['stmts_not_allowed_insurance_company'] = 0;
+    $GLOBALS['pat_not_allowed_insurance_company'] = array();
 
     $fhprint = fopen($STMT_TEMP_FILE, 'w');
     $sqlBindArray = array();
@@ -408,6 +420,42 @@ if ($_POST['form_portalnotify']) {
 
     if (!empty($stmt)) ++$stmt_count;
     fwrite($fhprint, make_statement($stmt));
+
+    //logging the reason for not printing some statements, their count
+    //and corresponding patient names
+    $countCase1 = (string)$GLOBALS['stmts_below_minimum_amount'];
+    $countCase2 = (string)$GLOBALS['stmts_set_no_patient'];
+    $countCase3 = (string)$GLOBALS['stmts_not_allowed_insurance_company'];
+    $reason = "\n\n";
+    if ($countCase1 != 0) {
+      //reason for case 1
+      $reason .= $countCase1 . " SELECTED STATEMENT(S) NOT PRINTED: ";
+      $reason .= "Statement amount value less than minimum amount value to print.";
+      $reason .= "\n  PATIENT NAMES: ";
+      foreach ($GLOBALS['pat_below_minimum_amount'] as $pat_name) {
+        $reason .= "{$pat_name} | ";
+      }
+    }
+    if ($countCase2 != 0) {
+      //reason for case 2
+      $reason .= "\n\n" . $countCase2 . " SELECTED STATEMENT(S) NOT PRINTED: ";
+      $reason .= "The patient is set to no statement";
+      $reason .= "\n  PATIENT NAMES: ";
+      foreach ($GLOBALS['pat_set_no_stmt'] as $pat_name) {
+        $reason .= "{$pat_name} | ";
+      }
+    }
+    if ($countCase3 != 0) {
+      //reason for case 3
+      $reason .= "\n\n" . $countCase3 . " SELECTED STATEMENT(S) NOT PRINTED: ";
+      $reason .= "The insurance company does not allow statements";
+      $reason .= "\n  PATIENT NAMES: ";
+      foreach ($GLOBALS['pat_not_allowed_insurance_company'] as $pat_name) {
+        $reason .= "{$pat_name} | ";
+      }
+    }
+
+    fwrite($fhprint, $reason);
     fclose($fhprint);
     sleep(1);
 
@@ -577,7 +625,7 @@ function npopup(pid) {
    </select>
   </td>
   <td>
-   <input type='submit' name='form_search' value='<?php xl("Search","e"); ?>'>
+   <input type='submit' name='form_search' class="cp-submit" value='<?php xl("Search","e"); ?>'>
   </td>
  </tr>
 
@@ -848,17 +896,17 @@ if ($_POST['form_search'] || $_POST['form_print']) {
 
 <p>
 <?php if ($eracount) { ?>
-<input type='button' value='<?php xl('Process ERA File','e')?>' onclick='processERA()' /> &nbsp;
+<input type='button' class="cp-submit" value='<?php xl('Process ERA File','e')?>' onclick='processERA()' /> &nbsp;
 <?php } else { ?>
-<input type='button' value='<?php xl('Select All','e')?>' onclick='checkAll(true)' /> &nbsp;
-<input type='button' value='<?php xl('Clear All','e')?>' onclick='checkAll(false)' /> &nbsp;
+<input type='button' class="cp-positive" value='<?php xl('Select All','e')?>' onclick='checkAll(true)' /> &nbsp;
+<input type='button' class="cp-negative" value='<?php xl('Clear All','e')?>' onclick='checkAll(false)' /> &nbsp;
   <?php if ($GLOBALS['statement_appearance'] != '1') { ?>
-<input type='submit' name='form_print' value='<?php xl('Print Selected Statements','e'); ?>' /> &nbsp;
-<input type='submit' name='form_download' value='<?php xl('Download Selected Statements','e'); ?>' /> &nbsp;
+<input type='submit' class="cp-output" name='form_print' value='<?php xl('Print Selected Statements','e'); ?>' /> &nbsp;
+<input type='submit' class="cp-output" name='form_download' value='<?php xl('Download Selected Statements','e'); ?>' /> &nbsp;
 <?php } ?>
-<input type='submit' name='form_pdf' value='<?php xl('PDF Download Selected Statements','e'); ?>' /> &nbsp;
+<input type='submit' class="cp-output" name='form_pdf' value='<?php xl('PDF Download Selected Statements','e'); ?>' /> &nbsp;
 <?php if ($is_portal ){?>
-  <input type='submit' name='form_portalnotify' value='<?php xl('Notify via Patient Portal','e'); ?>' /> &nbsp;
+  <input type='submit' class="cp-misc" name='form_portalnotify' value='<?php xl('Notify via Patient Portal','e'); ?>' /> &nbsp;
   <?php } }?>
 <input type='checkbox' name='form_without' value='1' /> <?php xl('Without Update','e'); ?>
 </p>
