@@ -103,10 +103,6 @@ if (isset($_POST["privatemode"]) && $_POST["privatemode"] =="user_admin") {
               $tqvar = formData('mname','P');
               sqlStatement("update users set mname='$tqvar' where id= ? ", array($_POST["id"]));
       }
-      if ($_POST["role_name"]) {
-        $tqvar = formData('role_name', 'P');
-        sqlStatement("update users set fullscreen_role='$tqvar' where id= ?", array($_POST["id"]));
-      }
       if ($_POST["fullscreen_page"]) {
         $tqvar = formData('fullscreen_page', 'P');
         sqlStatement("update users set fullscreen_page='$tqvar' where id=?", array($_POST["id"]));
@@ -116,6 +112,16 @@ if (isset($_POST["privatemode"]) && $_POST["privatemode"] =="user_admin") {
       } else {
         sqlStatement("update users set fullscreen_enable=0 where id=?", array($_POST["id"]));
       }
+
+      if ($_POST["menu_role"]) {
+        $tqvar = formData('menu_role', 'P');
+        if ($tqvar != "") {
+          sqlStatement("update users set menu_role='$tqvar' where id=?", array($_POST["id"]));
+        } else {
+          sqlStatement("update users set menu_role='Sample Role' where id=?", array($_POST["id"]));
+        }
+      }
+
       if ($_POST["facility_id"]) {
               $tqvar = formData('facility_id','P');
               sqlStatement("update users set facility_id = '$tqvar' where id = ? ", array($_POST["id"]));
@@ -237,6 +243,8 @@ if (isset($_POST["mode"])) {
 
     $calvar = $_POST["calendar"] ? 1 : 0;
     $fullscreen_enable = $_POST["fullscreen_enable"] ? 1 : 0;
+    $menuRole = $_POST["menu_role"] ?: "Sample Role";
+
     $res = sqlStatement("select distinct username from users where username != ''");
     $doit = true;
     while ($row = sqlFetchArray($res)) {
@@ -275,9 +283,9 @@ if (isset($_POST["mode"])) {
             "', npi  = '"          . trim(formData('npi'          )) .
             "', taxonomy = '"      . trim(formData('taxonomy'     )) .
             "', facility_id = '"   . trim(formData('facility_id'  )) .
-            "', fullscreen_role = '". trim(formData('role_name'    )) .
             "', fullscreen_page = '". trim(formData('fullscreen_page')) .
             "', fullscreen_enable = '". $fullscreen_enable .
+            "', menu_role = '". $menuRole .
             "', specialty = '"     . trim(formData('specialty'    )) .
             "', see_auth = '"      . trim(formData('see_auth'     )) .
             "', cal_ui = '"        . trim(formData('cal_ui'       )) .
@@ -351,8 +359,8 @@ if (isset($_GET["mode"])) {
   // this is commented out.  Somebody must have figured it was too dangerous.
   //
   if ($_GET["mode"] == "delete") {
-    $res = sqlStatement("select distinct username, id from users where id = '" .
-      $_GET["id"] . "'");
+    $res = sqlStatement("select distinct username, id from users where id = ?", array($_GET["id"]));
+
     for ($iter = 0; $row = sqlFetchArray($res); $iter++)
       $result[$iter] = $row;
 
@@ -362,7 +370,7 @@ if (isset($_GET["mode"])) {
     foreach($result as $iter) {
       sqlStatement("delete from groups where user = '" . $iter{"username"} . "'");
     }
-    sqlStatement("delete from users where id = '" . $_GET["id"] . "'");
+    sqlStatement("delete from users where iid = ?", array($_GET["id"]))
   }
   *******************************************************************/
 
@@ -391,35 +399,91 @@ $form_inactive = empty($_REQUEST['form_inactive']) ? false : true;
 ?>
 <html>
 <head>
-<?php call_required_libraries(array("jquery-min-3-1-1","bootstrap","fancybox-custom"));
-      resolveFancyboxCompatibility();
+
+    <?php call_required_libraries(array("jquery-min-3-1-1", "bootstrap","font-awesome", "iziModalToast"));
 ?>
 
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/common.js"></script>
-<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-ui.js"></script>
-<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery.easydrag.handler.beta2.js"></script>
+<!--<script type="text/javascript" src="<?php //echo $GLOBALS['webroot'] ?>/library/js/jquery-ui.js"></script>
+<script type="text/javascript" src="<?php //echo $GLOBALS['webroot'] ?>/library/js/jquery.easydrag.handler.beta2.js"></script>-->
 <script type="text/javascript">
 
 $(document).ready(function(){
 
-    // fancy box
-    enable_modals();
 
     tabbify();
 
-    // special size for
-    $(".iframe_medium").fancybox( {
-        'overlayOpacity' : 0.0,
-        'showCloseButton' : true,
-        'frameHeight' : 450,
-        'frameWidth' : 660
+            // enabling call for IziModalToast here and passing of  parameters
+
+            $('.trigger_userAdd').click(function (event) {
+                event.preventDefault();
+                $('#addUser-iframe').iziModal('open');
     });
 
-    $(function(){
-        // add drag and drop functionality to fancybox
-        $("#fancy_outer").easydrag();
+
+
+            $('.trigger_userEdit').click(function (event) {
+                event.preventDefault();
+                var editUserLink = $(this).attr("href");
+                call_izi(editUserLink);
     });
+
+
+            var addUserTitle = "Add User";
+            var editUserTitle = "Edit User";
+
+            $("#addUser-iframe").iziModal({
+                title: '<b>' + addUserTitle +'<b>',
+                subtitle: 'Add a new user with roles',
+                headerColor: '#88A0B9',
+                closeOnEscape: true,
+                fullscreen:true,
+                overlayClose: false,
+                closeButton: true,
+                theme: 'light',  // light
+                iframe: true,
+                width:700,
+                focusInput: true,
+                padding:5,
+                iframeHeight: 400,
+                iframeURL: "usergroup_admin_add.php"
 });
+
+
+
+
+            function call_izi(p) {
+                console.log(p);
+                $("#editUser-iframe").iziModal({
+                    title: '<b>' + editUserTitle +'<b>',
+                    subtitle: 'Edit a new user with roles',
+                    headerColor: '#88A0B9',
+                    closeOnEscape: true,
+                    fullscreen:true,
+                    overlayClose: false,
+                    closeButton: true,
+                    theme: 'light',  // light
+                    iframe: true,
+                    width:700,
+                    focusInput: true,
+                    padding:5,
+                    iframeHeight: 400,
+                    iframeURL: ''+p+'',
+                    onClosed: function(){
+                        setTimeout(function () {
+                            parent.$(".fa-refresh").click();
+                        },1500);
+
+                    }
+                });
+
+                setTimeout(function () {
+                    $('#editUser-iframe').iziModal('open');
+                },100);
+
+            }
+
+        });
 
 </script>
 <script language="JavaScript">
@@ -440,7 +504,7 @@ function authorized_clicked() {
        <table>
       <tr >
         <td><b><?php echo xlt('User / Groups'); ?></b>&nbsp;&nbsp;</td>
-        <td><a href="usergroup_admin_add.php" class="iframe_medium css_button cp-positive"><span><?php echo xlt('Add User'); ?></span></a>
+                <td><a href="usergroup_admin_add.php" class="trigger_userAdd css_button cp-positive"><span><?php echo xlt('Add User'); ?></span></a>
         </td>
         <td><a href="facility_user.php" class="css_button cp-misc"><span><?php echo xlt('View Facility Specific User Information'); ?></span></a>
         </td>
@@ -485,7 +549,7 @@ foreach ($result4 as $iter) {
   }
   print "<tr>
         <td><b><a href='user_admin.php?id=" . $iter{"id"} .
-    "' class='iframe_medium' onclick='top.restoreSession()'><span>" . $iter{"username"} . "</span></a></b>" ."&nbsp;</td>
+                            "' class='trigger_userEdit' onclick='top.restoreSession()'><span>" . $iter{"username"} . "</span></a></b>" ."&nbsp;</td>
     <td><span class='text'>" . attr($iter{"fname"}) . ' ' . attr($iter{"lname"}) ."</span>&nbsp;</td>
     <td><span class='text'>" . attr($iter{"info"}) . "</span>&nbsp;</td>
     <td align='left'><span class='text'>" .$iter{"authorized"} . "</span>&nbsp;</td>";
@@ -520,6 +584,36 @@ if (empty($GLOBALS['disable_non_default_groups'])) {
   if ($alertmsg = trim($alertmsg)) {
     echo "alert('$alertmsg');\n";
   }
+
+    elseif(isset($_SESSION["from_addUser"]) && $_SESSION["from_addUser"] === true){
+        echo "
+      iziToast.success({
+            title: 'User added',
+            message: 'Successfully added user to database',
+            position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+            icon: 'fa fa-user-plus'
+
+        });
+     ";
+        $_SESSION["from_addUser"] = false;
+    }
+
+    elseif (isset($_SESSION["from_editUser"]) && $_SESSION["from_editUser"] === true){
+        echo "
+      iziToast.success({
+            title: 'User edited',
+            message: 'Successfully updated user info',
+            position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+            icon: 'fa fa-pencil'
+
+        });
+     ";
+        $_SESSION["from_editUser"] = false;
+    }
+    else{
+        $_SESSION["from_addUser"] = false;
+        $_SESSION["from_editUser"] = false;
+    }
 ?>
 </script>
 

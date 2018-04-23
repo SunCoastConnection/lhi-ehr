@@ -41,6 +41,7 @@ require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/options.inc.php");
 require_once("$srcdir/erx_javascript.inc.php");
 require_once("$srcdir/headers.inc.php");
+require_once("$srcdir/role.php");
 
 $alertmsg = '';
 
@@ -51,7 +52,7 @@ $alertmsg = '';
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 
-<?php call_required_libraries(array("jquery-min-3-1-1", "fancybox", "common")); ?>
+<?php call_required_libraries(array("jquery-min-3-1-1", "font-awesome", "iziModalToast", "common")); ?>
 
 <script src="checkpwd_validation.js" type="text/javascript"></script>
 
@@ -131,34 +132,65 @@ function submitform() {
           return false;
        }
        <?php } // End erx_enable only include block?>
+        // send this session variable to the form so as to tract if it is a success (adding a new user)
+        <?php $_SESSION["from_addUser"] = true; ?>
 
         document.forms[0].submit();
-        parent.$.fn.fancybox.close(); 
+        // closing the izi Modal
+        parent.$('#addUser-iframe').iziModal('close');
 
     } else {
        if (document.forms[0].rumple.value.length<=0)
        {
           document.forms[0].rumple.style.backgroundColor="red";
-          alert("<?php xl('Required field missing: Please enter the User Name','e');?>");
+           alertMsg = "<?php xl('Required field missing: Please enter the <b>User Name</b>','e');?>";
+           iziToast.warning({
+               title: 'Warning -',
+               message: alertMsg,
+               position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+               icon: 'fa fa-exclamation-triangle'
+
+           });
           document.forms[0].rumple.focus();
           return false;
        }
        if (document.forms[0].stiltskin.value.length<=0)
        {
           document.forms[0].stiltskin.style.backgroundColor="red";
-          alert("<?php echo xl('Please enter the pass phrase'); ?>");
+           alertMsg = "<?php echo xl('Please enter the <b>pass phrase</b>');?>";
+           iziToast.warning({
+               title: 'Caution',
+               message: alertMsg,
+               position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+               icon: 'fa fa-exclamation-triangle'
+
+           });
           document.forms[0].stiltskin.focus();
           return false;
        }
        if(trimAll(document.getElementById('fname').value) == ""){
           document.getElementById('fname').style.backgroundColor="red";
-          alert("<?php echo xl('Required field missing: Please enter the First name');?>");
+           alertMsg = "<?php echo xl('Required field missing: Please enter the <b>First name</b>');?>";
+           iziToast.warning({
+               title: 'Warning -',
+               message: alertMsg,
+               position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+               icon: 'fa fa-exclamation-triangle'
+
+           });
           document.getElementById('fname').focus();
           return false;
        }
        if(trimAll(document.getElementById('lname').value) == ""){
           document.getElementById('lname').style.backgroundColor="red";
-          alert("<?php echo xl('Required field missing: Please enter the Last name');?>");
+           alertMsg = "<?php echo xl('Required field missing: Please enter the <b>Last name</b>');?>";
+           iziToast.warning({
+               title: 'Warning -',
+               message: alertMsg,
+               position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+               icon: 'fa fa-exclamation-triangle'
+
+           });
           document.getElementById('lname').focus();
           return false;
        }
@@ -181,9 +213,9 @@ function authorized_clicked() {
 <table><tr><td>
 <span class="title"><?php echo xlt('Add User'); ?></span>&nbsp;</td>
 <td>
-<a class="css_button" name='form_save' id='form_save' href='#' onclick="return submitform()">
+<a class="css_button cp-submit" name='form_save' id='form_save' href='#' onclick="return submitform()">
     <span><?php echo xlt('Save');?></span></a>
-<a class="css_button large_button" id='cancel' href='#'>
+<a class="css_button large_button cp-negative" id='cancel' href='#'>
     <span class='css_button_span large_button_span'><?php echo xlt('Cancel');?></span>
 </a>
 </td></tr></table>
@@ -355,42 +387,24 @@ echo generate_select_list('irnpool', 'irnpool', '',
   <td><textarea name=info style="width:120px;" cols=27 rows=4 wrap=auto></textarea></td>
   </tr>
   <tr>
-  <td><span class="text"><?php echo xlt('Full screen role'); ?>:</span></td>
+  <td><span class="text"><?php echo xlt('Menu role'); ?>:</span></td>
   <td>
-  <select style="width:120px;" name="role_name" id="role_name">
+  <select style="width:120px;" name="menu_role" id="menu_role">
     <?php
-      $fres = sqlStatement("select distinct menu_set from menu_trees order by menu_set");
-      if ($fres) {
-        for ($iter3 = 0;$frow = sqlFetchArray($fres);$iter3++)
-          $result[$iter3] = $frow;
-        foreach($result as $iter3) {
-      ?>
-      <option value="<?php echo $iter3{'menu_set'};?>"><?php echo xlt($iter3{'menu_set'}); ?></option>
+         $role = new Role();
+         $role_list = $role->getRoleList();
+         foreach($role_list as $role_title) {
+           ?>  <option value="<?php echo $role_title; ?>"><?php echo xlt($role_title); ?></option>
       <?php
         }
-      }
     ?>
   </select>
   </td>
   <td><span class="text"> <?php echo xlt('Full screen page'); ?>:</span></td>
   <td>
       <select style="width:120px;" name="fullscreen_page" id="fullscreen_page">
-      <?php
-
-      $fres = sqlStatement("select entry_id from menu_trees where menu_set='Administrators'");
-      if($fres) {
-        for($iter3 = 0;$frow = sqlFetchArray($fres); $iter3++)
-          $result[$iter3] = $frow;
-          // needs to be worked on for different types of menus
-          foreach($result as $iter) {
-            $fres2 = sqlStatement("select id,label from menu_entries where id= ?", array($iter{'entry_id'}));
-            $frow2 = sqlFetchArray($fres2);
-            ?> 
-            <option value="<?php echo $frow2{'id'}; ?>"><?php echo xlt($frow2{'label'}); ?></option>
-            <?php
-          }
-      }
-      ?>
+                <option value="Calendar|/interface/main/main_info.php">Calendar</option>
+                <option value="Flow Board|/interface/patient_tracker/patient_tracker.php">Flow Board</option>
       </select>
 
   
@@ -511,15 +525,29 @@ if (empty($GLOBALS['disable_non_default_groups'])) {
 ?>
 
 <script language="JavaScript">
+
+$(document).ready(function(){
+    $("#cancel").click(function() {
+        // closing the izi Modal
+        parent.$('#addUser-iframe').iziModal('close');
+     });
+
 <?php
   if ($alertmsg = trim($alertmsg)) {
     echo "alert('$alertmsg');\n";
+        echo "
+     alertMsg = '<?php echo xl('Required field missing: Please enter the First name');?>';
+           iziToast.warning({
+               title: 'Warning -',
+               message: $alertmsg
+               position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+               icon: 'fa fa-exclamation-triangle'
+
+           });
+    \n";
   }
 ?>
-$(document).ready(function(){
-    $("#cancel").click(function() {
-          parent.$.fn.fancybox.close();
-     });
+/*
 
      $("#role_name").on('change', function(e) {
        
@@ -546,7 +574,8 @@ $(document).ready(function(){
           }
           });
 
-       });  
+       }); */
+
 });
 </script>
 <table>

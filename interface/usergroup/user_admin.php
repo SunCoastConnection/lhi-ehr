@@ -40,83 +40,83 @@ require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/calendar.inc");
 require_once("$srcdir/options.inc.php");
 require_once("$srcdir/erx_javascript.inc.php");
+require_once("$srcdir/headers.inc.php");
+require_once("$srcdir/role.php");
 
 if (!$_GET["id"] || !acl_check('admin', 'users'))
   exit();
 
 if ($_GET["mode"] == "update") {
   if ($_GET["username"]) {
-    // $tqvar = addslashes(trim($_GET["username"]));
     $tqvar = trim(formData('username','G'));
-    $user_data = sqlFetchArray(sqlStatement("select * from users where id={$_GET["id"]}"));
-    sqlStatement("update users set username='$tqvar' where id={$_GET["id"]}");
-    sqlStatement("update groups set user='$tqvar' where user='". $user_data["username"]  ."'");
-    //echo "query was: " ."update groups set user='$tqvar' where user='". $user_data["username"]  ."'" ;
+    $user_data = sqlFetchArray(sqlStatement("select * from users where id= ?", array($_GET["id"])));
+    sqlStatement("update users set username='$tqvar' where id = ?", array($_GET["id"]));
+    sqlStatement("update groups set user='$tqvar' where user = ?", array($user_data["username"]));
   }
   if ($_GET["taxid"]) {
     $tqvar = formData('taxid','G');
-    sqlStatement("update users set federaltaxid='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set federaltaxid='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["drugid"]) {
     $tqvar = formData('drugid','G');
-    sqlStatement("update users set federaldrugid='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set federaldrugid='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["upin"]) {
     $tqvar = formData('upin','G');
-    sqlStatement("update users set upin='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set upin='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["npi"]) {
     $tqvar = formData('npi','G');
-    sqlStatement("update users set npi='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set npi='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["taxonomy"]) {
     $tqvar = formData('taxonomy','G');
-    sqlStatement("update users set taxonomy = '$tqvar' where id= {$_GET["id"]}");
+    sqlStatement("update users set taxonomy = '$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["lname"]) {
     $tqvar = formData('lname','G');
-    sqlStatement("update users set lname='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set lname='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["suffix"]) {
     $tqvar = formData('suffix','G');
-    sqlStatement("update users set suffix='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set suffix='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["job"]) {
     $tqvar = formData('job','G');
-    sqlStatement("update users set specialty='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set specialty='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["mname"]) {
           $tqvar = formData('mname','G');
-          sqlStatement("update users set mname='$tqvar' where id={$_GET["id"]}");
+          sqlStatement("update users set mname='$tqvar' where id = ?", array($_GET["id"]));
   }
   if ($_GET["facility_id"]) {
           $tqvar = formData('facility_id','G');
-          sqlStatement("update users set facility_id = '$tqvar' where id = {$_GET["id"]}");
+          sqlStatement("update users set facility_id = '$tqvar' where id = ?", array($_GET["id"]));
           //(CHEMED) Update facility name when changing the id
-          sqlStatement("UPDATE users, facility SET users.facility = facility.name WHERE facility.id = '$tqvar' AND users.id = {$_GET["id"]}");
+          sqlStatement("UPDATE users, facility SET users.facility = facility.name WHERE facility.id = '$tqvar' AND users.id = ?", array($_GET["id"]));
           //END (CHEMED)
   }
 
   if ($GLOBALS['restrict_user_facility'] && $_GET["schedule_facility"]) {
       sqlStatement("delete from users_facility
         where tablename='users'
-        and table_id={$_GET["id"]}
-        and facility_id not in (" . implode(",", $_GET['schedule_facility']) . ")");
+        and table_id=?
+        and facility_id not in (" . implode(",", $_GET['schedule_facility']) . ")", array($_GET["id"]));
       foreach($_GET["schedule_facility"] as $tqvar) {
       sqlStatement("replace into users_facility set
             facility_id = '$tqvar',
             tablename='users',
-            table_id = {$_GET["id"]}");
+            table_id = ?", array($_GET["id"]));
     }
   }
   if ($_GET["fname"]) {
           $tqvar = formData('fname','G');
-          sqlStatement("update users set fname='$tqvar' where id={$_GET["id"]}");
+          sqlStatement("update users set fname='$tqvar' where id = ?", array($_GET["id"]));
   }
   //(CHEMED) Calendar UI preference
   if ($_GET["cal_ui"]) {
           $tqvar = formData('cal_ui','G');
-          sqlStatement("update users set cal_ui = '$tqvar' where id = {$_GET["id"]}");
+          sqlStatement("update users set cal_ui = '$tqvar' where id = ?", array($_GET["id"]));
 
           // added by bgm to set this session variable if the current user has edited
       //   their own settings
@@ -129,18 +129,18 @@ if ($_GET["mode"] == "update") {
   if (isset($_GET['default_warehouse'])) {
     sqlStatement("UPDATE users SET default_warehouse = '" .
       formData('default_warehouse','G') .
-      "' WHERE id = '" . formData('id','G') . "'");
+      "' WHERE id = ?", array(formData('id','G')));
   }
 
   if (isset($_GET['irnpool'])) {
     sqlStatement("UPDATE users SET irnpool = '" .
       formData('irnpool','G') .
-      "' WHERE id = '" . formData('id','G') . "'");
+      "' WHERE id = ?", array(formData('id','G')));
   }
 
   if ($_GET["newauthPass"] && $_GET["newauthPass"] != "d41d8cd98f00b204e9800998ecf8427e") { // account for empty
     $tqvar = formData('newauthPass','G');
-    sqlStatement("update users set password='$tqvar' where id={$_GET["id"]}");
+    sqlStatement("update users set password='$tqvar' where id = ?", array($_GET["id"]));
   }
 
   $tqvar  = $_GET["authorized"] ? 1 : 0;
@@ -149,16 +149,16 @@ if ($_GET["mode"] == "update") {
 
   sqlStatement("UPDATE users SET authorized = $tqvar, active = $actvar, " .
     "calendar = $calvar, see_auth = '" . $_GET['see_auth'] . "' WHERE " .
-    "id = {$_GET["id"]}");
+    "id = ?", array($_GET["id"]));
 
   if ($_GET["comments"]) {
     $tqvar = formData('comments','G');
-    sqlStatement("update users set info = '$tqvar' where id = {$_GET["id"]}");
+    sqlStatement("update users set info = '$tqvar' where id = ?", array($_GET["id"]));
   }
 
   if (isset($phpgacl_location) && acl_check('admin', 'acl')) {
     // Set the access control group of user
-    $user_data = sqlFetchArray(sqlStatement("select username from users where id={$_GET["id"]}"));
+    $user_data = sqlFetchArray(sqlStatement("select username from users where id = ?", array($_GET["id"])));
     set_user_aro($_GET['access_group'], $user_data["username"],
       formData('fname','G'), formData('mname','G'), formData('lname','G'));
   }
@@ -202,9 +202,9 @@ parent.$.fn.fancybox.close();
 <head>
 
 <link rel="stylesheet" href="<?php echo $css_header; ?>" type="text/css">
-<script type="text/javascript" src="../../library/dialog.js"></script>
-<script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>
-<script type="text/javascript" src="../../library/js/common.js"></script>
+<!--<script type="text/javascript" src="../../library/dialog.js"></script>
+<script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>-->
+    <?php call_required_libraries(array("jquery-min-3-1-1", "font-awesome", "iziModalToast")); ?>
 
 <script src="checkpwd_validation.js" type="text/javascript"></script>
 
@@ -229,13 +229,28 @@ function submitform() {
         return sString;
     }
     if(trimAll(document.getElementById('fname').value) == ""){
-        alert("<?php xl('Required field missing: Please enter the First name','e');?>");
+        alertMsg = "<?php xl('Required field missing: Please enter the <b>First name</b>','e');?>";
+        iziToast.warning({
+            title: 'Warning -',
+            message: alertMsg,
+            position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+            icon: 'fa fa-exclamation-triangle'
+
+        });
         document.getElementById('fname').style.backgroundColor="red";
         document.getElementById('fname').focus();
         return false;
     }
     if(trimAll(document.getElementById('lname').value) == ""){
-        alert("<?php xl('Required field missing: Please enter the Last name','e');?>");
+        alertMsg = "<?php xl('Required field missing: Please enter the <b>Last name</b>','e');?>";
+        iziToast.warning({
+            title: 'Warning -',
+            message: alertMsg,
+            position: 'bottomRight', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter, center
+            icon: 'fa fa-exclamation-triangle'
+
+        });
+
         document.getElementById('lname').style.backgroundColor="red";
         document.getElementById('lname').focus();
         return false;
@@ -312,8 +327,11 @@ function submitform() {
     }
     <?php } ?>
     if(flag == 0){
+        // send this session variable to the form so as to tract if it is a success (editing a user)
+    <?php $_SESSION["from_editUser"] = true; ?>
+
                     document.forms[0].submit();
-                    parent.$.fn.fancybox.close(); 
+        parent.$('#editUser-iframe').iziModal('close');
     }
 }
 //Getting the list of selected item in ACL
@@ -349,8 +367,8 @@ function authorized_clicked() {
 <table><tr><td>
 <span class="title"><?php echo xlt('Edit User'); ?></span>&nbsp;
 </td><td>
-    <a class="css_button" name='form_save' id='form_save' href='#' onclick='return submitform()'> <span><?php echo xlt('Save');?></span> </a>
-    <a class="css_button" id='cancel' href='#'><span><?php echo xlt('Cancel');?></span></a>
+    <a class="css_button cp-submit" name='form_save' id='form_save' href='#' onclick='return submitform()'> <span><?php echo xlt('Save');?></span> </a>
+    <a class="css_button cp-negative" id='cancel' href='#'><span><?php echo xlt('Cancel');?></span></a>
 </td></tr>
 </table>
 <br>
@@ -562,42 +580,24 @@ echo generate_select_list('irnpool', 'irnpool', $iter['irnpool'],
   <td><textarea style="width:150px;" name="comments" wrap=auto rows=4 cols=25><?php echo $iter["info"];?></textarea></td>
   </tr>
   <tr>
-  <td><span class="text"><?php echo xlt('Full screen role'); ?>:</span></td>
+  <td><span class="text"><?php echo xlt('Menu role'); ?>:</span></td>
   <td>
-  <select style="width:120px;" name="role_name">
+  <select style="width:120px;" name="menu_role" id="menu_role">
     <?php
-      $fres = sqlStatement("select distinct menu_set from menu_trees order by menu_set");
-      if ($fres) {
-        for ($iter3 = 0;$frow = sqlFetchArray($fres);$iter3++)
-          $result[$iter3] = $frow;
-        foreach($result as $iter3) {
-      ?>
-      <option value="<?php echo $iter3{'menu_set'};?>" <?php if ($iter3{'menu_set'} == $iter["fullscreen_role"]) echo "selected"; ?>><?php echo $iter3{'menu_set'}; ?></option>
+         $role = new Role();
+         $role_list = $role->getRoleList();
+         foreach($role_list as $role_title) {
+           ?>  <option value="<?php echo $role_title; ?>" <?php if ($iter["menu_role"] == $role_title) echo "selected"; ?>><?php echo xlt($role_title); ?></option>
       <?php
         }
-      }
     ?>
   </select>
   </td>
   <td><span class="text"> <?php echo xlt('Full screen page'); ?>:</span></td>
   <td>
       <select style="width:120px;" name="fullscreen_page" id="fullscreen_page">
-      <?php
-
-      $fres = sqlStatement("select entry_id from menu_trees where menu_set='".$iter["fullscreen_role"]."'");
-      if($fres) {
-        for($iter3 = 0;$frow = sqlFetchArray($fres); $iter3++)
-          $result[$iter3] = $frow;
-          // needs to be worked on for different types of menus
-          foreach($result as $iter2) {
-            $fres2 = sqlStatement("select id,label from menu_entries where id='".$iter2{'entry_id'}."'");
-            $frow2 = sqlFetchArray($fres2);
-            ?> 
-            <option value="<?php echo $frow2{'id'}; ?>" <?php if ($frow2{'id'} == $iter["fullscreen_page"]) echo "selected"; ?>><?php echo xlt($frow2{'label'}); ?></option>
-            <?php
-          }
-      }
-      ?>
+                <option value="Calendar|/interface/main/main_info.php">Calendar</option>
+                <option value="Flow Board|/interface/patient_tracker/patient_tracker.php">Flow Board</option>
       </select>
 
   
@@ -636,7 +636,8 @@ Display red alert if entered password matched one of last three passwords/Displa
 <script language="JavaScript">
 $(document).ready(function(){
     $("#cancel").click(function() {
-          parent.$.fn.fancybox.close();
+        // closing the izi Modal
+        parent.$('#editUser-iframe').iziModal('close');
      });
 
 });

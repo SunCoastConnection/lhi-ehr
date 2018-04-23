@@ -167,7 +167,7 @@ if ($_POST['form_save'] && $_GET['mode'] == "user") {
     }
   }
   echo "<script type='text/javascript'>";
-  if (!$action['css_header']||!$action['menu_styling_tabs']) {
+  if (!$action['css_header']) {
     echo "top.location.reload(true);";
   }
   echo "self.location.href='edit_globals.php?mode=user&unique=yes';";
@@ -780,7 +780,7 @@ foreach ($GLOBALS_METADATA as $grpname => $grparr) {
 </form>
 
 </body>
-<script type="text/javascript" src="../super/js/edit_globals.js"></script>
+<!--<script type="text/javascript" src="../super/js/edit_globals.js"></script>-->
 
 <script language="JavaScript">
 

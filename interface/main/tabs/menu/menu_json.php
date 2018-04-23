@@ -27,7 +27,7 @@ menu_apply_restrictions($menu_parsed,$menu_restrictions);
         self.label=ko.observable(object.label);
 
         self.header=false;
-        if('url' in object )
+        if('url' in object && object.url !== null )
         {
             self.url=ko.observable(object.url);
             self.header=false;

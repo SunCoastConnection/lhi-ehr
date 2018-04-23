@@ -33,6 +33,7 @@ $fake_register_globals=false;
 
 //Include required scripts/libraries
 require_once("../globals.php");
+require_once("$srcdir/headers.inc.php");
 
 
 // Reference website links
@@ -75,47 +76,47 @@ $form_diagnosis = (isset($_POST['form_diagnosis'])) ? $_POST['form_diagnosis'] :
     <table>
         <tr class="misc-internet-search">
   <td>
-	<div style='float:left'>
-	<table class='text'>
-		<tr>
-			<td>
-			   <?php echo htmlspecialchars( xl('Search in'), ENT_NOQUOTES);
+    <div style='float:left'>
+    <table class='text'>
+        <tr>
+            <td>
+               <?php echo htmlspecialchars( xl('Search in'), ENT_NOQUOTES);
                 echo '&nbsp;&nbsp;';
-				echo "<select name='form_lookup_at'>\n";
-				foreach ($websites as $key => $value) {
-				  echo "    <option value='" . htmlspecialchars($key, ENT_QUOTES) . "'";
-				  if ($key == $form_lookup_at) echo ' selected';
-				  echo ">" . htmlspecialchars( xl($key), ENT_NOQUOTES) . "</option>\n";
-				}
-				echo "</select>"; ?>
-			</td>
+                echo "<select name='form_lookup_at'>\n";
+                foreach ($websites as $key => $value) {
+                  echo "    <option value='" . htmlspecialchars($key, ENT_QUOTES) . "'";
+                  if ($key == $form_lookup_at) echo ' selected';
+                  echo ">" . htmlspecialchars( xl($key), ENT_NOQUOTES) . "</option>\n";
+                }
+                echo "</select>"; ?>
+            </td>
         </tr>
         <tr>
             <td>
-			   <input type='text' name='form_diagnosis' size='60' value='<?php echo htmlspecialchars($form_diagnosis, ENT_QUOTES); ?>'
-				title='<?php echo htmlspecialchars( xl('Search Text'), ENT_QUOTES); ?>'>
-			</td>
-		</tr>
-	</table>
+               <input type='text' name='form_diagnosis' size='60' value='<?php echo htmlspecialchars($form_diagnosis, ENT_QUOTES); ?>'
+                title='<?php echo htmlspecialchars( xl('Search Text'), ENT_QUOTES); ?>'>
+            </td>
+        </tr>
+    </table>
 
-	</div>
+    </div>
 
   </td>
   <td align='left' valign='middle' height="100%">
-	<table style='border-left:1px solid; width:100%; height:100%' >
-		<tr>
-			<td>
-				<div style='margin-left:15px'>
-					<a href='#' class='css_button' onclick='top.restoreSession(); $("#theform").submit();'>
-					<span>
-						<?php echo htmlspecialchars( xl('Submit'), ENT_NOQUOTES); ?>
-					</span>
-					</a>
+    <table style='border-left:1px solid; width:100%; height:100%' >
+        <tr>
+            <td>
+                <div style='margin-left:15px'>
+                    <a href='#' class='css_button cp-submit' onclick='top.restoreSession(); $("#theform").submit();'>
+                    <span>
+                        <?php echo htmlspecialchars( xl('Submit'), ENT_NOQUOTES); ?>
+                    </span>
+                    </a>
 
-				</div>
-			</td>
-		</tr>
-	</table>
+                </div>
+            </td>
+        </tr>
+    </table>
   </td>
  </tr>
 </table>
