@@ -88,6 +88,33 @@
 #IfMissingColumn history_data risk_factors
 ALTER TABLE `history_data` ADD COLUMN `risk_factors` TEXT NULL DEFAULT NULL AFTER `exams`;
 #EndIf
+
+DELETE FROM `code_types` WHERE `code_types`.`ct_key` = 'ICD9';
+
+#IfMissingColumn users menu_role
+ALTER TABLE users ADD COLUMN menu_role varchar(100) NOT NULL default "Default User";
+#EndIf
+
+#IfMissingColumn users fullscreen_page
+ALTER TABLE users ADD COLUMN fullscreen_page text NOT NULL;
+#EndIf
+
+#IfMissingColumn users fullscreen_enable
+ALTER TABLE users ADD COLUMN fullscreen_enable int(11) NOT NULL default 0;
+#EndIf
+
+#IfMissingColumn users menu_role
+ALTER TABLE users ADD COLUMN menu_role varchar(100) NOT NULL default "Default User";
+#EndIf
+
+#IfColumn users fullscreen_role
+ALTER TABLE `users` DROP `fullscreen_role`;
+#EndIf
+
+DROP TABLE IF EXISTS `menu_trees`;
+
+DROP TABLE IF EXISTS `menu_entries`;
+
 --
 -- Table structure for table `libreehr_modules`
 --
