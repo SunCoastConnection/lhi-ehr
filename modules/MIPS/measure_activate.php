@@ -27,178 +27,178 @@ require_once '../../interface/globals.php';
 require_once $srcdir.'/api.inc';
 
 $updateStatus = array(
-	'off' => array(),
-	'on' => array()
+    'off' => array(),
+    'on' => array()
 );
 
 if(array_key_exists('action', $_GET) && $_GET['action'] == 'save') {
-	if(array_key_exists('pqrsRules', $_POST)) {
-		$pqrsRules = $_POST['pqrsRules'];
-	} else {
-		$pqrsRules = array();
-	}
+    if(array_key_exists('pqrsRules', $_POST)) {
+        $pqrsRules = $_POST['pqrsRules'];
+    } else {
+        $pqrsRules = array();
+    }
 
-	if(array_key_exists('pqrsRulesInitial', $_POST)) {
-		$pqrsRulesInitial = $_POST['pqrsRulesInitial'];
-	} else {
-		$pqrsRulesInitial = array();
-	}
+    if(array_key_exists('pqrsRulesInitial', $_POST)) {
+        $pqrsRulesInitial = $_POST['pqrsRulesInitial'];
+    } else {
+        $pqrsRulesInitial = array();
+    }
 
-	foreach($pqrsRulesInitial as $pqrsRule => $pqrsRuleActive) {
-		if(($pqrsRuleActive == '1' && !array_key_exists($pqrsRule, $pqrsRules)) ||
-			($pqrsRuleActive == '0' && array_key_exists($pqrsRule, $pqrsRules))
-		) {
-			$pqrsRuleActive = ($pqrsRuleActive == 1 ? 0 : 1);
+    foreach($pqrsRulesInitial as $pqrsRule => $pqrsRuleActive) {
+        if(($pqrsRuleActive == '1' && !array_key_exists($pqrsRule, $pqrsRules)) ||
+            ($pqrsRuleActive == '0' && array_key_exists($pqrsRule, $pqrsRules))
+        ) {
+            $pqrsRuleActive = ($pqrsRuleActive == 1 ? 0 : 1);
 
-			sqlStatementNoLog('UPDATE `clinical_rules`
-				SET `active` = ?
-				WHERE `id` = ?;',
-				array(
-					$pqrsRuleActive,
-					$pqrsRule
-				)
-			);
+            sqlStatementNoLog('UPDATE `clinical_rules`
+                SET `active` = ?
+                WHERE `id` = ?;',
+                array(
+                    $pqrsRuleActive,
+                    $pqrsRule
+                )
+            );
 
-			$updateStatus[($pqrsRuleActive == 0 ? 'off' : 'on')][] = $pqrsRule;
-		}
-	}
+            $updateStatus[($pqrsRuleActive == 0 ? 'off' : 'on')][] = $pqrsRule;
+        }
+    }
 }
 
 ?>
 <!DOCTYPE html>
 <html>
-	<head>
-			<span class='title' visibility: hidden><?php echo htmlspecialchars( xl('MIPS Measure Selection'), ENT_NOQUOTES); ?></span>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="<?php echo $css_header; ?>" type="text/css">
+    <head>
+            <span class='title' visibility: hidden><?php echo htmlspecialchars( xl('MIPS Measure Selection'), ENT_NOQUOTES); ?></span>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="<?php echo $css_header; ?>" type="text/css">
 
-		<style>
+        <style>
 h1, h2, h3 {
-	margin-bottom: 0.25ex;
+    margin-bottom: 0.25ex;
 }
 #measures ul {
-	padding-left: 1em;
+    padding-left: 1em;
 }
 #measures li {
-	list-style: none;
+    list-style: none;
 }
 .updateStatus {
-	color: #007c00;
+    color: #007c00;
 }
 .updateCount {
-	font-weight: bold;
+    font-weight: bold;
 }
 .checkbox-button {
-	display: inline-block;
+    display: inline-block;
 }
 .checkbox-button label {
-	background-color: #808080;
-	border: 1px solid #333333;
-	border-radius: 4px;
-	color: #f0f0f0;
-	display: inline-block;
-	font-family: monospace;
-	margin: 0.25ex 0.15ex 0.15ex 0ex;
-	padding: 0 0.75ex;
-	text-size: 16pt;
+    background-color: #808080;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #f0f0f0;
+    display: inline-block;
+    font-family: monospace;
+    margin: 0.25ex 0.15ex 0.15ex 0ex;
+    padding: 0 0.75ex;
+    text-size: 16pt;
 }
 .checkbox-button label:before {
-	color: #ff0000;
-	content: '\2718';
-	padding-right: 0.5ex;
+    color: #ff0000;
+    content: '\2718';
+    padding-right: 0.5ex;
 }
 .checkbox-button input[type=checkbox]:checked + label {
-	color: #333333;
-	background-color: #f0f0f0;
+    color: #333333;
+    background-color: #f0f0f0;
 }
 .checkbox-button input[type=checkbox]:checked + label:before {
-	color: #007c00;
-	content: '\2714';
+    color: #007c00;
+    content: '\2714';
 }
 .checkbox-button input[type=checkbox] {
-	display: none;
+    display: none;
 }
 .quickselect {
-	background-color: #f0f0f0;
-	border: 1px solid #333333;
-	border-radius: 4px;
-	color: #333333;
-	display: inline-block;
-	font-family: monospace;
-	margin: 0.25ex 0.15ex 0.15ex 0ex;
-	padding: 0 0.75ex;
-	font-size: 9pt;
+    background-color: #f0f0f0;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #333333;
+    display: inline-block;
+    font-family: monospace;
+    margin: 0.25ex 0.15ex 0.15ex 0ex;
+    padding: 0 0.75ex;
+    font-size: 9pt;
 }
-		</style>
-		<script type="text/javascript" src="../../library/js/jquery-1.9.1.min.js"></script>
-		<script language="JavaScript">
+        </style>
+        <script type="text/javascript" src="../../library/js/jquery-1.9.1.min.js"></script>
+        <script language="JavaScript">
 $(document).ready(function() {
-	$('input[type=checkbox]').change(function(e) {
-		var checked = $(this).prop('checked'),
-			container = $(this).parent(),
-			siblings = container.siblings();
+    $('input[type=checkbox]').change(function(e) {
+        var checked = $(this).prop('checked'),
+            container = $(this).parent(),
+            siblings = container.siblings();
 
-		container.find('input[type=checkbox]').prop({
-			indeterminate: false,
-			checked: checked
-		});
+        container.find('input[type=checkbox]').prop({
+            indeterminate: false,
+            checked: checked
+        });
 
-		function checkSiblings(element) {
-			var parent = element.parent().parent(),
-			all = true;
+        function checkSiblings(element) {
+            var parent = element.parent().parent(),
+            all = true;
 
-			element.siblings().each(function() {
-				return all = ($(this).children('input[type=checkbox]').prop('checked') === checked);
-			});
+            element.siblings().each(function() {
+                return all = ($(this).children('input[type=checkbox]').prop('checked') === checked);
+            });
 
-			if(all && checked) {
-				parent.children('input[type=checkbox]').prop({
-					indeterminate: false,
-					checked: checked
-				});
+            if(all && checked) {
+                parent.children('input[type=checkbox]').prop({
+                    indeterminate: false,
+                    checked: checked
+                });
 
-				checkSiblings(parent);
-			} else if(all && !checked) {
-				parent.children('input[type=checkbox]').prop('checked', checked);
-				parent.children('input[type=checkbox]').prop('indeterminate', (parent.find('input[type=checkbox]:checked').length > 0));
+                checkSiblings(parent);
+            } else if(all && !checked) {
+                parent.children('input[type=checkbox]').prop('checked', checked);
+                parent.children('input[type=checkbox]').prop('indeterminate', (parent.find('input[type=checkbox]:checked').length > 0));
 
-				checkSiblings(parent);
-			} else {
-				element.parents('li').children('input[type=checkbox]').prop({
-					indeterminate: true,
-					checked: false
-				});
-			}
-		}
+                checkSiblings(parent);
+            } else {
+                element.parents('li').children('input[type=checkbox]').prop({
+                    indeterminate: true,
+                    checked: false
+                });
+            }
+        }
 
-		checkSiblings(container);
-	});
+        checkSiblings(container);
+    });
 
-	$('#measures ul').each(function() {
-		measure = $(this).children('li.checkbox-button').first();
+    $('#measures ul').each(function() {
+        measure = $(this).children('li.checkbox-button').first();
 
-		if(measure.length) {
-			checkbox = $(measure).children('input[type=checkbox]');
-			$(checkbox).click();
-			$(checkbox).click();
-		}
-	});
+        if(measure.length) {
+            checkbox = $(measure).children('input[type=checkbox]');
+            $(checkbox).click();
+            $(checkbox).click();
+        }
+    });
 
 });
 
-	function quickSelect(specialty) {
-		var mymeasurelist;
-		console.log('Called quickSelect() with ' + specialty);
-		switch(specialty) {
+    function quickSelect(specialty) {
+        var mymeasurelist;
+        console.log('Called quickSelect() with ' + specialty);
+        switch(specialty) {
 
-			case "MIPS-1 Allergy/Immunology":
-				mymeasurelist = [110,111,130,160,226,317,331,332,333,334,374,398,402,444];
-				break;
-			case "MIPS-2 Anesthesiology":
-				mymeasurelist = [44,76,130,317,404,424,426,427,430];
+            case "MIPS-1 Allergy/Immunology":
+                mymeasurelist = [110,111,130,160,226,317,331,332,333,334,374,398,402,444];
+                break;
+            case "MIPS-2 Anesthesiology":
+                mymeasurelist = [44,76,130,317,404,424,426,427,430];
                                 break;
                         case "MIPS-3 Cardiology":
-				mymeasurelist = [5,6,7,8,47,118,128,130,204,226,236,317,322,323,324,326,402,431,438];
+                mymeasurelist = [5,6,7,8,47,118,128,130,204,226,236,317,322,323,324,326,402,431,438];
                                 break;
                         case "MIPS-4 Dermatology":
                                 mymeasurelist = [130,137,138,224,226,265,317,337,402,410];
@@ -282,41 +282,42 @@ $(document).ready(function() {
                                 mymeasurelist = [47,128,130,226,236,258,259,260,317,344,345,347,357,402];
                                 break;
 
-			default:
-				console.log('Something Else!');
-		}
-		console.log('mymeasurelist = '+mymeasurelist);
-		for (var mymeasure of mymeasurelist) {
-			//console.log('For ' + mymeasure);
-			mymeasurestring="#PQRS_"+("000" + mymeasure).slice(-4);
-			$(mymeasurestring).prop('checked', true);
-		}
-	};
+            default:
+                console.log('Something Else!');
+        }
+        console.log('mymeasurelist = '+mymeasurelist);
+        for (var mymeasure of mymeasurelist) {
+            //console.log('For ' + mymeasure);
+            mymeasurestring="#PQRS_"+("000" + mymeasure).slice(-4);
+            $(mymeasurestring).prop('checked', true);
+        }
+    };
 
-		</script>
-	</head>
-	<body class="body_top">
-		<form action="?action=save" method="post">
-			<h1>MIPS Measure Selector</h1>
+        </script>
+    </head>
+    <body class="body_top">
+        <form action="?action=save" method="post">
+            <h1>MIPS Measure Selector</h1>
 <?php
 
 if(count($updateStatus['off']) || count($updateStatus['on'])) {
 
 ?>
-			<p class="updateStatus">Updated <span class="updateCount"><?php echo count($updateStatus['off']) + count($updateStatus['on']); ?></span> measures [<?php echo (count($updateStatus['off']) ? ' Off: <span class="updateCount">'.count($updateStatus['off']).'</span>' : '').(count($updateStatus['on']) ? ' On: <span class="updateCount">'.count($updateStatus['on']).'</span>' : ''); ?> ]</p>
+            <p class="updateStatus">Updated <span class="updateCount"><?php echo count($updateStatus['off']) + count($updateStatus['on']); ?></span> measures [<?php echo (count($updateStatus['off']) ? ' Off: <span class="updateCount">'.count($updateStatus['off']).'</span>' : '').(count($updateStatus['on']) ? ' On: <span class="updateCount">'.count($updateStatus['on']).'</span>' : ''); ?> ]</p>
 <?php
 
 }
 
 ?>
-			<div id="measures">
-				<ul>
+            <p><input type="submit" value="Update" /></p>
+            <div id="measures">
+                <ul>
 
-					<li>MIPS Specialty Sets for 2017
-						<ul>
-							<button type="button" class="quickselect" onclick="quickSelect('MIPS-1 Allergy/Immunology')">MIPS-1 Allergy/Immunology</button>
-							<button type="button" class="quickselect" onclick="quickSelect('MIPS-2 Anesthesiology')">MIPS-2 Anesthesiology</button>
-							<button type="button" class="quickselect" onclick="quickSelect('MIPS-3 Cardiology')">MIPS-3 Cardiology</button>
+                    <li>MIPS Specialty Sets for 2017
+                        <ul>
+                            <button type="button" class="quickselect" onclick="quickSelect('MIPS-1 Allergy/Immunology')">MIPS-1 Allergy/Immunology</button>
+                            <button type="button" class="quickselect" onclick="quickSelect('MIPS-2 Anesthesiology')">MIPS-2 Anesthesiology</button>
+                            <button type="button" class="quickselect" onclick="quickSelect('MIPS-3 Cardiology')">MIPS-3 Cardiology</button>
                                                         <button type="button" class="quickselect" onclick="quickSelect('MIPS-4 Dermatology')">MIPS-4 Dermatology</button>
                                                         <button type="button" class="quickselect" onclick="quickSelect('MIPS-5 Diagnostic Radiology')">MIPS-5 Diagnostic Radiology</button>               
                                                         <button type="button" class="quickselect" onclick="quickSelect('MIPS-6 Electrophysiology Cardiac Specialist')">MIPS-6 Electrophysiology Cardiac Specialist</button>
@@ -344,89 +345,89 @@ if(count($updateStatus['off']) || count($updateStatus['on'])) {
                                                         <button type="button" class="quickselect" onclick="quickSelect('MIPS-28 Thoracic Surgery')">MIPS-28 Thoracic Surgery</button>
                                                         <button type="button" class="quickselect" onclick="quickSelect('MIPS-29 Urology')">MIPS-29 Urology</button>
                                                         <button type="button" class="quickselect" onclick="quickSelect('MIPS-30 Vascular Surgery')">MIPS-30 Vascular Surgery</button>
-						</ul>
-					</li>
-					
-					<li>
-						<input type="checkbox" id="pqrs-toggle">
-						<label for="pqrs-toggle">All Measures</label>
-						<ul>
-							<li>
-								<input type="checkbox" id="individual-toggle">
-								<label for="individual-toggle">Individual Measure Selection (click twice to de-select all)</label>
-								<ul>
+                        </ul>
+                    </li>
+                    
+                    <li>
+                        <input type="checkbox" id="pqrs-toggle">
+                        <label for="pqrs-toggle">All Measures</label>
+                        <ul>
+                            <li>
+                                <input type="checkbox" id="individual-toggle">
+                                <label for="individual-toggle">Individual Measure Selection (click twice to de-select all)</label>
+                                <ul>
 <?php
 
 $rules = sqlStatementNoLog(
-	'SELECT `id`, `active`
-	FROM `clinical_rules`
-	WHERE `id` LIKE "PQRS_%"
-		AND `id` NOT LIKE "%_Group_%"
-	ORDER BY `id` ASC;'
+    'SELECT `id`, `active`
+    FROM `clinical_rules`
+    WHERE `id` LIKE "PQRS_%"
+        AND `id` NOT LIKE "%_Group_%"
+    ORDER BY `id` ASC;'
 );
 
 foreach($rules as $rule) {
-	$id = $rule['id'];
-	$active = $rule['active'];
+    $id = $rule['id'];
+    $active = $rule['active'];
 
-	$idParts = explode('_', $id);
-	array_shift($idParts);
-	$label = implode(' ', $idParts);
+    $idParts = explode('_', $id);
+    array_shift($idParts);
+    $label = implode(' ', $idParts);
 
 ?>
-									<li class="checkbox-button">
-										<input type="hidden" name="pqrsRulesInitial[<?php echo $id; ?>]" value="<?php echo $active ?>">
-										<input type="checkbox" class="measure" id="<?php echo $id; ?>" name="pqrsRules[<?php echo $id; ?>]" value="1"<?php if($active == 1) { echo ' checked="checked"'; } ?>>
-										<label for="<?php echo $id; ?>"><?php echo $label; ?></label>
-									</li>
+                                    <li class="checkbox-button">
+                                        <input type="hidden" name="pqrsRulesInitial[<?php echo $id; ?>]" value="<?php echo $active ?>">
+                                        <input type="checkbox" class="measure" id="<?php echo $id; ?>" name="pqrsRules[<?php echo $id; ?>]" value="1"<?php if($active == 1) { echo ' checked="checked"'; } ?>>
+                                        <label for="<?php echo $id; ?>"><?php echo $label; ?></label>
+                                    </li>
 <?php
 
 }
 
 ?>
-								</ul>
-							</li>
-							<li>
-								<ul>
+                                </ul>
+                            </li>
+                            <li>
+                                <ul>
 <?php
 
 $rules = sqlStatementNoLog(
-	'SELECT `id`, `active`
-	FROM `clinical_rules`
-	WHERE `id` LIKE "pre_%"
-		AND `id` NOT LIKE "%_Group_%"
-	ORDER BY `id` ASC;'
+    'SELECT `id`, `active`
+    FROM `clinical_rules`
+    WHERE `id` LIKE "pre_%"
+        AND `id` NOT LIKE "%_Group_%"
+    ORDER BY `id` ASC;'
 );
 
 foreach($rules as $rule) {
-	$id = $rule['id'];
-	$active = $rule['active'];
+    $id = $rule['id'];
+    $active = $rule['active'];
 
-	$idParts = explode('_', $id);
-	array_shift($idParts);
-	$label = implode(' ', $idParts);
+    $idParts = explode('_', $id);
+    array_shift($idParts);
+    $label = implode(' ', $idParts);
 
 ?>
-									<li class="checkbox-button">
-										<input type="hidden" name="pqrsRulesInitial[<?php echo $id; ?>]" value="<?php echo $active ?>">
-										<input type="checkbox" class="measure" id="<?php echo $id; ?>" name="pqrsRules[<?php echo $id; ?>]" value="1"<?php if($active == 1) { echo ' checked="checked"'; } ?>>
-										<label for="<?php echo $id; ?>"><?php echo "pre-select ".$label; ?></label>
-									</li>
+                                    <li class="checkbox-button">
+                                        <input type="hidden" name="pqrsRulesInitial[<?php echo $id; ?>]" value="<?php echo $active ?>">
+                                        <input type="checkbox" class="measure" id="<?php echo $id; ?>" name="pqrsRules[<?php echo $id; ?>]" value="1"<?php if($active == 1) { echo ' checked="checked"'; } ?>>
+                                        <label for="<?php echo $id; ?>"><?php echo "pre-select ".$label; ?></label>
+                                    </li>
 <?php
 
 }
 
 ?>
 
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-			<p><input type="submit" value="Update" /></p>
-		</form>
-	</body>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <p><input type="submit" value="Update" /></p>
+        </form>
+    </body>
 </html>

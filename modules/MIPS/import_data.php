@@ -18,14 +18,14 @@
 require_once '../../interface/globals.php';
 include_once("$srcdir/api.inc");
 include_once("$srcdir/acl.inc");
-?>	
+?>  
 <html>
 <?php if (acl_check('admin', 'practice' )) { ?>
 <span class='title' visibility: hidden>Import Database</span>
 <h1>Import Processed x12 837 file data</h1>
 <b>This tool truncates all data from previous imports, and loads the new data uploaded to the sites directory.  It also removes all users with an ID number greater than 1000.  Imported data user (providers) 
 are set to NPI numbers which are ten digit numbers.</b>
-<form action="import_data.php" method="post">	
+<form action="import_data.php" method="post">   
 <?php
 if($_POST['formSubmit'] == "Submit") 
 {
@@ -39,25 +39,33 @@ $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/
 sqlStatementNoLog($query);
 }
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing1.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing1.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing1.sql");
+    sqlStatementNoLog($query);
 }
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing2.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing2.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing2.sql");
+    sqlStatementNoLog($query);
 }
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing3.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing3.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing3.sql");
+    sqlStatementNoLog($query);
 }
 
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing4.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing4.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing4.sql");
+    sqlStatementNoLog($query);
 }
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing5.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing5.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing5.sql");
+    sqlStatementNoLog($query);
+}
+if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing6.sql")) {
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing6.sql");
+    sqlStatementNoLog($query);
+}
+if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing7.sql")) {
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/billing7.sql");
+    sqlStatementNoLog($query);
 }
 
 
@@ -71,12 +79,12 @@ $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/
 sqlStatementNoLog($query);
 }
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/form_encounter1.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/form_encounter1.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/form_encounter1.sql");
+    sqlStatementNoLog($query);
 }
 if ( file_exists($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/form_encounter2.sql")) {
-	$query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/form_encounter2.sql");
-	sqlStatementNoLog($query);
+    $query = file_get_contents($GLOBALS['OE_SITE_DIR']."/filemanager/files/Importer/form_encounter2.sql");
+    sqlStatementNoLog($query);
 }
 
 sqlStatementNoLog("TRUNCATE TABLE `forms`;");
