@@ -381,13 +381,20 @@ function allowOnlyDigits(elem_name){
         }
         <?php } ?>
         var msg = "";
+        var ins_error = '0';
         msg += "<?php echo htmlspecialchars(xl('The following fields are required'),ENT_QUOTES); ?>:\n\n";
         for ( var i = 0; i < errMsgs.length; i++ ) {
                msg += errMsgs[i] + "\n";
         }
+        <?php if($GLOBALS['primary_insurance_required']){ ?>
+          if($('#i1provider option:selected').val() == '') {
+             var ins_error = '1';
+             msg += "<?php echo htmlspecialchars(xl('Primary Insurance Provider Needed.'),ENT_QUOTES); ?> \n";
+          }
+        <?php } ?>
         msg += "\n<?php echo htmlspecialchars(xl('Please fill them in before continuing.'),ENT_QUOTES); ?>";
 
-        if ( errMsgs.length > 0 ) {
+        if ( errMsgs.length > 0 || ins_error == '1' ) {
                alert(msg);
                return false;
         }
@@ -625,7 +632,7 @@ function allowOnlyDigits(elem_name){
               <tr>
                 <td colspan='2'>
                   <span class='required'><?php echo $insurance_headings[$i -1].":"?></span>
-                  <select name="i<?php echo $i?>provider">
+                  <select name="i<?php echo $i?>provider" id="i<?php echo $i?>provider">
                     <option value=""><?php xl('Unassigned','e'); ?></option>
                     <?php
                       foreach ($insurancei as $iid => $iname) {

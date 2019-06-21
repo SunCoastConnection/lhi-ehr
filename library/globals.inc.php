@@ -1080,6 +1080,14 @@ $GLOBALS_METADATA = array(
 
   ),
 
+   'primary_insurance_required' => array(
+      xl('Require the Entry of the Primary Insurance in the New Patient Screen'),
+      'bool',
+      '0',                              // default
+      xl('Require the Entry of the Primary Insurance in the New Patient Screen')
+
+  ),
+
   ),
 
   // Statement Tab
@@ -1522,6 +1530,13 @@ $GLOBALS_METADATA = array(
        '1',                             // default
       xl('Do not register appointments with time outside clinic hours.')
     ),
+
+    'use_appt_status_colors' => array(
+      xl('Use Appointment Status Colors in the Calendar'),
+       'bool',                          // data type
+       '1',                             // default
+      xl('Use the Appointment Status Colors in the Calendar Instead of the Appointment Category Colors.')
+    ),    
 
     'calendar_refresh_freq' => array(
       xl('Calendar Refresh Frequency'),
